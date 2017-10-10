@@ -4,8 +4,8 @@
 
 const int FRAME_DELAY = 1000 / FRAMES_PER_SECOND;
 
+//editted
 Game* game;
-
 void DisplayCallbackFunction(void) {
 	game->draw();
 }
