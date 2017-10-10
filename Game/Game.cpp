@@ -220,6 +220,7 @@ void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 	if (state == GLUT_DOWN) {
 		switch (button) {
 		case GLUT_LEFT_BUTTON:
+			player->fire();
 			// handle left click
 			break;
 		case GLUT_RIGHT_BUTTON:
@@ -237,8 +238,8 @@ void Game::mouseMoved(glm::vec2 mouse) {
 	glm::vec2 change = mouse - mousePosition;
 	switch (state) {
 	case State::Play:
-		if (mousePosition.length() > 0 && !(abs(change.x) >= 200.0f && abs(change.y) >= 200.0f))
-			camera->processMotion(change, timer->getElapsedTimeMS());
+		//if (mousePosition.length() > 0 && !(abs(change.x) >= 200.0f && abs(change.y) >= 200.0f))
+			//camera->processMotion(change, timer->getElapsedTimeMS());
 		mousePosition = mouse;
 		break;
 	default:

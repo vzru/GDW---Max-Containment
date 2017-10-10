@@ -134,6 +134,19 @@
     <ClCompile Include="QuadMesh.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="Controller.h" />
+    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="Graphics.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Object.h" />
+    <ClInclude Include="OBJMesh.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="QuadMesh.h" />
+    <ClInclude Include="Timer.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
