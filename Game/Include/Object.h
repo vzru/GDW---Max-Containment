@@ -8,7 +8,7 @@
 #include <GLM\gtc\type_ptr.hpp>
 #include <GL/freeglut.h>
 
-class Mesh;
+class OBJMesh;
 
 class Object {
 protected:
@@ -42,6 +42,6 @@ public:
 	// Other Properties
 	std::string name;
 	glm::vec4 colour;
-	std::shared_ptr<Mesh> mesh;
+	std::shared_ptr<OBJMesh> mesh;
 	// Material* ...
 };

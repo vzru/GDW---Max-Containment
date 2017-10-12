@@ -121,6 +121,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="Enemy.cpp" />
@@ -135,17 +136,18 @@
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="Controller.h" />
-    <ClInclude Include="Enemy.h" />
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="Graphics.h" />
-    <ClInclude Include="Mesh.h" />
-    <ClInclude Include="Object.h" />
-    <ClInclude Include="OBJMesh.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="QuadMesh.h" />
-    <ClInclude Include="Timer.h" />
+    <ClInclude Include="Include\Bullet.h" />
+    <ClInclude Include="Include\Camera.h" />
+    <ClInclude Include="Include\Controller.h" />
+    <ClInclude Include="Include\Enemy.h" />
+    <ClInclude Include="Include\Game.h" />
+    <ClInclude Include="Include\Graphics.h" />
+    <ClInclude Include="Include\Mesh.h" />
+    <ClInclude Include="Include\Object.h" />
+    <ClInclude Include="Include\OBJMesh.h" />
+    <ClInclude Include="Include\Player.h" />
+    <ClInclude Include="Include\QuadMesh.h" />
+    <ClInclude Include="Include\Timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -3,7 +3,7 @@
 
 #include "Object.h"
 #include "Graphics.h"
-#include "Mesh.h"
+#include "OBJMesh.h"
 
 Object::Object(glm::vec3 pos)
 	: scale(1.0f), colour(1.0f), position(pos), mesh(nullptr)

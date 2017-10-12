@@ -1,20 +1,41 @@
 #include <iostream>
 
 #include "Player.h"
+#include "OBJMesh.h"
+#include "Bullet.h"
 
-Player::Player(glm::vec3 pos) : Object(pos) {}
+Player::Player(glm::vec3 pos) : Object(pos) {
+	//mesh = std::shared_ptr<OBJMesh>();
+	//mesh->loadMesh("assets/player.obj");
+}
 
 void Player::update(float dt) {
 	position += velocity * (dt / 50);
 	if (cooldown >= 0.0f)
 		cooldown -= dt;
+	if (firing)
+		fire();
+	for (int i = 0; i < bullets.size(); i++)
+		if (bullets[i]->update(dt)) {
+			delete bullets[i];
+			bullets.erase(bullets.begin() + i);
+			i--;
+		}
 
 	Object::update(dt);
 }
 
-bool Player::fire() {
+void Player::draw() {
+	for (auto bullet : bullets) {
+		bullet->draw();
+	}
+
+	Object::draw();
+}
+
+bool Player::fire(glm::vec2 mouse) {
 	if (cooldown <= 0.0f) {
-		makeBullet();
+		makeBullet(mouse);
 		cooldown = RateOfFire;
 		return true;
 	} return false;
@@ -26,7 +47,18 @@ bool Player::fire() {
 		//return false;
 	//}
 }
+bool Player::fire() {
+	if (cooldown <= 0.0f) {
+		makeBullet();
+		cooldown = RateOfFire;
+		return true;
+	} return false;
+}
 
+void Player::makeBullet(glm::vec2 pos) {
+	//bullets.push_back(new Bullet({ position.x, position.z }, glm::degrees(rotation.y)));
+	bullets.push_back(new Bullet({ position.x, position.z }, pos));
+}
 void Player::makeBullet() {
-
+	bullets.push_back(new Bullet({ position.x, position.z }, glm::radians(-rotation.y)));
 }

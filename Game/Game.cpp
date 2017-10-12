@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 
 #include <Windows.h>
 
@@ -11,9 +12,15 @@
 #include "Timer.h"
 #include "Camera.h"
 #include "Controller.h"
+#include "OBJMesh.h"
 
 float dLinePoint(glm::vec2 point, glm::vec2 line, float angle) {
-	return 0;
+	//float inner = glm::dot(line, point);
+	float inner = angle - atan2(point.y, point.y);
+	//float length = glm::length(point) * sin(inner);
+	float length = glm::length(point) * cos(inner);
+	std::cout << inner, angle, length;
+	return length;
 }
 
 Game::Game(int& argc, char** argv) {
@@ -44,6 +51,18 @@ Game::Game(int& argc, char** argv) {
 	camera = new Camera();
 	xBox = new Input::XBox();
 	player = new Player();
+
+	enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
+	enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
+	enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
+	enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
+	enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
+	enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
+	enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
+	enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
+	enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
+	enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
+	enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
 }
 Game::~Game() {
 	delete timer;
@@ -62,16 +81,20 @@ void Game::update() {
 	camera->update();
 
 	xBox->Update();
-
-	player->update(deltaTime);
-	for (auto& enemy : enemies) {
-		enemy->setRotation(enemy->getRotation() + glm::vec3(0, 5, 0));
-		glm::vec3 diff = enemy->getPosition() - player->getPosition();
-		if (glm::length(diff) < 20.0f) {
-			enemy->velocity = -glm::normalize(diff);
-			enemy->triggered = true;
+	if (state == State::Play) {
+		player->update(deltaTime);
+		for (auto& enemy : enemies) {
+			enemy->setRotation(enemy->getRotation() + glm::vec3(0, 5, 0));
+			glm::vec3 diff = enemy->getPosition() - player->getPosition();
+			if (glm::length(diff) < 10.0f) {
+				enemy->velocity = -glm::normalize(diff);
+				enemy->triggered = true;
+			} else {
+				enemy->velocity = { 0.0f,0.0f,0.0f };
+				enemy->triggered = false;
+			}
+			enemy->update(deltaTime);
 		}
-		enemy->update(deltaTime);
 	}
 }
 void Game::draw() {
@@ -126,7 +149,7 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 		std::cout << "Total elapsed time: " << timer->getCurrentTime() / 1000.0f << std::endl;
 		break;
 	case 'Q': case 'q':
-		enemies.push_back(new Enemy({ rand() % 21 - 10, 0, rand() % 21 - 10 }));
+		enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
 		break;
 	default:
 		break;
@@ -217,10 +240,19 @@ void Game::windowReshape(glm::vec2 size) {
 }
 // mouse callback functions
 void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
+	if (button == GLUT_LEFT_BUTTON) {
+		switch (state) {
+		case GLUT_DOWN:
+			player->firing = true;
+			break;
+		case GLUT_UP:
+			player->firing = false;
+			break;
+		}
+	}
 	if (state == GLUT_DOWN) {
 		switch (button) {
 		case GLUT_LEFT_BUTTON:
-			player->fire();
 			// handle left click
 			break;
 		case GLUT_RIGHT_BUTTON:
@@ -245,13 +277,19 @@ void Game::mouseMoved(glm::vec2 mouse) {
 	default:
 		break;
 	}
+	if (!xBox->GetConnected(0)) {
+		glm::vec3 pos = player->getPosition();
+		glm::vec2 diff = glm::vec2(pos.x, pos.z) + windowSize * 0.5f - mouse;
+		player->setRotation({ 0,glm::degrees(atan2(diff.y, -diff.x)),0 });
+	}
+	player->fire();
 }
 void Game::mousePassive(glm::vec2 mouse) {
-		if (!xBox->GetConnected(0)) {
-			glm::vec3 pos = player->getPosition();
-			glm::vec2 diff = glm::vec2(pos.x, pos.z) + windowSize * 0.5f - mouse;
-			player->setRotation({ 0,glm::degrees(atan2(diff.y, -diff.x)),0 });
-		}
+	if (!xBox->GetConnected(0)) {
+		glm::vec3 pos = player->getPosition();
+		glm::vec2 diff = glm::vec2(pos.x, pos.z) + windowSize * 0.5f - mouse;
+		player->setRotation({ 0,glm::degrees(atan2(diff.y, -diff.x)),0 });
+	}
 }
 // controller callback functions
 void Game::controllerInput(unsigned short index, Input::Button button) {

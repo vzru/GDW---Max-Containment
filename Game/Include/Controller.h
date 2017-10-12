@@ -6,6 +6,7 @@
 #include <glm/vec2.hpp>
 #include <glm/glm.hpp>
 
+// for some reason this gets hidden when including some stuff so rewriting it
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
 namespace Input {
