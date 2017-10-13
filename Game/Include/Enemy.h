@@ -5,6 +5,7 @@
 class Enemy : public Object {
 public:
 	Enemy(glm::vec3 pos = { 0.0f,0.0f,0.0f });
+	~Enemy();
 
 	virtual void update(float dt);
 

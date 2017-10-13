@@ -13,5 +13,5 @@ public:
 
 private:
 	glm::vec2 start, length;
-	float life = 1000.0f;
+	float life = 100.0f;
 };

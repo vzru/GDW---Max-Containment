@@ -1,9 +1,8 @@
 #include "Camera.h"
 
 Camera::Camera()
-	: cameraPosition({ 0.0f, 10.0f, 10.0f }), movementScalar(0.5f),
-	upVector(0.0f, 1.0f, 0.0f), forwardVector({ 0.0f, -1.0f, -1.0f })
-	{	//processMotion({ 0.0f, 0.0f }, 0.03f);
+	: cameraPosition({ 0.0f, 10.0f, 10.0f }) {
+	reset();
 	}
 Camera::~Camera() {}
 
@@ -11,6 +10,12 @@ void Camera::update() {
 	auto m = glm::lookAt(cameraPosition, cameraPosition + forwardVector, upVector);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(&m[0][0]);
+}
+
+void Camera::reset() {
+	movementScalar = 0.5;
+	upVector = { 0.0f, 1.0f, 0.0f };
+	forwardVector = { 0.0f, -1.0f, -1.0f };
 }
 
 void Camera::processMotion(glm::vec2 change, float dt) {

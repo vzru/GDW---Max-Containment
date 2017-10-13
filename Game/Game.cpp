@@ -99,7 +99,7 @@ void Game::update() {
 }
 void Game::draw() {
 	// Set up scene
-	glClearColor(0.5, 0.5, 0.5, 1);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -237,6 +237,7 @@ void Game::specialInput(unsigned char key, glm::vec2 mouse) {
 
 void Game::windowReshape(glm::vec2 size) {
 	windowSize = size;
+	camera->reset();
 }
 // mouse callback functions
 void Game::mouseClicked(int button, int state, glm::vec2 mouse) {

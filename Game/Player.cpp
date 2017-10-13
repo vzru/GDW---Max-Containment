@@ -6,8 +6,9 @@
 
 Player::Player(glm::vec3 pos) : Object(pos) {
 	//mesh = std::shared_ptr<OBJMesh>();
-	//mesh->loadMesh("assets/player.obj");
+	//mesh->loadMesh("assets/mainCharacter.obj");
 }
+Player::~Player() {}
 
 void Player::update(float dt) {
 	position += velocity * (dt / 50);

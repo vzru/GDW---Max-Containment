@@ -12,19 +12,21 @@ public:
 
 	// Applies view matrix to OpenGL
 	void update();
+	// reset the window position
+	void reset();
 
-	// rotate the window from the mouse
+	// rotate the window
 	void processMotion(glm::vec2 change, float dt);
-
 	// move the camera
 	void pan(glm::vec3 amount);
 	void move(glm::vec3 amount);
-
 private:
+	// position vectors
 	glm::vec3 cameraPosition;
 	glm::vec3 forwardVector;
 	glm::vec3 rightVector;
 	glm::vec3 upVector;
+	// helpers
 	float movementScalar;
 	void calcRightVector();
 };

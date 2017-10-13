@@ -8,17 +8,17 @@ void Graphics::drawGrid(glm::vec3 size) {
 	glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
 	glBegin(GL_LINES);
 
-	glm::vec3 temp(-size.x, size.y, 0);
+	glm::vec3 temp(-size.x, size.y, 0.0f);
 	int width = size.x / 10 * 2 + size.y / 10 * 2;
 	//glm::vec3 lines(0, 0, 0);
 	for (int i = 0; i <= width; i++) {
 		if (i <= width / 2) {
 			if (i == width / 4) {
-				glLineWidth(50.0);
-				glColor3f(0, 0, 1);
+				glLineWidth(50.0f);
+				glColor3f(0.0f, 0.0f, 1.0f);
 			} else {
-				glLineWidth(0.01);
-				glColor3f(0, 0, 0);
+				glLineWidth(0.01f);
+				glColor3f(0.2f, 0.2f, 0.2f);
 			}
 			temp.y = size.y;
 			glVertex3f(temp.x, temp.y, temp.z);
@@ -31,21 +31,21 @@ void Graphics::drawGrid(glm::vec3 size) {
 		}
 		if (i >= width / 2) {
 			if (i == width / 2 + width / 4) {
-				glLineWidth(50.0);
-				glColor3f(1, 0, 0);
+				glLineWidth(50.0f);
+				glColor3f(1.0f, 0.0f, 0.0f);
 			} else {
-				glLineWidth(0.01);
-				glColor3f(0, 0, 0);
+				glLineWidth(0.01f);
+				glColor3f(0.2f, 0.2f, 0.2f);
 			}
 			glVertex3f(temp.x, temp.y, temp.z);
 			glVertex3f(-size.x, temp.y, temp.z);
 			temp.y += 10;
 		}
 	}
-	glColor3f(0, 1, 0);
+	glColor3f(0.0f, 1.0f, 0.0f);
 	glVertex3f(0.0f, 0.0f, 0.0f);
 	glVertex3f(0.0f, 0.0f, -size.z);
-	glColor3f(0, 0, 0);
+	glColor3f(0.0f, 0.0f, 0.0f);
 	glEnd();
 	glPopMatrix();
 }

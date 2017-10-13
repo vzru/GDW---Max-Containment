@@ -43,10 +43,13 @@ public:
 	void keyboardDown(unsigned char key, glm::vec2 mouse);
 	void keyboardUp(unsigned char key, glm::vec2 mouse);
 	void specialInput(unsigned char key, glm::vec2 mouse);
+	//resize
 	void windowReshape(glm::vec2 size);
+	//mouse
 	void mouseClicked(int button, int state, glm::vec2 mouse);
 	void mouseMoved(glm::vec2 mouse);
 	void mousePassive(glm::vec2 mouse);
+	//controller
 	void controllerInput(unsigned short index, Input::Button button);
 	void controllerSpecial(unsigned short index, Input::Triggers triggers, Input::Sticks sticks);
 private:

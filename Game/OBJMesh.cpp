@@ -32,12 +32,15 @@ void OBJMesh::loadMesh(std::string filename) {
 
 	// Containers for OBJ data
 	std::vector<glm::vec3> objVertices;
-	std::vector<glm::vec3> objUVs;
+	std::vector<glm::vec2> objUVs;
 	std::vector<glm::vec3> objNormals;
 	std::vector<Face3> objFaces;
 
 	file.get(currentChar);
 	while (!file.eof()) {
+		if (currentChar == '#')
+			// this line is a comment so skip
+			continue;
 		if (currentChar == 'v') {
 			file.get(currentChar);
 			if (currentChar == ' ') {
@@ -45,7 +48,6 @@ void OBJMesh::loadMesh(std::string filename) {
 				objVertices.push_back(temp);
 			} else if (currentChar == 't') {
 				file >> temp.x >> temp.y;
-				temp.z = 0.0f;
 				objUVs.push_back(temp);
 			} else if (currentChar == 'n') {
 				file >> temp.x >> temp.y >> temp.z;
