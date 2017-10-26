@@ -81,22 +81,22 @@ void Object::draw(Shader *shader, Camera *camera) {
 		shader->sendUniformMat4("uView", glm::value_ptr(camera->getPosition()), false);
 		shader->sendUniformMat4("uProj", glm::value_ptr(camera->getProjection()), false);
 
-		//double dArray[16] = { 0.0 };
-		//
-		//const float *pSource = (const float*)glm::value_ptr(camera->getPosition());
-		//for (int i = 0; i < 16; ++i)
-		//{
-		//	dArray[i] = pSource[i];
-		//	if (i % 4 == 3)
-		//	{
-		//		std::cout << dArray[i] << std::endl;
-		//	}
-		//	else
-		//	{
-		//		std::cout << dArray[i] << ' ';
-		//	}
-		//}
-		//std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+		double dArray[16] = { 0.0 };
+		
+		const float *pSource = (const float*)glm::value_ptr(camera->getPosition());
+		for (int i = 0; i < 16; ++i)
+		{
+			dArray[i] = pSource[i];
+			if (i % 4 == 3)
+			{
+				std::cout << dArray[i] << std::endl;
+			}
+			else
+			{
+				std::cout << dArray[i] << ' ';
+			}
+		}
+		std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
 
 		shader->sendUniform("lightPos", glm::vec4(4.f, 0.f, 0.f, 1.f));
 		shader->sendUniform("objectColor", colour);

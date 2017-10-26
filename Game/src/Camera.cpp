@@ -58,22 +58,22 @@ glm::vec3& Camera::getProjection() {
 glm::mat4 Camera::getTransform()
 {
 	cameraPosition = glm::translate(cameraPosition, position);
-	double dArray[16] = { 0.0 };
-
-	const float *pSource = (const float*)glm::value_ptr(cameraPosition);
-	for (int i = 0; i < 16; ++i)
-	{
-		dArray[i] = pSource[i];
-		if (i % 4 == 3)
-		{
-			std::cout << dArray[i] << std::endl;
-		}
-		else
-		{
-			std::cout << dArray[i] << ' ';
-		}
-	}
-	std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+	//double dArray[16] = { 0.0 };
+	//
+	//const float *pSource = (const float*)glm::value_ptr(cameraPosition);
+	//for (int i = 0; i < 16; ++i)
+	//{
+	//	dArray[i] = pSource[i];
+	//	if (i % 4 == 3)
+	//	{
+	//		std::cout << dArray[i] << std::endl;
+	//	}
+	//	else
+	//	{
+	//		std::cout << dArray[i] << ' ';
+	//	}
+	//}
+	//std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
 	return cameraPosition;
 }
 

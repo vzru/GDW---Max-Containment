@@ -8,7 +8,7 @@ class Bullet;
 
 class Player : public Object {
 public:
-	Player(glm::vec3 pos = { 0.0f,0.0f,0.0f });
+	Player(glm::vec3 pos = { 0.0f, 0.0f, 0.0f });
 	~Player();
 
 	virtual void update(float dt);
