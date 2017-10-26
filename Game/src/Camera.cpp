@@ -1,5 +1,7 @@
 #include "Camera.h"
 #include "Game.h"
+#include <iostream>
+#include <glm\gtc\type_ptr.hpp>
 
 Camera::Camera()
 	: position({ 0.0f, 10.0f, 10.0f }) {
@@ -50,37 +52,51 @@ glm::vec3 Camera::getPosition() {
 	return position;
 }
 
-<<<<<<< HEAD
-glm::mat4 Camera::getTransform()
-{
-	cameraPosition = glm::translate(cameraPosition, position);
-	//double dArray[16] = { 0.0 };
-	//
-	//const float *pSource = (const float*)glm::value_ptr(cameraPosition);
-	//for (int i = 0; i < 16; ++i)
-	//{
-	//	dArray[i] = pSource[i];
-	//	if (i % 4 == 3)
-	//	{
-	//		std::cout << dArray[i] << std::endl;
-	//	}
-	//	else
-	//	{
-	//		std::cout << dArray[i] << ' ';
-	//	}
-	//}
-	//std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
-	return cameraPosition;
-=======
+//glm::mat4& Camera::getTransform()
+//{
+//	transform = glm::translate(transform, position);
+//	//double dArray[16] = { 0.0 };
+//	//
+//	//const float *pSource = (const float*)glm::value_ptr(cameraPosition);
+//	//for (int i = 0; i < 16; ++i)
+//	//{
+//	//	dArray[i] = pSource[i];
+//	//	if (i % 4 == 3)
+//	//	{
+//	//		std::cout << dArray[i] << std::endl;
+//	//	}
+//	//	else
+//	//	{
+//	//		std::cout << dArray[i] << ' ';
+//	//	}
+//	//}
+//	//std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+//	return transform;
+//}
 glm::mat4& Camera::getTransform() {
 	transform = glm::translate(transform, position);
 	transform = glm::rotate(transform, glm::radians(90.0f), rightVector);
+	double dArray[16] = { 0.0 };
+	
+	const float *pSource = (const float*)glm::value_ptr(transform);
+	for (int i = 0; i < 16; ++i)
+	{
+		dArray[i] = pSource[i];
+		if (i % 4 == 3)
+		{
+			std::cout << dArray[i] << std::endl;
+		}
+		else
+		{
+			std::cout << dArray[i] << ' ';
+		}
+	}
+	std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
 	return transform;
 }
 
 glm::mat4& Camera::getProjection() {
 	projection = glm::perspective(45.f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 10000.f);
 	return projection;
->>>>>>> aa0d134182a9337dc0fa96e256bdb16704205409
 }
 
