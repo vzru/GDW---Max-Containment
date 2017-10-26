@@ -105,7 +105,7 @@ void Game::draw() {
 	glLoadIdentity();
 
 	glViewport(0, 0, windowSize.x, windowSize.y);
-	gluPerspective(60.0f, (float)windowSize.x / (float)windowSize.y, 0.001f, 10000.0f);
+	gluPerspective(70.0f, (float)windowSize.x / (float)windowSize.y, 0.001f, 10000.0f);
 	glMatrixMode(GL_MODELVIEW);
 			
 

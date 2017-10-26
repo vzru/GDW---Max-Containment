@@ -1,7 +1,7 @@
 #include "Camera.h"
 
 Camera::Camera()
-	: cameraPosition({ 0.0f, 10.0f, 10.0f }) {
+	: cameraPosition({ 0.0f, 15.0f, 10.0f }) {
 	reset();
 	}
 Camera::~Camera() {}
@@ -15,7 +15,7 @@ void Camera::update() {
 void Camera::reset() {
 	movementScalar = 0.5;
 	upVector = { 0.0f, 1.0f, 0.0f };
-	forwardVector = { 0.0f, -1.0f, -1.0f };
+	forwardVector = { 0.0f, -(cameraPosition.y/10), -(cameraPosition.z/10) };
 }
 
 void Camera::processMotion(glm::vec2 change, float dt) {
