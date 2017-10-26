@@ -40,6 +40,7 @@ Game::Game(int& argc, char** argv)
 	glutInitWindowSize(windowSize.x, windowSize.y);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
 	glutCreateWindow("Title");
+	glutFullScreen();
 
 	glewExperimental = true;
 	if (glewInit() != GLEW_OK) {
@@ -47,6 +48,7 @@ Game::Game(int& argc, char** argv)
 		system("pause");
 		exit(0);
 	}
+
 
 	std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 

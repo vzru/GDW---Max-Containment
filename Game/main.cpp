@@ -1,4 +1,6 @@
 #include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
 #include <gl/glew.h>
 
 #include "Game.h"
@@ -56,6 +58,7 @@ int main(int argc, char **argv) {
 		system("pause");
 		return 0;
 	}
+
 
 	// setup callback functions
 	glutDisplayFunc(DisplayCallbackFunction);
