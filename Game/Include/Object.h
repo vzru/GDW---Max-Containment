@@ -39,7 +39,7 @@ public:
 	glm::mat4 getTransformation();
 
 	virtual void update(float dt);
-	virtual void draw(Shader &shader, Camera *camera);
+	virtual void draw(Shader *shader, Camera *camera);
 
 	// Other Properties
 	std::string name;

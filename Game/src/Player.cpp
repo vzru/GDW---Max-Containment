@@ -28,12 +28,12 @@ void Player::update(float dt) {
 	Object::update(dt);
 }
 
-void Player::draw(Shader &shader) {
+void Player::draw(Shader* shader, Camera* camera) {
 	for (auto bullet : bullets) {
 		bullet->draw();
 	}
 
-	Object::draw(shader);
+	Object::draw(shader, camera);
 }
 
 bool Player::fire(glm::vec2 mouse) {

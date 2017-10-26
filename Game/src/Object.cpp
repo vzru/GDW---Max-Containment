@@ -58,7 +58,7 @@ void Object::update(float dt) {
 	// Note: pay attention to transformation order (5)
 }
 
-void Object::draw(Shader &shader, Camera *camera) {
+void Object::draw(Shader *shader, Camera *camera) {
 	// Draw a coordinate frame for the object
 	glm::vec3 wPos = position;
 	glm::mat4 wRot = localRotation;
@@ -75,25 +75,25 @@ void Object::draw(Shader &shader, Camera *camera) {
 	if (mesh == nullptr)
 		Graphics::drawSphere(transform, 0.5f, colour);
 	else {
-		shader.bind();
-		shader.sendUniformMat4("uModel", glm::value_ptr(transform), false);
-		shader.sendUniformMat4("uView", glm::value_ptr(camera->cameraPosition;), false);
-		shader.sendUniformMat4("uProj", glm::value_ptr(cameraProjection), false);
+		shader->bind();
+		shader->sendUniformMat4("uModel", glm::value_ptr(transform), false);
+		shader->sendUniformMat4("uView", glm::value_ptr(camera->getPosition()), false);
+		shader->sendUniformMat4("uProj", glm::value_ptr(camera->getProjection()), false);
 
-		shader.sendUniform("lightPos", glm::vec4(4.f, 0.f, 0.f, 1.f));
-		shader.sendUniform("objectColor", colour);
-		shader.sendUniform("lightAmbient", glm::vec3(0.15f, 0.15f, 0.15f));
-		shader.sendUniform("lightDiffuse", glm::vec3(0.7f, 0.7f, 0.7f));
-		shader.sendUniform("lightSpecular", glm::vec3(1.f, 1.f, 1.f));
-		shader.sendUniform("lightSpecularExponent", 50.f);
-		shader.sendUniform("attenuationConstant", 1.f);
-		shader.sendUniform("attenuationLinear", 0.1f);
-		shader.sendUniform("attenuationQuadratic", 0.01f);
+		shader->sendUniform("lightPos", glm::vec4(4.f, 0.f, 0.f, 1.f));
+		shader->sendUniform("objectColor", colour);
+		shader->sendUniform("lightAmbient", glm::vec3(0.15f, 0.15f, 0.15f));
+		shader->sendUniform("lightDiffuse", glm::vec3(0.7f, 0.7f, 0.7f));
+		shader->sendUniform("lightSpecular", glm::vec3(1.f, 1.f, 1.f));
+		shader->sendUniform("lightSpecularExponent", 50.f);
+		shader->sendUniform("attenuationConstant", 1.f);
+		shader->sendUniform("attenuationLinear", 0.1f);
+		shader->sendUniform("attenuationQuadratic", 0.01f);
 
 		glBindVertexArray(mesh->vao);
 		glDrawArrays(GL_TRIANGLES, 0, mesh->getNumVertices());
 		glBindVertexArray(GL_NONE);
 
-		shader.unbind();
+		shader->unbind();
 	}
 }

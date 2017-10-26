@@ -44,9 +44,9 @@ void Camera::calcRightVector() {
 	rightVector = glm::normalize(rightVector);
 }
 
-glm::vec3 Camera::getPosition() {
+glm::vec3& Camera::getPosition() {
 	return position;
 }
-glm::vec3 Camera::getProjection() {
+glm::vec3& Camera::getProjection() {
 	return forwardVector;
 }

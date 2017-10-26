@@ -21,8 +21,8 @@ public:
 	void pan(glm::vec3 amount);
 	void move(glm::vec3 amount);
 	// getters
-	glm::vec3 getPosition();
-	glm::vec3 getProjection();
+	glm::vec3& getPosition();
+	glm::vec3& getProjection();
 private:
 	// position vectors
 	glm::vec3 position;

@@ -112,9 +112,9 @@ void Game::draw() {
 	switch (state) {
 	case State::Play:
 		Graphics::drawGrid({ 100,100,100 });
-		player->draw(*program);
+		player->draw(program, camera);
 		for (auto& enemy : enemies)
-			enemy->draw(*program);
+			enemy->draw(program, camera);
 		break;
 	default:
 		break;
