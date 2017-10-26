@@ -8,6 +8,7 @@
 #include "Mesh.h"
 #include "Game.h"
 #include "Graphics.h"
+#include "Shader.h"
 #include "Enemy.h"
 #include "Player.h"
 #include "Timer.h"
@@ -59,6 +60,8 @@ Game::Game(int& argc, char** argv)
 	camera = new Camera();
 	xBox = new Input::XBox();
 	player = new Player();
+	program = new Shader();
+	program->load("assets/shaders/Basic.vert", "assets/shaders/Basic.frag");
 
 	// fill in a bunch of enemies
 	for (int i = 0; i < 10; i++)

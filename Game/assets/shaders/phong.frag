@@ -2,8 +2,7 @@
 
 uniform vec4 lightPos;
 
-// color
-uniform vec4 objectColor;
+// Color
 uniform vec3 lightAmbient;
 uniform vec3 lightDiffuse;
 uniform vec3 lightSpecular;
@@ -14,12 +13,16 @@ uniform float attenuationConstant;
 uniform float attenuationLinear;
 uniform float attenuationQuadratic;
 
+uniform sampler2D uTex;
+
 in vec3 position;
+in vec2 texCoord;
 in vec3 normal;
 
 out vec4 outColor;
 
-void main() {
+void main()
+{
 	outColor.rgb = lightAmbient;
 
 	// account for rasterizer interpolating
@@ -29,25 +32,29 @@ void main() {
 	float dist = length(lightVec);
 	vec3 lightDir = lightVec / dist;
 
-	float NdotL = dot(normal, lightDir);
 
-	if (NdotL > 0.0) {
-		// the light contributes to the suface
+	float NdotL = dot(norm, lightDir);
 
-		// calculate the attenuation (fallofff)
-		float attenuation = 1.0 / (attenuationConstant +
-			attenuationLinear * dist +
-			attenuationQuadratic * dist * dist);
+	if(NdotL > 0.0)
+	{
+		// The light contributes to this surface
 
-		// calculate the diffuse contribution
+		// Calculate the attenuation (falloff)
+		float attenuation = 1.0 / (attenuationConstant + 
+		(attenuationLinear * dist ) +
+		(attenuationQuadratic * dist * dist ));
+
+		// Calculate the diffuse contribution
 		outColor.rgb += lightDiffuse * NdotL * attenuation;
 
-		// Blinn::Pong half vector
-		float NdotV = max(dot(normal, normalize(lightDir + normalize(-position))), 0.0);
+		// Blinn-Phong half vector
+		float NdotHV = max(dot(norm, normalize(lightDir + normalize(-position))), 0.0);
 
-		outColor.rgb += lightSpecular * pow(NdotV, lightSpecularExponent) * attenuation;
+		outColor.rgb += lightSpecular * pow(NdotHV, lightSpecularExponent) * attenuation;
+
 	}
 
-	outColor.rgb *= objectColor.rgb;
-	outColor.a = objectColor.a;
+	vec4 textureColor = texture(uTex, texCoord);
+	outColor.rgb *= textureColor.rgb;
+	outColor.a = textureColor.a;
 }

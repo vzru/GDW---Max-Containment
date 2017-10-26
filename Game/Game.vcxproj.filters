@@ -73,20 +73,6 @@
     </Object>
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\shaders\basic.frag">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="assets\shaders\basic.vert">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="assets\shaders\phong.frag">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="assets\shaders\phong.vert">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="src\Bullet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -129,5 +115,22 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\shaders\Basic.frag">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="assets\shaders\Basic.vert">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="assets\shaders\Phong.frag">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="assets\shaders\Phong.vert">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="assets\shaders\PhongNoTexture.vert">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
