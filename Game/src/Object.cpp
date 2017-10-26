@@ -77,7 +77,7 @@ void Object::draw(Shader *shader, Camera *camera) {
 	else {
 		shader->bind();
 		shader->sendUniformMat4("uModel", glm::value_ptr(transform), false);
-		shader->sendUniformMat4("uView", glm::value_ptr(camera->getPosition()), false);
+		shader->sendUniformMat4("uView", glm::value_ptr(camera->getTransform()), false);
 		shader->sendUniformMat4("uProj", glm::value_ptr(camera->getProjection()), false);
 
 		shader->sendUniform("lightPos", glm::vec4(4.f, 0.f, 0.f, 1.f));

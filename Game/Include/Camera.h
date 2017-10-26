@@ -21,18 +21,17 @@ public:
 	void pan(glm::vec3 amount);
 	void move(glm::vec3 amount);
 	// getters
-	glm::vec3& getPosition();
-	glm::vec3& getProjection();
-	glm::mat4 getTransform();
-	glm::mat4 getCameraProjection();
+	glm::vec3 getPosition();
+	glm::mat4& getTransform();
+	glm::mat4& getProjection();
 private:
 	// position vectors
 	glm::vec3 position;
 	glm::vec3 forwardVector;
 	glm::vec3 rightVector;
 	glm::vec3 upVector;
-	glm::mat4 cameraPosition;
-	glm::mat4 cameraProjection;
+	glm::mat4 transform;
+	glm::mat4 projection;
 	// helpers
 	float movementScalar;
 	void calcRightVector();

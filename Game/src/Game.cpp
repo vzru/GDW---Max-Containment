@@ -41,7 +41,7 @@ Game::Game(int& argc, char** argv)
 	glutInitWindowSize(windowSize.x, windowSize.y);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
 	glutCreateWindow("Max Containment");
-	glutFullScreen();
+	//glutFullScreen();
 
 	glewExperimental = true;
 	if (glewInit() != GLEW_OK) {
