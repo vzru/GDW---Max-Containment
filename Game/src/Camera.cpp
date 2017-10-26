@@ -1,5 +1,8 @@
 #include "Camera.h"
 
+#include <glm\gtc\type_ptr.hpp>
+#include <iostream>
+
 Camera::Camera()
 	: position({ 0.0f, 10.0f, 10.0f }) {
 	reset();
@@ -10,6 +13,7 @@ void Camera::update() {
 	auto m = glm::lookAt(position, position + forwardVector, upVector);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(&m[0][0]);
+	//std::cout << position.x << '/' << position.y << '/' << position.z << std::endl;
 }
 
 void Camera::reset() {
@@ -54,6 +58,22 @@ glm::vec3& Camera::getProjection() {
 glm::mat4 Camera::getTransform()
 {
 	cameraPosition = glm::translate(cameraPosition, position);
+	double dArray[16] = { 0.0 };
+
+	const float *pSource = (const float*)glm::value_ptr(cameraPosition);
+	for (int i = 0; i < 16; ++i)
+	{
+		dArray[i] = pSource[i];
+		if (i % 4 == 3)
+		{
+			std::cout << dArray[i] << std::endl;
+		}
+		else
+		{
+			std::cout << dArray[i] << ' ';
+		}
+	}
+	std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
 	return cameraPosition;
 }
 

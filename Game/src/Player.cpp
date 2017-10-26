@@ -24,6 +24,8 @@ void Player::update(float dt) {
 			bullets.erase(bullets.begin() + i);
 			i--;
 		}
+	
+	//std::cout << "Player: " << getPosition().x << '/' << getPosition().y << '/' << getPosition().z << std::endl;
 
 	Object::update(dt);
 }

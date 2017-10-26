@@ -30,6 +30,7 @@ bool Shader::load(const std::string & vertFile, const std::string & fragFile) {
 		std::cout << "Vertex shader failed to compile." << std::endl;
 		outputShaderLog(vertexShader);
 		unload();
+		system("pause");
 		return false;
 	}
 
@@ -37,6 +38,7 @@ bool Shader::load(const std::string & vertFile, const std::string & fragFile) {
 		std::cout << "Fragment shader failed to compile." << std::endl;
 		outputShaderLog(fragShader);
 		unload();
+		system("pause");
 		return false;
 	}
 
