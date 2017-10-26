@@ -50,3 +50,10 @@ glm::vec3& Camera::getPosition() {
 glm::vec3& Camera::getProjection() {
 	return forwardVector;
 }
+
+glm::mat4 Camera::getTransform()
+{
+	cameraPosition = glm::translate(cameraPosition, position);
+	return cameraPosition;
+}
+

@@ -23,12 +23,16 @@ public:
 	// getters
 	glm::vec3& getPosition();
 	glm::vec3& getProjection();
+	glm::mat4 getTransform();
+	glm::mat4 getCameraProjection();
 private:
 	// position vectors
 	glm::vec3 position;
 	glm::vec3 forwardVector;
 	glm::vec3 rightVector;
 	glm::vec3 upVector;
+	glm::mat4 cameraPosition;
+	glm::mat4 cameraProjection;
 	// helpers
 	float movementScalar;
 	void calcRightVector();
