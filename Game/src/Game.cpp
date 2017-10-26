@@ -5,6 +5,7 @@
 
 #include <glm/glm.hpp>
 
+#include "Mesh.h"
 #include "Game.h"
 #include "Graphics.h"
 #include "Enemy.h"
@@ -12,7 +13,6 @@
 #include "Timer.h"
 #include "Camera.h"
 #include "Controller.h"
-#include "OBJMesh.h"
 
 float dLinePoint(glm::vec2 point, glm::vec2 line, float angle) {
 	//float inner = glm::dot(line, point);
@@ -23,22 +23,30 @@ float dLinePoint(glm::vec2 point, glm::vec2 line, float angle) {
 	return length;
 }
 
-Game::Game(int& argc, char** argv) {
+Game::Game(int& argc, char** argv)
+	: windowSize(WINDOW_WIDTH, WINDOW_HEIGHT) {
 	// Memory Leak Detection
 #ifdef _DEBUG
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
 	/* initialize the window and OpenGL properly */
-	// Request an OpenGL 4.4 compatibility
-	// A compatibility context is needed to use the provided rendering utilities 
-	// which are written in OpenGL 1.1
-	glutInitContextVersion(4, 4);
-	glutInitContextProfile(GLUT_COMPATIBILITY_PROFILE);
+	/// Request an OpenGL 4.4 compatibility
+	/// A compatibility context is needed to use the provided rendering utilities 
+	/// which are written in OpenGL 1.1
+	///glutInitContextProfile(GLUT_COMPATIBILITY_PROFILE);
 	glutInit(&argc, argv);
+	glutInitContextVersion(4, 2); ///2/4
 	glutInitWindowSize(windowSize.x, windowSize.y);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
 	glutCreateWindow("Title");
+
+	glewExperimental = true;
+	if (glewInit() != GLEW_OK) {
+		std::cout << "GLEW could not be initialized." << std::endl;
+		system("pause");
+		exit(0);
+	}
 
 	std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 
@@ -52,17 +60,9 @@ Game::Game(int& argc, char** argv) {
 	xBox = new Input::XBox();
 	player = new Player();
 
-	enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
-	enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
-	enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
-	enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
-	enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
-	enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
-	enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
-	enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
-	enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
-	enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
-	enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
+	// fill in a bunch of enemies
+	for (int i = 0; i < 10; i++)
+		enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
 }
 Game::~Game() {
 	delete timer;
@@ -75,12 +75,12 @@ Game::~Game() {
 }
 
 void Game::update() {
-	deltaTime = timer->tick();
+	deltaTime = timer->update();
 
 	camera->move(player->velocity * (deltaTime / 50));
 	camera->update();
 
-	xBox->Update();
+	xBox->update();
 	if (state == State::Play) {
 		player->update(deltaTime);
 		for (auto& enemy : enemies) {
@@ -112,9 +112,9 @@ void Game::draw() {
 	switch (state) {
 	case State::Play:
 		Graphics::drawGrid({ 100,100,100 });
-		player->draw();
+		player->draw(*program);
 		for (auto& enemy : enemies)
-			enemy->draw();
+			enemy->draw(*program);
 		break;
 	default:
 		break;
@@ -278,7 +278,7 @@ void Game::mouseMoved(glm::vec2 mouse) {
 	default:
 		break;
 	}
-	if (!xBox->GetConnected(0)) {
+	if (!xBox->getConnected(0)) {
 		glm::vec3 pos = player->getPosition();
 		glm::vec2 diff = glm::vec2(pos.x, pos.z) + windowSize * 0.5f - mouse;
 		player->setRotation({ 0,glm::degrees(atan2(diff.y, -diff.x)),0 });
@@ -286,7 +286,7 @@ void Game::mouseMoved(glm::vec2 mouse) {
 	player->fire();
 }
 void Game::mousePassive(glm::vec2 mouse) {
-	if (!xBox->GetConnected(0)) {
+	if (!xBox->getConnected(0)) {
 		glm::vec3 pos = player->getPosition();
 		glm::vec2 diff = glm::vec2(pos.x, pos.z) + windowSize * 0.5f - mouse;
 		player->setRotation({ 0,glm::degrees(atan2(diff.y, -diff.x)),0 });

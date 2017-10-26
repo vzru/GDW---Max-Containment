@@ -12,7 +12,7 @@ public:
 	~Player();
 
 	virtual void update(float dt);
-	virtual void draw();
+	virtual void draw(Shader &shader);
 	bool fire(glm::vec2 mouse);
 	bool fire();
 	

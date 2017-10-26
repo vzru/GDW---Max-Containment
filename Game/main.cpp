@@ -51,7 +51,6 @@ int main(int argc, char **argv) {
 	// initialize game
 	game = new Game(argc, argv);
 
-	glewExperimental = true;
 	if (glewInit() != GLEW_OK) {
 		std::cout << "GLEW could not be initialized." << std::endl;
 		system("pause");

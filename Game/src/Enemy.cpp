@@ -1,9 +1,9 @@
+#include "Mesh.h"
 #include "Enemy.h"
-#include "OBJMesh.h"
 
 Enemy::Enemy(glm::vec3 pos) : Object(pos) {
-	//mesh = std::shared_ptr<OBJMesh>();
-	//mesh->loadMesh("assets/enemyModel.obj");
+	//mesh = std::shared_ptr<Mesh>();
+	//mesh->loadMesh("assets/models/enemy.obj");
 }
 Enemy::~Enemy() {}
 

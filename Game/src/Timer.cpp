@@ -2,12 +2,12 @@
 
 Timer::Timer() {
 	previousTime = glutGet(GLUT_ELAPSED_TIME);
-	tick();
+	update();
 }
 Timer::~Timer() {}
 
 // update the timer
-float Timer::tick()
+float Timer::update()
 {
 	currentTime = glutGet(GLUT_ELAPSED_TIME);
 	elapsedTime = currentTime - previousTime;
@@ -17,16 +17,11 @@ float Timer::tick()
 }
 
 // return delta time in miliseconds
-float Timer::getElapsedTimeMS() {
+float Timer::getElapsedTime() {
 	return elapsedTime;
 }
 
-// return delta time in seconds
-float Timer::getElapsedTimeSeconds() {
-	return elapsedTime / 1000.0f;
-}
-
-// get time elapsed since program start
+// return time elapsed since program start in miliseconds
 float Timer::getCurrentTime() {
 	return currentTime;
 }

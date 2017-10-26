@@ -26,32 +26,35 @@ namespace Input {
 		~XBox();
 
 		// Call this function ONCE in an update
-		bool Update(unsigned short _numControllers = 1);
+		bool update(unsigned short _numControllers = 1);
 
 		// Call this function to get the sticks. The function errors(WIP) if there is no controller for this index
-		Sticks GetSticks(unsigned short index);
+		Sticks getSticks(unsigned short index);
 		// This function returns false if there is no controller plugged in to this index
-		bool GetConnected(unsigned short index);
+		bool getConnected(unsigned short index);
 		// Call this function to get the Button. The function errors(WIP) if there is no controller, returns false if the button isn't pressed and returns true if the button is
-		bool GetButton(unsigned short index, Button _buttons);
+		bool getButton(unsigned short index, Button _buttons);
 		// Call this function to get the triggers on the controller. It errors(WIP) if there is no controller connected
-		Triggers GetTriggers(unsigned short index);
+		Triggers getTriggers(unsigned short index);
 		// Call this function to set the vibration. It errors(WIP) if there is no controller connected
-		bool SetVibration(unsigned short index, Triggers _powers);
+		bool setVibration(unsigned short index, Triggers _powers);
 		
 		// these are the callbacks
-		void setCallbacks(void (*_callback)(unsigned short index, Input::Button button), void(*_special)(unsigned short index, Input::Triggers triggers, Input::Sticks sticks));
+		void setCallbacks(
+			void (*_callback)(unsigned short index, Input::Button button),
+			void(*_special)(unsigned short index, Input::Triggers _triggers, Input::Sticks _sticks)
+		);
 		void (*callback)(unsigned short index, Input::Button button);
-		void (*special)(unsigned short index, Input::Triggers triggers, Input::Sticks sticks);
+		void (*special)(unsigned short index, Input::Triggers _triggers, Input::Sticks _sticks);
 	private:
 
-		XINPUT_STATE m_state;
+		XINPUT_STATE state;
 
-		int m_packetNumber[4];
-		bool m_connected[4];
+		int packetNumber[4];
+		bool connected[4];
 
-		bool m_buttonStates[4][14];
-		Triggers m_triggers[4];
-		Sticks m_sticks[4];
+		bool buttonStates[4][14];
+		Triggers triggers[4];
+		Sticks sticks[4];
 	};
 }

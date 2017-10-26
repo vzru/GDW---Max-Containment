@@ -1,14 +1,16 @@
 #include <iostream>
 
+#include "Mesh.h"
 #include "Player.h"
-#include "OBJMesh.h"
 #include "Bullet.h"
 
 Player::Player(glm::vec3 pos) : Object(pos) {
-	//mesh = std::shared_ptr<OBJMesh>();
-	//mesh->loadMesh("assets/mainCharacter.obj");
+	mesh = std::make_shared<Mesh>();
+	mesh->load("assets/models/player.obj");
 }
-Player::~Player() {}
+Player::~Player() {
+	mesh->unload();
+}
 
 void Player::update(float dt) {
 	position += velocity * (dt / 50);
@@ -26,12 +28,12 @@ void Player::update(float dt) {
 	Object::update(dt);
 }
 
-void Player::draw() {
+void Player::draw(Shader &shader) {
 	for (auto bullet : bullets) {
 		bullet->draw();
 	}
 
-	Object::draw();
+	Object::draw(shader);
 }
 
 bool Player::fire(glm::vec2 mouse) {

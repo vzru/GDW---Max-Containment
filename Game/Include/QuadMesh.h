@@ -1,4 +1,5 @@
 #pragma once
+/*
 
 #include "Mesh.h"
 
@@ -12,3 +13,5 @@ public:
 	void setUVbottomRight(glm::vec2 uv);
 	void setUVtopRight(glm::vec2 uv);
 };
+
+*/

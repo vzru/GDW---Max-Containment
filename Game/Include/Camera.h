@@ -20,9 +20,12 @@ public:
 	// move the camera
 	void pan(glm::vec3 amount);
 	void move(glm::vec3 amount);
+	// getters
+	glm::vec3 getPosition();
+	glm::vec3 getProjection();
 private:
 	// position vectors
-	glm::vec3 cameraPosition;
+	glm::vec3 position;
 	glm::vec3 forwardVector;
 	glm::vec3 rightVector;
 	glm::vec3 upVector;

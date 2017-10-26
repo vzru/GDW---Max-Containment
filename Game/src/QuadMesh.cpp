@@ -1,3 +1,5 @@
+/*
+
 #include <vector>
 #include "QuadMesh.h"
 
@@ -47,3 +49,5 @@ void QuadMesh::setUVbottomRight(glm::vec2 uv) {
 	textureCoordinates[3] = uv;
 }
 
+
+*/

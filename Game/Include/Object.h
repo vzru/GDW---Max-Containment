@@ -8,7 +8,9 @@
 #include <GLM\gtc\type_ptr.hpp>
 #include <GL/freeglut.h>
 
-class OBJMesh;
+class Mesh;
+class Shader;
+class Camera;
 
 class Object {
 protected:
@@ -18,7 +20,7 @@ protected:
 
 	// these matrices are computed in the Update function
 	glm::mat4 localRotation;
-	glm::mat4 localToWorldMatrix;
+	glm::mat4 transform;
 
 public:
 	Object(glm::vec3 pos = { 0,0,0 });
@@ -34,14 +36,14 @@ public:
 	glm::vec3 getRotation();
 	glm::vec3 getScale();
 
-	glm::mat4 getLocalToWorldMatrix();
+	glm::mat4 getTransformation();
 
 	virtual void update(float dt);
-	virtual void draw();
+	virtual void draw(Shader &shader, Camera *camera);
 
 	// Other Properties
 	std::string name;
 	glm::vec4 colour;
-	std::shared_ptr<OBJMesh> mesh;
+	std::shared_ptr<Mesh> mesh;
 	// Material* ...
 };

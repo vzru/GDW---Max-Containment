@@ -1,3 +1,5 @@
+/*
+
 #include <vector>
 #include <fstream>
 #include <iostream>
@@ -38,9 +40,6 @@ void OBJMesh::loadMesh(std::string filename) {
 
 	file.get(currentChar);
 	while (!file.eof()) {
-		if (currentChar == '#')
-			// this line is a comment so skip
-			continue;
 		if (currentChar == 'v') {
 			file.get(currentChar);
 			if (currentChar == ' ') {
@@ -90,3 +89,4 @@ void OBJMesh::loadMesh(std::string filename) {
 	//createVBO();
 }
 
+*/

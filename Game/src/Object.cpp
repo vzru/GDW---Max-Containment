@@ -1,9 +1,12 @@
 #include <windows.h>
-#include <GL/GL.h>
 
+#include "Mesh.h"
+#include "Shader.h"
 #include "Object.h"
 #include "Graphics.h"
-#include "OBJMesh.h"
+#include "Camera.h"
+
+#include <glm\gtc\type_ptr.hpp>
 
 Object::Object(glm::vec3 pos)
 	: scale(1.0f), colour(1.0f), position(pos), mesh(nullptr)
@@ -30,8 +33,8 @@ glm::vec3 Object::getScale() {
 	return scale;
 }
 
-glm::mat4 Object::getLocalToWorldMatrix() {
-	return localToWorldMatrix;
+glm::mat4 Object::getTransformation() {
+	return transform;
 }
 
 void Object::update(float dt) {
@@ -48,14 +51,14 @@ void Object::update(float dt) {
 	// 4. Create scale matrix
 	glm::mat4 scal = glm::scale(scale);
 	// 5. Combine all above transforms into a single matrix
-	localToWorldMatrix = tran * localRotation * scal;
+	transform = tran * localRotation * scal;
 
 	// Note: pay attention to rotation order (2), ZYX is not the same as XYZ
 	// Order is specified by an HTR file when you export it
 	// Note: pay attention to transformation order (5)
 }
 
-void Object::draw() {
+void Object::draw(Shader &shader, Camera *camera) {
 	// Draw a coordinate frame for the object
 	glm::vec3 wPos = position;
 	glm::mat4 wRot = localRotation;
@@ -70,9 +73,27 @@ void Object::draw() {
 
 	// Draw node
 	if (mesh == nullptr)
-		Graphics::drawSphere(localToWorldMatrix, 0.5f, colour);
+		Graphics::drawSphere(transform, 0.5f, colour);
 	else {
-		mesh->setAllColours(colour);
-		mesh->draw(localToWorldMatrix);
+		shader.bind();
+		shader.sendUniformMat4("uModel", glm::value_ptr(transform), false);
+		shader.sendUniformMat4("uView", glm::value_ptr(camera->cameraPosition;), false);
+		shader.sendUniformMat4("uProj", glm::value_ptr(cameraProjection), false);
+
+		shader.sendUniform("lightPos", glm::vec4(4.f, 0.f, 0.f, 1.f));
+		shader.sendUniform("objectColor", colour);
+		shader.sendUniform("lightAmbient", glm::vec3(0.15f, 0.15f, 0.15f));
+		shader.sendUniform("lightDiffuse", glm::vec3(0.7f, 0.7f, 0.7f));
+		shader.sendUniform("lightSpecular", glm::vec3(1.f, 1.f, 1.f));
+		shader.sendUniform("lightSpecularExponent", 50.f);
+		shader.sendUniform("attenuationConstant", 1.f);
+		shader.sendUniform("attenuationLinear", 0.1f);
+		shader.sendUniform("attenuationQuadratic", 0.01f);
+
+		glBindVertexArray(mesh->vao);
+		glDrawArrays(GL_TRIANGLES, 0, mesh->getNumVertices());
+		glBindVertexArray(GL_NONE);
+
+		shader.unbind();
 	}
 }
