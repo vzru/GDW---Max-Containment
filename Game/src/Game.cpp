@@ -64,6 +64,7 @@ Game::Game(int& argc, char** argv)
 	for (int i = 0; i < 10; i++)
 		enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
 }
+
 Game::~Game() {
 	delete timer;
 	delete camera;
@@ -97,6 +98,7 @@ void Game::update() {
 		}
 	}
 }
+
 void Game::draw() {
 	// Set up scene
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -210,25 +212,26 @@ void Game::keyboardUp(unsigned char key, glm::vec2 mouse) {
 		break;
 	}
 }
+
 void Game::specialInput(unsigned char key, glm::vec2 mouse) {
 	switch (key) {
 	case GLUT_KEY_UP:
-		camera->pan({ 0,0,5 });
+		//camera->pan({ 0,0,5 });
 		break;
 	case GLUT_KEY_DOWN:
-		camera->pan({ 0,0,-5 });
+		//camera->pan({ 0,0,-5 });
 		break;
 	case GLUT_KEY_LEFT:
-		camera->pan({ -5,0,0 });
+		//camera->pan({ -5,0,0 });
 		break;
 	case GLUT_KEY_RIGHT:
-		camera->pan({ 5,0,0 });
+		//camera->pan({ 5,0,0 });
 		break;
 	case GLUT_KEY_PAGE_UP:
-		camera->pan({ 0,5,0 });
+		//camera->pan({ 0,5,0 });
 		break;
 	case GLUT_KEY_PAGE_DOWN:
-		camera->pan({ 0,-5,0 });
+		//camera->pan({ 0,-5,0 });
 		break;
 	default:
 		break;
