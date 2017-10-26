@@ -1,5 +1,7 @@
 #include "Camera.h"
 #include "Game.h"
+#include <iostream>
+#include <glm\gtc\type_ptr.hpp>
 
 #include <glm\gtc\type_ptr.hpp>
 #include <iostream>
