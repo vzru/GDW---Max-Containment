@@ -156,7 +156,12 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 		std::cout << "Total elapsed time: " << timer->getCurrentTime() / 1000.0f << std::endl;
 		break;
 	case 'Q': case 'q':
+		
 		enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
+		if (state == State::Pause)
+		{
+			glutExit();
+		}
 		break;
 	default:
 		break;
