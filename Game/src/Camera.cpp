@@ -1,6 +1,9 @@
 #include "Camera.h"
 #include "Game.h"
 
+#include <glm\gtc\type_ptr.hpp>
+#include <iostream>
+
 Camera::Camera()
 	: position({ 0.0f, 10.0f, 10.0f }) {
 	reset();
@@ -11,6 +14,7 @@ void Camera::update() {
 	auto m = glm::lookAt(position, position + forwardVector, upVector);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(&m[0][0]);
+	//std::cout << position.x << '/' << position.y << '/' << position.z << std::endl;
 }
 
 void Camera::reset() {
@@ -50,14 +54,26 @@ glm::vec3 Camera::getPosition() {
 	return position;
 }
 
-glm::mat4& Camera::getTransform() {
-	transform = glm::translate(transform, position);
-	transform = glm::rotate(transform, glm::radians(90.0f), rightVector);
-	return transform;
-}
-
 glm::mat4& Camera::getProjection() {
 	projection = glm::perspective(45.f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 10000.f);
 	return projection;
+}
+
+glm::mat4& Camera::getTransform() {
+	transform = glm::mat4();
+	transform = glm::translate(transform, position);
+	//transform = glm::rotate(transform, glm::radians(90.0f), rightVector);
+	double dArray[16] = { 0.0 };
+
+	const float *pSource = (const float*)glm::value_ptr(transform);
+	for (int i = 0; i < 16; ++i) {
+		dArray[i] = pSource[i];
+		if (i % 4 == 3)
+			std::cout << dArray[i] << std::endl;
+		else
+			std::cout << dArray[i] << ' ';
+	}
+	std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
+	return transform;
 }
 

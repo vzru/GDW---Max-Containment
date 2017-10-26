@@ -5,8 +5,8 @@
 #include "Bullet.h"
 
 Player::Player(glm::vec3 pos) : Object(pos) {
-	//mesh = std::make_shared<Mesh>();
-	//mesh->load("assets/models/player.obj");
+	mesh = std::make_shared<Mesh>();
+	mesh->load("assets/models/player.obj");
 }
 Player::~Player() {
 	mesh->unload();
@@ -25,7 +25,7 @@ void Player::update(float dt) {
 			i--;
 		}
 	
-	//std::cout << "Player: " << getPosition().x << '/' << getPosition().y << '/' << getPosition().z << std::endl;
+	std::cout << "Player: " << getPosition().x << '/' << getPosition().y << '/' << getPosition().z << std::endl;
 
 	Object::update(dt);
 }

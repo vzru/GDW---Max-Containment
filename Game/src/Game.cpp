@@ -63,7 +63,11 @@ Game::Game(int& argc, char** argv)
 	xBox = new Input::XBox();
 	player = new Player();
 	program = new Shader();
-	program->load("assets/shaders/Basic.vert", "assets/shaders/Basic.frag");
+	if(!program->load("assets/shaders/Phong.vert", "assets/shaders/Phong.frag")) {
+		std::cout << "Shaders failed to initialize." << std::endl;
+		system("pause");
+		exit(0);
+	}
 
 	// fill in a bunch of enemies
 	for (int i = 0; i < 10; i++)
