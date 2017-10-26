@@ -63,12 +63,7 @@ Game::Game(int& argc, char** argv)
 	xBox = new Input::XBox();
 	player = new Player();
 	program = new Shader();
-	if(!program->load("assets/shaders/Phong.vert", "assets/shaders/Phong.frag"))
-	{
-		std::cout << "Shaders failed to initialize." << std::endl;
-		system("pause");
-		exit(0);
-	}
+	program->load("assets/shaders/Basic.vert", "assets/shaders/Basic.frag");
 
 	// fill in a bunch of enemies
 	for (int i = 0; i < 10; i++)
@@ -113,8 +108,8 @@ void Game::draw() {
 	// Set up scene
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//glMatrixMode(GL_PROJECTION);
-	//glLoadIdentity();
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
 
 	glViewport(0, 0, windowSize.x, windowSize.y);
 	gluPerspective(60.0f, (float)windowSize.x / (float)windowSize.y, 0.001f, 10000.0f);

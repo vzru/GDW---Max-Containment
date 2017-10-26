@@ -78,7 +78,7 @@ void Object::draw(Shader *shader, Camera *camera) {
 	else {
 		shader->bind();
 		shader->sendUniformMat4("uModel", glm::value_ptr(transform), false);
-		shader->sendUniformMat4("uView", glm::value_ptr(camera->getPosition()), false);
+		shader->sendUniformMat4("uView", glm::value_ptr(camera->getTransform()), false);
 		shader->sendUniformMat4("uProj", glm::value_ptr(camera->getProjection()), false);
 
 		double dArray[16] = { 0.0 };

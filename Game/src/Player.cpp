@@ -5,8 +5,8 @@
 #include "Bullet.h"
 
 Player::Player(glm::vec3 pos) : Object(pos) {
-	mesh = std::make_shared<Mesh>();
-	mesh->load("assets/models/player.obj");
+	//mesh = std::make_shared<Mesh>();
+	//mesh->load("assets/models/player.obj");
 }
 Player::~Player() {
 	mesh->unload();

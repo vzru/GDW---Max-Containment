@@ -1,7 +1,5 @@
 #include "Camera.h"
-
-#include <glm\gtc\type_ptr.hpp>
-#include <iostream>
+#include "Game.h"
 
 Camera::Camera()
 	: position({ 0.0f, 10.0f, 10.0f }) {
@@ -13,13 +11,13 @@ void Camera::update() {
 	auto m = glm::lookAt(position, position + forwardVector, upVector);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(&m[0][0]);
-	//std::cout << position.x << '/' << position.y << '/' << position.z << std::endl;
 }
 
 void Camera::reset() {
 	movementScalar = 0.5;
 	upVector = { 0.0f, 1.0f, 0.0f };
 	forwardVector = { 0.0f, -1.0f, -1.0f };
+	//forwardVector = { 0.0f, -position.z / 10.0f, -position.y / 10.0f };
 }
 
 void Camera::processMotion(glm::vec2 change, float dt) {
@@ -48,13 +46,11 @@ void Camera::calcRightVector() {
 	rightVector = glm::normalize(rightVector);
 }
 
-glm::vec3& Camera::getPosition() {
+glm::vec3 Camera::getPosition() {
 	return position;
 }
-glm::vec3& Camera::getProjection() {
-	return forwardVector;
-}
 
+<<<<<<< HEAD
 glm::mat4 Camera::getTransform()
 {
 	cameraPosition = glm::translate(cameraPosition, position);
@@ -75,5 +71,16 @@ glm::mat4 Camera::getTransform()
 	//}
 	//std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
 	return cameraPosition;
+=======
+glm::mat4& Camera::getTransform() {
+	transform = glm::translate(transform, position);
+	transform = glm::rotate(transform, glm::radians(90.0f), rightVector);
+	return transform;
+}
+
+glm::mat4& Camera::getProjection() {
+	projection = glm::perspective(45.f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 10000.f);
+	return projection;
+>>>>>>> aa0d134182a9337dc0fa96e256bdb16704205409
 }
 
