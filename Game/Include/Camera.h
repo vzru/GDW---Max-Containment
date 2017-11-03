@@ -22,14 +22,17 @@ public:
 	void move(glm::vec3 amount);
 	// getters
 	glm::vec3 getPosition();
+	void setPosition(glm::vec3 pos);
 	glm::mat4& getTransform();
 	glm::mat4& getProjection();
 private:
 	// position vectors
-	glm::vec3 position;
-	glm::vec3 forwardVector;
-	glm::vec3 rightVector;
-	glm::vec3 upVector;
+	//glm::vec3 position;
+	//glm::vec3 forwardVector;
+	//glm::vec3 rightVector;
+	//glm::vec3 upVector;
+	glm::mat4 translate;
+	glm::mat4 rotate;
 	glm::mat4 transform;
 	glm::mat4 projection;
 	// helpers
