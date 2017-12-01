@@ -53,12 +53,11 @@ int main(int argc, char **argv) {
 	// initialize game
 	game = new Game(argc, argv);
 
-	if (glewInit() != GLEW_OK) {
-		std::cout << "GLEW could not be initialized." << std::endl;
-		system("pause");
-		return 0;
-	}
-
+	//if (glewInit() != GLEW_OK) {
+	//	std::cout << "GLEW could not be initialized." << std::endl;
+	//	system("pause");
+	//	return 0;
+	//}
 
 	// setup callback functions
 	glutDisplayFunc(DisplayCallbackFunction);
@@ -70,7 +69,7 @@ int main(int argc, char **argv) {
 	glutPassiveMotionFunc(MousePassiveMotionCallbackFunction);
 	glutTimerFunc(1, TimerCallbackFunction, 0);
 	glutSpecialFunc(SpecialInputCallbackFunction);
-	game->xBox->setCallbacks(ControllerInputCallbackFunction, ControllerSpecialCallbackFunction);
+	game->extraCallbacks(ControllerInputCallbackFunction, ControllerSpecialCallbackFunction);
 
 	// start game
 	glutMainLoop();

@@ -7,13 +7,13 @@
 
 class Camera {
 public:
-	Camera();
+	Camera(glm::vec2 size);
 	~Camera();
 
-	// Applies view matrix to OpenGL
-	void update();
+	// updates the view matrix and applies it to OpenGL
+	void update(glm::vec3 center);
 	// reset the window position
-	void reset();
+	void reset(glm::vec2 size);
 
 	// rotate the window
 	void processMotion(glm::vec2 change, float dt);
@@ -23,19 +23,21 @@ public:
 	// getters
 	glm::vec3 getPosition();
 	void setPosition(glm::vec3 pos);
-	glm::mat4& getTransform();
-	glm::mat4& getProjection();
+	glm::mat4& getView();
+	glm::mat4& getProj();
 private:
-	// position vectors
-	//glm::vec3 position;
+	// vectors
+	glm::vec3 position;
 	//glm::vec3 forwardVector;
 	//glm::vec3 rightVector;
-	//glm::vec3 upVector;
-	glm::mat4 translate;
-	glm::mat4 rotate;
-	glm::mat4 transform;
-	glm::mat4 projection;
+	//glm::vec3 upVector; //(0,1,0)
+	// matrices
+	glm::mat4 proj;
+	glm::mat4 view;
+	//glm::mat4 translate;
+	//glm::mat4 rotate;
+	//glm::mat4 transform;
 	// helpers
 	float movementScalar;
-	void calcRightVector();
+	//void calcRightVector();
 };

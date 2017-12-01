@@ -1,17 +1,19 @@
 #pragma once
 
-#include <glm/vec2.hpp>
+#include "Object.h"
 
-class Bullet {
+class Object;
+
+class Bullet : public Object {
 public:
-	Bullet(glm::vec2 _start, float a);
-	Bullet(glm::vec2 _start, glm::vec2 end);
+	Bullet(Object* origin);
 	~Bullet();
 
-	void draw();
-	bool update(float dt);
+	virtual void update(float dt);
+	//virtual void draw(Shader *shader, Camera *camera, std::vector<Light> lights);
 
+	float cooldown = 0.f;
+	float life = 0.05f;
 private:
-	glm::vec2 start, length;
-	float life = 100.0f;
+
 };

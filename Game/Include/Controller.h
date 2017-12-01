@@ -42,7 +42,7 @@ namespace Input {
 		// these are the callbacks
 		void setCallbacks(
 			void (*_callback)(unsigned short index, Input::Button button),
-			void(*_special)(unsigned short index, Input::Triggers _triggers, Input::Sticks _sticks)
+			void (*_special)(unsigned short index, Input::Triggers triggers, Input::Sticks sticks)
 		);
 		void (*callback)(unsigned short index, Input::Button button);
 		void (*special)(unsigned short index, Input::Triggers _triggers, Input::Sticks _sticks);

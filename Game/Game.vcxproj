@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -80,7 +80,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>./lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glew32.lib;opengl32.lib;freeglut.lib;Xinput9_1_0.lib;SOIL_ext.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew32.lib;freeglut.lib;Xinput9_1_0.lib;SOIL_ext.lib;fmod_vc.lib;fmodL_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -93,7 +93,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>./lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glew32.lib;opengl32.lib;freeglut.lib;Xinput9_1_0.lib;SOIL_ext.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew32.lib;freeglut.lib;Xinput9_1_0.lib;SOIL_ext.lib;fmod_vc.lib;fmodL_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -125,20 +125,53 @@
   <ItemGroup>
     <ClInclude Include="Include\Bullet.h" />
     <ClInclude Include="Include\Camera.h" />
+    <ClInclude Include="include\Assets.h" />
     <ClInclude Include="Include\Controller.h" />
     <ClInclude Include="Include\Enemy.h" />
     <ClInclude Include="Include\Game.h" />
     <ClInclude Include="Include\Graphics.h" />
+    <ClInclude Include="include\Level.h" />
+    <ClInclude Include="include\Light.h" />
+    <ClInclude Include="include\Material.h" />
     <ClInclude Include="Include\Mesh.h" />
     <ClInclude Include="Include\Object.h" />
-    <ClInclude Include="Include\OBJMesh.h" />
     <ClInclude Include="Include\Player.h" />
-    <ClInclude Include="Include\QuadMesh.h" />
     <ClInclude Include="Include\Shader.h" />
+    <ClInclude Include="include\Sound.h" />
+    <ClInclude Include="include\Texture.h" />
     <ClInclude Include="Include\Timer.h" />
+    <ClInclude Include="include\Type.h" />
   </ItemGroup>
   <ItemGroup>
+    <Object Include="assets\meshes\character_model.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </Object>
+    <Object Include="assets\meshes\Hitbox Base.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </Object>
+    <Object Include="assets\meshes\Hitbox Triangle.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </Object>
+    <Object Include="assets\meshes\Level Triangle.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </Object>
+    <Object Include="assets\models\Cube.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </Object>
     <Object Include="assets\models\enemy.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </Object>
+    <Object Include="assets\models\human.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </Object>
+    <Object Include="assets\models\monkey.obj">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </Object>
@@ -151,24 +184,39 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\Bullet.cpp" />
     <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\Assets.cpp" />
     <ClCompile Include="src\Controller.cpp" />
     <ClCompile Include="src\Enemy.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Graphics.cpp" />
+    <ClCompile Include="src\Level.cpp" />
+    <ClCompile Include="src\Light.cpp" />
+    <ClCompile Include="src\Material.cpp" />
     <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\Object.cpp" />
-    <ClCompile Include="src\OBJMesh.cpp" />
     <ClCompile Include="src\Player.cpp" />
-    <ClCompile Include="src\QuadMesh.cpp" />
     <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\Sound.cpp" />
+    <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\shaders\Basic.frag" />
-    <None Include="assets\shaders\Basic.vert" />
+    <None Include="assets\shaders\passThrough.frag" />
+    <None Include="assets\shaders\passThrough.vert" />
     <None Include="assets\shaders\Phong.frag" />
     <None Include="assets\shaders\Phong.vert" />
-    <None Include="assets\shaders\PhongNoTexture.vert" />
+    <None Include="assets\shaders\PhongColorSides.frag" />
+    <None Include="assets\shaders\PhongColorSIdes.vert" />
+    <None Include="assets\shaders\PhongNoTexture.frag" />
+    <None Include="assets\sounds\Slap.ogg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\textures\character texture.png" />
+    <Image Include="assets\textures\fullSpecular.png" />
+    <Image Include="assets\textures\fur.png" />
+    <Image Include="assets\textures\monkeySpecular.png" />
+    <Image Include="assets\textures\normal.jpg" />
+    <Image Include="assets\textures\noSpecular.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

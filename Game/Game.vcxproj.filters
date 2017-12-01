@@ -13,14 +13,17 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Resource Files\models">
-      <UniqueIdentifier>{03e6999a-f67a-4588-ab90-be052fd8348c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resource Files\shaders">
       <UniqueIdentifier>{11fb8398-f654-4a11-84f5-55c17aea5c68}</UniqueIdentifier>
     </Filter>
     <Filter Include="Resource Files\textures">
       <UniqueIdentifier>{77a0e469-7a49-4a83-b0d8-6523cf3075f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\sounds">
+      <UniqueIdentifier>{baad674b-be9d-469b-b4ea-e3173a9669fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\meshes">
+      <UniqueIdentifier>{03e6999a-f67a-4588-ab90-be052fd8348c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -45,13 +48,7 @@
     <ClInclude Include="Include\Object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\OBJMesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Player.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\QuadMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Timer.h">
@@ -63,13 +60,55 @@
     <ClInclude Include="Include\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Type.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Sound.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Level.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Assets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Object Include="assets\models\player.obj">
-      <Filter>Resource Files\models</Filter>
+      <Filter>Resource Files\meshes</Filter>
     </Object>
     <Object Include="assets\models\enemy.obj">
-      <Filter>Resource Files\models</Filter>
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="assets\models\Cube.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="assets\models\human.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="assets\models\monkey.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="assets\meshes\character_model.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="assets\meshes\Hitbox Base.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="assets\meshes\Hitbox Triangle.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="assets\meshes\Level Triangle.obj">
+      <Filter>Resource Files\meshes</Filter>
     </Object>
   </ItemGroup>
   <ItemGroup>
@@ -97,13 +136,7 @@
     <ClCompile Include="src\Object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\OBJMesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Player.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\QuadMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Shader.cpp">
@@ -115,12 +148,30 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Light.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Sound.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Level.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Assets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\shaders\Basic.frag">
+    <None Include="assets\shaders\passThrough.frag">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="assets\shaders\Basic.vert">
+    <None Include="assets\shaders\passThrough.vert">
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="assets\shaders\Phong.frag">
@@ -129,8 +180,37 @@
     <None Include="assets\shaders\Phong.vert">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="assets\shaders\PhongNoTexture.vert">
+    <None Include="assets\shaders\PhongColorSides.frag">
       <Filter>Resource Files\shaders</Filter>
     </None>
+    <None Include="assets\shaders\PhongColorSIdes.vert">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="assets\shaders\PhongNoTexture.frag">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="assets\sounds\Slap.ogg">
+      <Filter>Resource Files\sounds</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\textures\fullSpecular.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="assets\textures\fur.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="assets\textures\monkeySpecular.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="assets\textures\noSpecular.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="assets\textures\normal.jpg">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="assets\textures\character texture.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
   </ItemGroup>
 </Project>

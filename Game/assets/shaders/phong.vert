@@ -9,9 +9,11 @@ layout(location = 1) in vec2 in_uv;
 layout(location = 2) in vec3 in_normal;
 
 out vec3 position;
+out vec2 texCoord;
 out vec3 normal;
 
 void main() {
+	texCoord = in_uv;
 	normal = mat3(uView) * mat3(uModel) * in_normal;
 	
 	vec4 viewSpacePos = uView * uModel * vec4(in_vert, 1.f);

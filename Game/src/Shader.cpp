@@ -26,6 +26,7 @@ bool Shader::load(const std::string & vertFile, const std::string & fragFile) {
 	glShaderSource(fragShader, 1, &temp, NULL);
 
 	// Compile Code
+	std::cout << "Loading shader: " << vertFile << std::endl;
 	if (!compileShader(vertexShader)) {
 		std::cout << "Vertex shader failed to compile." << std::endl;
 		outputShaderLog(vertexShader);
@@ -34,6 +35,7 @@ bool Shader::load(const std::string & vertFile, const std::string & fragFile) {
 		return false;
 	}
 
+	std::cout << "Loading shader: " << fragFile << std::endl;
 	if (!compileShader(fragShader)) {
 		std::cout << "Fragment shader failed to compile." << std::endl;
 		outputShaderLog(fragShader);

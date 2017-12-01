@@ -3,67 +3,75 @@
 #include "Mesh.h"
 #include "Player.h"
 #include "Bullet.h"
+#include "Material.h"
+#include "Level.h"
 
-Player::Player(glm::vec3 pos) : Object(pos) {
-	mesh = std::make_shared<Mesh>();
-	mesh->load("assets/models/player.obj");
+Player::Player(glm::vec3 pos) : Object(pos), bullet(new Bullet(this)), health(20.f) {
 }
 Player::~Player() {
-	mesh->unload();
+	delete bullet;
+	while (bullets.size() > 0) {
+		delete bullets[0];
+		bullets.erase(bullets.begin());
+	}
 }
 
-void Player::update(float dt) {
-	position += velocity * (dt / 50);
-	if (cooldown >= 0.0f)
-		cooldown -= dt;
-	if (firing)
-		fire();
-	for (int i = 0; i < bullets.size(); i++)
-		if (bullets[i]->update(dt)) {
+void Player::update(float dt, Level* level) {
+	// movement
+	velocity += acceleration * (dt / 200.f);
+	//if (glm::length(velocity) > 4.f)
+		//velocity = glm::normalize(velocity) * 4.f;
+	collide(dt, level);
+	if (glm::length(velocity) > 0.f)
+
+	position += velocity * (dt / 200.f);
+	if (glm::length(velocity) > 0.f)
+		velocity = glm::normalize(velocity) * glm::length(velocity) * 0.9f;
+	
+	// gun cooldown
+	if (cooldown >= 0.f)
+		cooldown -= dt / 100.f;
+	// shooting
+	if (firing) fire();
+	for (int i = 0; i < bullets.size(); i++) {
+		bullets[i]->update(dt / 1000.f);
+		if (bullets[i]->life <= 0.f) {
 			delete bullets[i];
 			bullets.erase(bullets.begin() + i);
 			i--;
 		}
+	}
 	
-	std::cout << "Player: " << getPosition().x << '/' << getPosition().y << '/' << getPosition().z << std::endl;
+	//std::cout << "Player Position: " << acceleration.x << '/' << acceleration.y << '/' << acceleration.z << std::endl;
+	//std::cout << "Player Velocity: " << velocity.x << '/' << velocity.y << '/' << velocity.z << std::endl;
 
+	// create transformation matrix
 	Object::update(dt);
 }
 
-void Player::draw(Shader* shader, Camera* camera) {
+void Player::draw(Shader* shader, Camera* camera, std::vector<Light> lights) {
 	for (auto bullet : bullets) {
-		bullet->draw();
+		bullet->draw(shader, camera, lights);
 	}
 
-	Object::draw(shader, camera);
+	Object::draw(shader, camera, lights);
 }
 
-bool Player::fire(glm::vec2 mouse) {
-	if (cooldown <= 0.0f) {
-		makeBullet(mouse);
-		cooldown = RateOfFire;
-		return true;
-	} return false;
-	//if (bullets & (1 << 32)) {
-		//bullets -= 1;
-	//} else {
-		//std::cout << "Tried to fire when there were no bullets, reloading." << std::endl;
-		//bullets -= 1;
-		//return false;
-	//}
+void Player::reset() {
+	position = { 4.f, 0.f, 6.f };
+	velocity = { 0.f, 0.f, 0.f };
+	acceleration = { 0.f, 0.f, 0.f };
+	cooldown = 0.f;
+	health = 20.f;
+	firing = false;
 }
+
 bool Player::fire() {
 	if (cooldown <= 0.0f) {
-		makeBullet();
+		bullet->setPosition(position);
+		bullet->setRotation(rotation);
+		bullets.push_back(new Bullet(*bullet));
 		cooldown = RateOfFire;
 		return true;
 	} return false;
-}
-
-void Player::makeBullet(glm::vec2 pos) {
-	//bullets.push_back(new Bullet({ position.x, position.z }, glm::degrees(rotation.y)));
-	bullets.push_back(new Bullet({ position.x, position.z }, pos));
-}
-void Player::makeBullet() {
-	bullets.push_back(new Bullet({ position.x, position.z }, glm::radians(-rotation.y)));
 }
