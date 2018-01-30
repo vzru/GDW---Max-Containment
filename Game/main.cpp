@@ -6,6 +6,9 @@
 #include "Game.h"
 #include "Controller.h"
 
+//#include "Sound.h"
+
+
 #define FRAMES_PER_SECOND 60
 
 const int FRAME_DELAY = 1000 / FRAMES_PER_SECOND;
@@ -58,6 +61,27 @@ int main(int argc, char **argv) {
 	//	system("pause");
 	//	return 0;
 	//}
+
+	//SoundEngine se;
+	//se.Init();
+	//
+	//FMOD::Sound     *sound; //*sound2, *sound3;
+	//FMOD::Channel   *channel = 0; // *channel2 = 0, *channel3 = 0;
+	//
+	//FMOD_RESULT      result;
+	//
+	//FMOD_VECTOR soundpos = { 0.0f, 0.0f, 0.0f };
+	//FMOD_VECTOR soundvel = { 0.0f, 0.0f, 0.0f };
+	//
+	//result = se.system->createSound("assets/sounds/GS.wav", FMOD_3D, 0, &sound);
+	//FmodErrorCheck(result);
+	//result = sound->set3DMinMaxDistance(0.5f * 1.0, 300.0f * 1.0);
+	//FmodErrorCheck(result);
+	//result = sound->setMode(FMOD_LOOP_NORMAL);
+	//FmodErrorCheck(result);
+	//
+	//result = se.system->set3DListenerAttributes(0, &se.listener.pos, &se.listener.vel, &se.listener.forward, &se.listener.up);
+	//FmodErrorCheck(result);
 
 	// setup callback functions
 	glutDisplayFunc(DisplayCallbackFunction);

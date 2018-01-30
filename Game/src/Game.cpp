@@ -18,6 +18,8 @@
 #include "Controller.h"
 #include "Light.h"
 
+#include "SoundEngine.h"
+
 Game::Game(int& argc, char** argv)
 	: windowSize(WINDOW_WIDTH, WINDOW_HEIGHT) {
 	// Memory Leak Detection
@@ -185,6 +187,24 @@ Game::Game(int& argc, char** argv)
 	loadEnemies();
 
 	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load in things" << std::endl;
+
+	
+	se.Init();
+
+	result = se.system->createSound("assets/sounds/GS.wav", FMOD_3D, 0, &sound);
+	FmodErrorCheck(result);
+	result = sound->set3DMinMaxDistance(0.0f, 30000.0f);
+	FmodErrorCheck(result);
+	result = sound->setMode(FMOD_LOOP_NORMAL);
+	FmodErrorCheck(result);
+	result = se.system->playSound(sound, 0, false, &channel);
+	FmodErrorCheck(result);
+
+	
+	
+	//result = channel->set3DAttributes(&soundpos, &soundvel);
+	//FmodErrorCheck(result);
+
 }
 
 void Game::loadEnemies() {
@@ -245,11 +265,17 @@ void Game::clearEnemies() {
 
 void Game::update() {
 	deltaTime = timer->update();
-	//std::cout << "Keys: " << keys << std::endl;
+
 	
+	//std::cout << "Keys: " << keys << std::endl;
+
 	input.xBox->update();
 
 	if (state == State::Play) {
+		result = se.system->set3DListenerAttributes(0, &se.listener.pos, &se.listener.vel, &se.listener.forward, &se.listener.up);
+		FmodErrorCheck(result);
+		result = se.system->update();
+		FmodErrorCheck(result);
 		// player movement
 		if (input.keys & Input::Keys::KeyW && ~(input.keys & Input::Keys::KeyS))
 			player->acceleration.z = -1.f;
@@ -266,7 +292,11 @@ void Game::update() {
 		if (glm::length(player->acceleration) > 0.f)
 			player->acceleration = glm::normalize(player->acceleration);
 		player->update(deltaTime, level.collision);
+
 		
+		
+
+
 		// stuff based on player
 		hud.display->setPosition(player->getPosition() + glm::vec3(0.f, 8.1f, 1.47f));
 		hud.healthBar->setPosition(player->getPosition() + glm::vec3(-1.85f, 7.9f, 2.53f));
@@ -275,7 +305,7 @@ void Game::update() {
 		hud.healthBar->update(deltaTime);
 		level.camera->update(player->getPosition());
 		level.light->posDir = glm::vec4(player->getPosition() + glm::vec3(0.f, 2.f, 0.f), 1.f);
-		
+
 		// bullet collision
 		for (auto bullet : player->bullets) {
 			if (bullet->cooldown <= 0.f) {
@@ -331,11 +361,21 @@ void Game::update() {
 		glm::vec3 pPos = player->getPosition();
 		// player loses
 		if (player->health <= 0.f)
+		{
 			state = State::Lose;
+		}
+			
 		// player wins
 		if (pPos.x > level.exit.x && pPos.x < level.exit.y && pPos.z > level.exit.z && pPos.z < level.exit.w)
+		{
 			state = State::Win;
+		}
+			
 		//std::cout << "Player health: " << player->health << std::endl;
+
+		//Soundtrack	
+	
+		
 	}
 }
 

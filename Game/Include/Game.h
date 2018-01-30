@@ -16,6 +16,7 @@
 #include <GL\glut.h>
 #include <glm\vec2.hpp>
 #include <glm\vec4.hpp>
+#include "SoundEngine.h"
 //helpers
 class Timer;	class Camera;
 class Enemy;	class Player;
@@ -67,6 +68,15 @@ public:
 	void controllerSpecial(unsigned short index, Input::Triggers triggers, Input::Sticks sticks);
 private:
 	// helpers
+	SoundEngine se;
+	FMOD_RESULT      result;
+	FMOD::Sound     *sound;
+	FMOD::Channel   *channel = 0;
+	FMOD_VECTOR soundpos = { 0.0f, 0.0f, 0.0f };
+	FMOD_VECTOR soundvel = { 0.0f, 0.0f, 0.0f };
+
+
+
 	Timer* timer = nullptr;
 	float deltaTime = 0.f;
 	State state = State::Menu;
