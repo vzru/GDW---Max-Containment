@@ -42,6 +42,8 @@ void Player::update(float dt, Level* level) {
 		}
 	}
 	
+	if(reloadCd > 0)
+	reloadCd -= dt/1000.f;
 	//std::cout << "Player Position: " << acceleration.x << '/' << acceleration.y << '/' << acceleration.z << std::endl;
 	//std::cout << "Player Velocity: " << velocity.x << '/' << velocity.y << '/' << velocity.z << std::endl;
 
@@ -67,11 +69,19 @@ void Player::reset() {
 }
 
 bool Player::fire() {
-	if (cooldown <= 0.0f) {
+	if (cooldown <= 0.0f & reloadCd <= 0.0f) {
+		ammo--;
+		//std::cout << ammo << std::endl;
 		bullet->setPosition(position);
 		bullet->setRotation(rotation);
 		bullets.push_back(new Bullet(*bullet));
 		cooldown = RateOfFire;
+		if (ammo <= 0)
+		{
+			reloadCd = 3.f;
+			std::cout << "Reload!" << std::endl;
+			ammo = 30.0f;
+		}
 		return true;
 	} return false;
 }

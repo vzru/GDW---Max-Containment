@@ -60,4 +60,6 @@ public:
 	glm::vec4 color;
 	Mesh* mesh;
 	Material* mat;
+	int hp, ammo;
+	bool collect;
 };

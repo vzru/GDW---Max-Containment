@@ -37,7 +37,7 @@ Game::Game(int& argc, char** argv)
 	glutInitWindowSize(windowSize.x, windowSize.y);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
 	glutCreateWindow("Max Containment");
-	glutFullScreen();
+	//glutFullScreen();
 
 	glewExperimental = true;
 	if (glewInit() != GLEW_OK) {
@@ -45,7 +45,7 @@ Game::Game(int& argc, char** argv)
 		system("pause");
 		exit(0);
 	}
-	
+
 	std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << ", GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
 	// Initialize GL
@@ -76,7 +76,7 @@ Game::Game(int& argc, char** argv)
 	level.light->specular = { 1.f, 1.f, 1.f };
 	level.light->specularExponent = 50.f;
 	level.light->attenuation = { 1.f, 0.1f, 0.01f };
-	
+
 
 	// Initialize images
 	screen.menu = new Object();
@@ -147,6 +147,16 @@ Game::Game(int& argc, char** argv)
 	player->loadTexture(Type::Texture::DIFFUSE, "assets/textures/character texture.png");
 	player->loadTexture(Type::Texture::SPECULAR, "assets/textures/fullSpecular.png");
 	player->bullet->loadMesh("assets/meshes/bullet.obj");
+	player->ammo = 30.0f;
+	player->reloadCd = 0.0f;
+
+	drop = new Object();
+	drop->loadMesh("assets/meshes/cube.obj");
+	//drop->loadTexture(Type::Texture::DIFFUSE, "assets/textures/character texture.png");
+	//drop->loadTexture(Type::Texture::SPECULAR, "assets/textures/fullSpecular.png");
+	drop->ammo = 30.0f;
+	drop->hp = 5.0f;
+	drop->collect = false;
 
 	// Initialize HUD
 	hud.display = new Object();
@@ -229,6 +239,7 @@ Game::~Game() {
 	program.clear();
 	clearEnemies();
 	enemies.clear();
+	clearDrops();
 	std::get<0>(level.enemies).clear();
 	std::get<1>(level.enemies).clear();
 	std::get<2>(level.enemies).clear();
@@ -243,10 +254,12 @@ void Game::clearEnemies() {
 	enemies.clear();
 }
 
+
+
 void Game::update() {
 	deltaTime = timer->update();
 	//std::cout << "Keys: " << keys << std::endl;
-	
+
 	input.xBox->update();
 
 	if (state == State::Play) {
@@ -266,7 +279,7 @@ void Game::update() {
 		if (glm::length(player->acceleration) > 0.f)
 			player->acceleration = glm::normalize(player->acceleration);
 		player->update(deltaTime, level.collision);
-		
+
 		// stuff based on player
 		hud.display->setPosition(player->getPosition() + glm::vec3(0.f, 8.1f, 1.47f));
 		hud.healthBar->setPosition(player->getPosition() + glm::vec3(-1.85f, 7.9f, 2.53f));
@@ -275,7 +288,7 @@ void Game::update() {
 		hud.healthBar->update(deltaTime);
 		level.camera->update(player->getPosition());
 		level.light->posDir = glm::vec4(player->getPosition() + glm::vec3(0.f, 2.f, 0.f), 1.f);
-		
+
 		// bullet collision
 		for (auto bullet : player->bullets) {
 			if (bullet->cooldown <= 0.f) {
@@ -306,7 +319,7 @@ void Game::update() {
 		// enemy update
 		for (int i = 0; i < enemies.size(); i++) {
 			glm::vec3 diff = enemies[i]->getPosition() - player->getPosition();
-			// aim towars player
+			// aim towards player
 			enemies[i]->setRotation({ 0.f, glm::degrees(atan2f(-diff.z, diff.x)) - 90.f, 0.f });
 			// hurt player
 			if (enemies[i]->cooldown <= 0.f)
@@ -323,6 +336,7 @@ void Game::update() {
 			enemies[i]->update(deltaTime, level.collision);
 			// kill enemy
 			if (enemies[i]->health <= 0.f) {
+				createDropItem(enemies[i]->getPosition());
 				delete enemies[i];
 				enemies.erase(i + enemies.begin());
 				i--;
@@ -360,6 +374,16 @@ void Game::draw() {
 		//level.hitboxes->draw(program["PhongColorSides"], camera, lights);
 		hud.healthBar->draw(program["PhongNoTexture"], level.camera, { *hud.light });
 		hud.display->draw(program["Phong"], level.camera, { *hud.light });
+
+		for (int i = 0; i < dropItems.size(); i++)
+		{
+			if (!dropItems[i]->collect)
+			{
+				std::cout << "drawn drop " << dropItems[i]->collect << std::endl;
+				dropItems[i]->draw(program["Phong"], level.camera, { *level.light });
+			}
+		}
+
 		break;
 	case State::Pause:
 		screen.pause->draw(program["Phong"], screen.camera, { *screen.light });
@@ -430,6 +454,7 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 		if (state == State::Pause) {
 			player->reset();
 			clearEnemies();
+
 			loadEnemies();
 			state = State::Menu;
 		}
@@ -576,6 +601,7 @@ void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 		}
 	}
 }
+
 void Game::mouseMoved(glm::vec2 mouse) {
 	input.mouse = mouse;
 	switch (state) {
@@ -657,6 +683,7 @@ void Game::controllerInput(unsigned short index, Input::Button button) {
 			break;
 		}
 }
+
 void Game::controllerSpecial(unsigned short index, Input::Triggers triggers, Input::Sticks sticks) {
 	switch (state) {
 	case State::Play:
@@ -674,4 +701,20 @@ void Game::controllerSpecial(unsigned short index, Input::Triggers triggers, Inp
 	default:
 		break;
 	}
+}
+
+void Game::createDropItem(glm::vec3 pos)
+{
+	drop->setPosition(pos);
+	std::cout << "DROP!" << dropItems.size() << std::endl;
+	dropItems.push_back(drop);
+}
+
+void Game::clearDrops()
+{
+	for (int i = 0; i < dropItems.size(); i++)
+	{
+		delete dropItems[i];
+	}
+	dropItems.clear();
 }

@@ -65,6 +65,8 @@ public:
 	//controller
 	void controllerInput(unsigned short index, Input::Button button);
 	void controllerSpecial(unsigned short index, Input::Triggers triggers, Input::Sticks sticks);
+
+	void createDropItem(glm::vec3 pos);
 private:
 	// helpers
 	Timer* timer = nullptr;
@@ -112,7 +114,10 @@ private:
 	Player* player;
 	std::vector<Enemy*> enemies;
 	std::tuple<Enemy*, Enemy*, Enemy*> enemys;
+	Object* drop;
+	std::vector<Object*> dropItems;
 	void loadEnemies(), clearEnemies();
+	void clearDrops();
 	// hud
 	struct HudData {
 		Object *display;
