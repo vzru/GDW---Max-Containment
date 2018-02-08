@@ -1,6 +1,8 @@
 #include <iostream>
 #include <memory>
 #include <tuple>
+#include <ctime>
+#include <cstdlib>
 
 #include <Windows.h>
 
@@ -148,12 +150,14 @@ Game::Game(int& argc, char** argv)
 	player->loadTexture(Type::Texture::SPECULAR, "assets/textures/fullSpecular.png");
 	player->bullet->loadMesh("assets/meshes/bullet.obj");
 	player->ammo = 30.0f;
+	player->ammoDepo = 90.f;
 	player->reloadCd = 0.0f;
 
 	drop = new Object();
 	drop->loadMesh("assets/meshes/cube.obj");
 	//drop->loadTexture(Type::Texture::DIFFUSE, "assets/textures/character texture.png");
-	//drop->loadTexture(Type::Texture::SPECULAR, "assets/textures/fullSpecular.png");
+	drop->loadTexture(Type::Texture::SPECULAR, "assets/textures/fullSpecular.png");
+	drop->update(0.f);
 	drop->ammo = 30.0f;
 	drop->hp = 5.0f;
 	drop->collect = false;
@@ -232,6 +236,7 @@ Game::~Game() {
 	delete hud.healthBar;
 	delete hud.light;
 	delete input.xBox;
+	delete drop;
 	for (auto& prog : program) {
 		prog.second->unload();
 		delete prog.second;
@@ -350,6 +355,30 @@ void Game::update() {
 		if (pPos.x > level.exit.x && pPos.x < level.exit.y && pPos.z > level.exit.z && pPos.z < level.exit.w)
 			state = State::Win;
 		//std::cout << "Player health: " << player->health << std::endl;
+		for (int i = 0; i < dropItems.size(); i++)
+		{
+			if (!dropItems[i]->collect)
+			{
+				float dist = glm::length(player->getPosition() - dropItems[i]->getPosition());
+				if (dist < 0.3)
+				{
+					std::cout << dropItems[i]->ammo << '/' << dropItems[i]->hp << std::endl;
+					dropItems[i]->collect = true;
+					player->ammoDepo += dropItems[i]->ammo;
+					if (player->health < 20.0f)
+					{
+						if ((player->health + dropItems[i]->hp) > 20.0f)
+						{
+							player->health = 20.0f;
+						}
+						else
+						{
+							player->health += dropItems[i]->hp;
+						}
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -379,8 +408,10 @@ void Game::draw() {
 		{
 			if (!dropItems[i]->collect)
 			{
-				std::cout << "drawn drop " << dropItems[i]->collect << std::endl;
-				dropItems[i]->draw(program["Phong"], level.camera, { *level.light });
+				//std::cout << "drawn drop pos " << i << ":" << dropItems[i]->getPosition().x << '/' << dropItems[i]->getPosition().y << '/' << dropItems[i]->getPosition().z << std::endl;
+				//std::cout << "player pos:" << player->getPosition().x << '/' << player->getPosition().y << '/' << player->getPosition().z << std::endl;
+
+				dropItems[i]->draw(program["PhongNoTexture"], level.camera, { *level.light });
 			}
 		}
 
@@ -705,9 +736,31 @@ void Game::controllerSpecial(unsigned short index, Input::Triggers triggers, Inp
 
 void Game::createDropItem(glm::vec3 pos)
 {
-	drop->setPosition(pos);
-	std::cout << "DROP!" << dropItems.size() << std::endl;
-	dropItems.push_back(drop);
+	float temp = rand() % 100;
+	std::cout << temp << '/' << player->health << std::endl;
+	if (temp > 60 & temp <= 80)
+	{
+		drop->ammo = 30.0f;
+		drop->color = glm::vec4(1.0f, 0.647f, 0.f, 0.5f);
+		drop->setPosition(pos);
+		drop->update(deltaTime);
+		//std::cout << "DROP!" << dropItems.size() << std::endl;
+		dropItems.push_back(new Object(*drop));
+	}
+	else if (temp > 80)
+	{
+		drop->hp = 5.0f;
+		drop->color = glm::vec4(0.0f, 1.0f, 0.f, 0.5f);
+		drop->setPosition(pos);
+		drop->update(deltaTime);
+		//std::cout << "DROP!" << dropItems.size() << std::endl;
+		dropItems.push_back(new Object(*drop));
+	}
+	else
+	{
+		drop->ammo = 0.0f;
+		drop->hp = 0.0f;
+	}
 }
 
 void Game::clearDrops()

@@ -16,7 +16,7 @@ public:
 	void reset();
 	bool fire();
 	
-	float health, cooldown, ammo, reloadCd;
+	float health, cooldown, ammo, ammoDepo, reloadCd;
 	bool firing = false;
 
 	glm::vec3 acceleration = { 0.f, 0.f, 0.f };

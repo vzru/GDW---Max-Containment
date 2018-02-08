@@ -65,6 +65,8 @@ void Player::reset() {
 	acceleration = { 0.f, 0.f, 0.f };
 	cooldown = 0.f;
 	health = 20.f;
+	ammo = 30.0f;
+	ammoDepo = 90.0f;
 	firing = false;
 }
 
@@ -76,11 +78,21 @@ bool Player::fire() {
 		bullet->setRotation(rotation);
 		bullets.push_back(new Bullet(*bullet));
 		cooldown = RateOfFire;
-		if (ammo <= 0)
+		std::cout << ammo << '/' << ammoDepo << std::endl;
+		if (ammo <= 0 & ammoDepo > 0.0f)
 		{
+			if (ammoDepo > 30.0f)
+			{
+				ammo = 30.0f;
+				ammoDepo -= 30.0f;
+			}
+			else if (ammoDepo > 0.0f)
+			{
+				ammo = ammoDepo;
+				ammoDepo = 0.0f;
+			}
 			reloadCd = 3.f;
 			std::cout << "Reload!" << std::endl;
-			ammo = 30.0f;
 		}
 		return true;
 	} return false;
