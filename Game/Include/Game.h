@@ -69,13 +69,15 @@ public:
 private:
 	// helpers
 	SoundEngine se;
+	SoundEngine sound2;
 	FMOD_RESULT      result;
+	FMOD_RESULT		 result1;
 	FMOD::Sound     *sound;
+	FMOD::Sound     *sound1;
 	FMOD::Channel   *channel = 0;
+	FMOD::Channel   *channel1 = 0;
 	FMOD_VECTOR soundpos = { 0.0f, 0.0f, 0.0f };
 	FMOD_VECTOR soundvel = { 0.0f, 0.0f, 0.0f };
-
-
 
 	Timer* timer = nullptr;
 	float deltaTime = 0.f;

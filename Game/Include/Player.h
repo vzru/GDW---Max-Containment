@@ -15,6 +15,12 @@ public:
 	virtual void draw(Shader* shader, Camera* camera, std::vector<Light> light);
 	void reset();
 	bool fire();
+
+	//Shooting variables
+	int maxMag = 30;
+	int mag;
+	int maxCache = 600;
+	int cache;
 	
 	float health, cooldown;
 	bool firing = false;

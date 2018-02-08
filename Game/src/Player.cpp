@@ -7,6 +7,8 @@
 #include "Level.h"
 
 Player::Player(glm::vec3 pos) : Object(pos), bullet(new Bullet(this)), health(20.f) {
+	mag = 30;
+	cache = 600;
 }
 Player::~Player() {
 	delete bullet;
@@ -68,10 +70,16 @@ void Player::reset() {
 
 bool Player::fire() {
 	if (cooldown <= 0.0f) {
-		bullet->setPosition(position);
-		bullet->setRotation(rotation);
-		bullets.push_back(new Bullet(*bullet));
-		cooldown = RateOfFire;
-		return true;
+		if (mag > 0)
+		{
+			bullet->setPosition(position);
+			bullet->setRotation(rotation);
+			bullets.push_back(new Bullet(*bullet));
+			cooldown = RateOfFire;
+			--mag;
+			std::cout << mag << std::endl;
+
+			return true;
+		}
 	} return false;
 }

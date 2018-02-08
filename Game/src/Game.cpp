@@ -39,7 +39,7 @@ Game::Game(int& argc, char** argv)
 	glutInitWindowSize(windowSize.x, windowSize.y);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
 	glutCreateWindow("Max Containment");
-	glutFullScreen();
+	//glutFullScreen();
 
 	glewExperimental = true;
 	if (glewInit() != GLEW_OK) {
@@ -188,9 +188,8 @@ Game::Game(int& argc, char** argv)
 
 	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load in things" << std::endl;
 
-	
+	//Sound
 	se.Init();
-
 	result = se.system->createSound("assets/sounds/GS.wav", FMOD_3D, 0, &sound);
 	FmodErrorCheck(result);
 	result = sound->set3DMinMaxDistance(0.0f, 30000.0f);
@@ -200,6 +199,17 @@ Game::Game(int& argc, char** argv)
 	result = se.system->playSound(sound, 0, false, &channel);
 	FmodErrorCheck(result);
 
+	channel->setVolume(0.2);
+
+	sound2.Init();
+	result = sound2.system->createSound("assets/sounds/SW.mp3", FMOD_3D, 0, &sound1);
+	FmodErrorCheck(result1);
+	result = sound->set3DMinMaxDistance(0.0f, 30000.0f);
+	FmodErrorCheck(result1);
+	result = sound->setMode(FMOD_LOOP_NORMAL);
+	FmodErrorCheck(result1);
+	result = sound2.system->playSound(sound1, 0, false, &channel1);
+	FmodErrorCheck(result1);
 	
 	
 	//result = channel->set3DAttributes(&soundpos, &soundvel);
@@ -266,16 +276,21 @@ void Game::clearEnemies() {
 void Game::update() {
 	deltaTime = timer->update();
 
+	result = se.system->update();
+	FmodErrorCheck(result);
+
+	result1 = sound2.system->update();
+	FmodErrorCheck(result1);
+
+	//result = se.system->set3DListenerAttributes(0, &se.listener.pos, &se.listener.vel, &se.listener.forward, &se.listener.up);
+	//FmodErrorCheck(result);
 	
 	//std::cout << "Keys: " << keys << std::endl;
 
 	input.xBox->update();
 
 	if (state == State::Play) {
-		result = se.system->set3DListenerAttributes(0, &se.listener.pos, &se.listener.vel, &se.listener.forward, &se.listener.up);
-		FmodErrorCheck(result);
-		result = se.system->update();
-		FmodErrorCheck(result);
+		
 		// player movement
 		if (input.keys & Input::Keys::KeyW && ~(input.keys & Input::Keys::KeyS))
 			player->acceleration.z = -1.f;
