@@ -39,7 +39,7 @@ namespace Input {
 		All = 0x3FFFFFF,
 	};
 }
-enum class State { Menu, Play, Pause, Win, Lose };
+enum class State { Menu, Play, Pause, Win, Lose, Control };
 
 class Game {
 public:
@@ -129,7 +129,7 @@ private:
 	} hud;
 	// screens
 	struct Screen {
-		Object *menu, *pause, *win, *lose, *loading;
+		Object *menu, *pause, *win, *lose, *loading, *controls;
 		Camera *camera;
 		Light *light;
 		Object *playObj, *quitObj;

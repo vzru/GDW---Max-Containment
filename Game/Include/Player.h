@@ -18,6 +18,7 @@ public:
 	
 	float health, cooldown, ammo, ammoDepo, reloadCd;
 	bool firing = false;
+	bool reloaded = false;
 
 	glm::vec3 acceleration = { 0.f, 0.f, 0.f };
 	Bullet* bullet;

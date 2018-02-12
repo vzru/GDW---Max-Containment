@@ -39,6 +39,8 @@ Game::Game(int& argc, char** argv)
 	glutInitWindowSize(windowSize.x, windowSize.y);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
 	glutCreateWindow("Max Containment");
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glutFullScreen();
 
 	glewExperimental = true;
@@ -58,7 +60,7 @@ Game::Game(int& argc, char** argv)
 	input.xBox = new Input::XBox();
 
 	srand(time(NULL));
-	
+
 	screen.camera = new Camera(windowSize);
 	screen.camera->setPosition({ 0.f, 5.f, 0.01f });
 	screen.camera->update({ 0.f, 0.f, 0.f });
@@ -111,14 +113,20 @@ Game::Game(int& argc, char** argv)
 	screen.pause = new Object();
 	screen.lose = new Object();
 	screen.win = new Object();
+	screen.controls = new Object();
+
 	screen.menu->loadMesh("assets/meshes/screen.obj");
 	screen.pause->loadMesh("assets/meshes/screen.obj");
 	screen.win->loadMesh("assets/meshes/screen.obj");
 	screen.lose->loadMesh("assets/meshes/screen.obj");
+	screen.controls->loadMesh("assets/meshes/screen.obj");
+
 	screen.menu->loadTexture(Type::DIFFUSE, "assets/textures/menu.png");
 	screen.pause->loadTexture(Type::DIFFUSE, "assets/textures/pause.png");
 	screen.win->loadTexture(Type::DIFFUSE, "assets/textures/win.png");
 	screen.lose->loadTexture(Type::DIFFUSE, "assets/textures/lose.png");
+	screen.controls->loadTexture(Type::DIFFUSE, "assets/textures/controls.png");
+
 	// Initialize screens
 	screen.playObj = new Object({ 0.f, 0.2f, 0.3f });
 	screen.quitObj = new Object({ 0.f, 0.2f, 1.75f });
@@ -151,13 +159,20 @@ Game::Game(int& argc, char** argv)
 		exit(0);
 	}
 
-	Sound* sound = new Sound("assets/sounds/game soundtrack.wav", true);
+	Sound* sound = new Sound("assets/sounds/game soundtrack.wav", true, 2);
 	soundList.push_back(sound);
 
-	sound = new Sound("assets/sounds/ambient machine noise.wav", true);
-	soundList.push_back(sound);
+	Sound* sound1 = new Sound("assets/sounds/ambient machine noise.wav", true, 2);
+	soundList.push_back(sound1);
 
-	soundList[0]->createChannel();
+	Sound* sound2 = new Sound("assets/sounds/Gunshot_sound.wav", true, 3);
+	soundList.push_back(sound2);
+
+	Sound* sound3 = new Sound("assets/sounds/Reload_sound.wav", false, 3);
+	soundList.push_back(sound3);
+
+	soundList[0]->createChannel(2);
+	soundList[0]->setVolume(0.05f);
 
 
 	// Initialize Player
@@ -166,6 +181,7 @@ Game::Game(int& argc, char** argv)
 	player->loadTexture(Type::Texture::DIFFUSE, "assets/textures/character texture.png");
 	player->loadTexture(Type::Texture::SPECULAR, "assets/textures/fullSpecular.png");
 	player->bullet->loadMesh("assets/meshes/bullet.obj");
+	player->bullet->color = { 1.0f , 1.0f, 1.0f, 0.3f };
 	player->ammo = 30.0f;
 	player->ammoDepo = 90.f;
 	player->reloadCd = 0.0f;
@@ -225,7 +241,6 @@ Game::Game(int& argc, char** argv)
 	loadEnemies();
 
 	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load in things" << std::endl;
-	soundList[0]->setVolume(0.1f);
 	//soundList[1]->createChannel();
 }
 
@@ -256,6 +271,7 @@ Game::~Game() {
 	delete screen.pause;
 	delete screen.win;
 	delete screen.lose;
+	delete screen.controls;
 	delete screen.camera;
 	delete screen.light;
 	delete screen.playObj;
@@ -314,6 +330,13 @@ void Game::update() {
 	if (state == State::Play) {
 		//soundList[0]->stopSound();
 		//soundList[1]->playSound();
+	if (player->reloadCd > 0.0f && !player->reloaded)
+	{
+		soundList[2]->stopSound();
+		player->reloaded = true;
+		soundList[3]->playSound(3);
+		soundList[3]->setVolume(0.5f);
+	}
 
 		//soundList[1]->createChannel();
 		// player movement
@@ -482,6 +505,9 @@ void Game::draw() {
 	case State::Lose:
 		screen.lose->draw(program["Phong"], screen.camera, { *screen.light });
 		break;
+	case State::Control:
+		screen.controls->draw(program["Phong"], screen.camera, { *screen.light });
+		break;
 	default:
 		break;
 	}
@@ -508,8 +534,11 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 			player->reset();
 			clearEnemies();
 			loadEnemies();
+			soundList[1]->stopSound();
+			soundList[0]->playSound(2);
+			soundList[0]->setVolume(0.05f);
 			state = State::Menu;
-			soundList[0]->playSound();
+			//soundList[0]->playSound();
 			break;
 		default:
 			break;
@@ -518,7 +547,13 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 	case ' ':
 		switch (state) {
 		case State::Menu:
+			state = State::Control;
+			break;
+		case State::Control:
 			state = State::Play;
+			soundList[0]->stopSound();
+			soundList[1]->playSound(2);
+			soundList[1]->setVolume(0.01f);
 			break;
 		case State::Pause:
 			state = State::Play;
@@ -527,8 +562,11 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 			player->reset();
 			clearEnemies();
 			loadEnemies();
+			soundList[1]->stopSound();
+			soundList[0]->playSound(2);
+			soundList[0]->setVolume(0.05f);
 			state = State::Menu;
-			soundList[0]->playSound();
+			//soundList[0]->playSound();
 			break;
 		}
 		break;
@@ -539,10 +577,12 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 		if (state == State::Pause) {
 			player->reset();
 			clearEnemies();
-
 			loadEnemies();
+			soundList[1]->stopSound();
+			soundList[0]->playSound(2);
+			soundList[0]->setVolume(0.05f);
 			state = State::Menu;
-			soundList[0]->playSound();
+			//soundList[0]->playSound();
 		}
 		//enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
 		break;
@@ -636,9 +676,16 @@ void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 			switch (state) {
 			case GLUT_DOWN:
 				player->firing = true;
+				if (player->reloadCd <= 0.0f)
+				{
+					soundList[3]->stopSound();
+					soundList[2]->playSound(3);
+					soundList[2]->setVolume(0.05f);
+				}
 				break;
 			case GLUT_UP:
 				player->firing = false;
+				soundList[2]->stopSound();
 				break;
 			default:
 				break;
@@ -655,8 +702,8 @@ void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 			case GLUT_DOWN:
 				if (mouse.x > screen.playPos.x * windowSize.x && mouse.x < screen.playPos.y * windowSize.x && mouse.y > screen.playPos.z * windowSize.y && mouse.y < screen.playPos.w * windowSize.y)
 				{
-					this->state = State::Play;
-					soundList[1]->playSound();
+					this->state = State::Control;
+					//soundList[1]->playSound();
 				}
 				if (mouse.x > screen.quitPos.x * windowSize.x && mouse.x < screen.quitPos.y * windowSize.x && mouse.y > screen.quitPos.z * windowSize.y && mouse.y < screen.quitPos.w * windowSize.y)
 					glutExit();
@@ -764,9 +811,13 @@ void Game::controllerInput(unsigned short index, Input::Button button) {
 			break;
 		case State::Menu:
 			if (button == Input::Button::A)
-				state = State::Play;
+				state = State::Control;
 			if (button == Input::Button::Start)
 				glutExit();
+			break;
+		case State::Control:
+			if (button == Input::Button::B)
+				state = State::Play;
 			break;
 		default:
 			break;
@@ -796,7 +847,7 @@ void Game::createDropItem(glm::vec3 pos)
 {
 	float temp = rand() % 100;
 	std::cout << temp << '/' << player->health << std::endl;
-	if (temp > 55 & temp <= 80)
+	if (temp > 50 & temp <= 80)
 	{
 		//drop->ammo = 30.0f;
 		//dropAmmo->color = glm::vec4(1.0f, 0.647f, 0.f, 0.5f);

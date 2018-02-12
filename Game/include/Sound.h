@@ -12,13 +12,13 @@ class Sound
 {
 public:
 	Sound();
-	Sound(char * filename, bool loop);
+	Sound(char * filename, bool loop, int dimension);
 	~Sound();
 	//void fmodErrorCK(FMOD_RESULT result);
-	void loadSound(char * filename, bool loop);
-	void createChannel();
+	void loadSound(char * filename, bool loop, int dimension);
+	void createChannel(int mode);
 	void stopSound();
-	void playSound();
+	void playSound(int mode);
 	void setVolume(float l);
 	void changeSoundLoc(FMOD_VECTOR pos);
 	void update();
