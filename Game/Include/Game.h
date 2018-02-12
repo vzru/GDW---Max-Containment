@@ -116,7 +116,7 @@ private:
 	Player* player;
 	std::vector<Enemy*> enemies;
 	std::tuple<Enemy*, Enemy*, Enemy*> enemys;
-	Object* drop;
+	Object *dropHP, *dropAmmo;
 	std::vector<Object*> dropItems;
 	void loadEnemies(), clearEnemies();
 	void clearDrops();

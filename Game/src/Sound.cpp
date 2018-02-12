@@ -44,6 +44,7 @@ void Sound::loadSound(char * filename, bool loop)
 
 void Sound::createChannel()
 {
+	/*channel = new Channel;*/
 	result = sSys.getSystem()->playSound(sound, 0, true, &channel);
 	sSys.fmodErrorCK(result);
 	result = channel->set3DAttributes(&pos, &vel);

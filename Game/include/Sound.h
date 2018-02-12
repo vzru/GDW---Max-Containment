@@ -2,6 +2,12 @@
 
 #include "SoundE.h"
 
+//struct Channel
+//{
+//	FMOD_VECTOR pos = { 0.0f, 0.0f, 0.0f };
+//	FMOD_VECTOR vel = { 0.0f, 0.0f, 0.0f };
+//};
+
 class Sound
 {
 public:
@@ -21,6 +27,7 @@ private:
 	FMOD::Sound *sound;
 
 	FMOD::Channel *channel = 0;
+	std::vector<FMOD::Channel*> channelList;
 	FMOD_VECTOR pos = { 0.0f, 0.0f, 0.0f };
 	FMOD_VECTOR vel = { 0.0f, 0.0f, 0.0f };
 	//FMOD_BOOL* isPlaying;
