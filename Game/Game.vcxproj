@@ -137,7 +137,8 @@
     <ClInclude Include="Include\Object.h" />
     <ClInclude Include="Include\Player.h" />
     <ClInclude Include="Include\Shader.h" />
-    <ClInclude Include="include\Sound.h" />
+    <ClInclude Include="Include\Sound.h" />
+    <ClInclude Include="Include\SoundE.h" />
     <ClInclude Include="include\Texture.h" />
     <ClInclude Include="Include\Timer.h" />
     <ClInclude Include="include\Type.h" />
@@ -197,6 +198,7 @@
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Sound.cpp" />
+    <ClCompile Include="src\SoundE.cpp" />
     <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\Timer.cpp" />
   </ItemGroup>

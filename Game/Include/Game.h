@@ -10,6 +10,7 @@
 #include <unordered_map>
 //windows includes
 #include <Windows.h>
+#include "Sound.h"
 //3rd party includes
 //#include <GL\GL.h>
 //#include <GL\GLU.h>
@@ -27,15 +28,15 @@ namespace Input {
 	enum Button;
 	class XBox;
 	enum Keys {
-		None	= 0x0000000,
-		KeyW	= 0x0000001,		KeyA	= 0x0000002,		KeyS	= 0x000004,		KeyD	= 0x000008,
-		KeyQ	= 0x0000010,		KeyE	= 0x0000020,		KeyR	= 0x000040,		KeyF	= 0x000080,
-		KeyZ	= 0x0000100,		KeyX	= 0x0000200,		KeyC	= 0x000400,		KeyV	= 0x000800,
-		Num1	= 0x0001000,		Num2	= 0x0002000,		Num3	= 0x004000,		Num4	= 0x008000,
-		Esc		= 0x0010000,		Enter	= 0x0020000,		Space	= 0x040000,		Delete	= 0x080000,
-		LShift	= 0x0100000,		RShift	= 0x0200000,		LAlt	= 0x400000,		RAlt	= 0x800000,
-		LCtrl	= 0x1000000,		RCtrl	= 0x2000000,
-		All		= 0x3FFFFFF,
+		None = 0x0000000,
+		KeyW = 0x0000001, KeyA = 0x0000002, KeyS = 0x000004, KeyD = 0x000008,
+		KeyQ = 0x0000010, KeyE = 0x0000020, KeyR = 0x000040, KeyF = 0x000080,
+		KeyZ = 0x0000100, KeyX = 0x0000200, KeyC = 0x000400, KeyV = 0x000800,
+		Num1 = 0x0001000, Num2 = 0x0002000, Num3 = 0x004000, Num4 = 0x008000,
+		Esc = 0x0010000, Enter = 0x0020000, Space = 0x040000, Delete = 0x080000,
+		LShift = 0x0100000, RShift = 0x0200000, LAlt = 0x400000, RAlt = 0x800000,
+		LCtrl = 0x1000000, RCtrl = 0x2000000,
+		All = 0x3FFFFFF,
 	};
 }
 enum class State { Menu, Play, Pause, Win, Lose };
@@ -50,7 +51,7 @@ public:
 	// updates
 	void update();
 	void draw();
-		
+
 	// callbacks
 	//key
 	void keyboardDown(unsigned char key, glm::vec2 mouse);
@@ -68,6 +69,7 @@ public:
 
 	void createDropItem(glm::vec3 pos);
 private:
+	std::vector<Sound*> soundList;
 	// helpers
 	Timer* timer = nullptr;
 	float deltaTime = 0.f;
@@ -127,7 +129,7 @@ private:
 	} hud;
 	// screens
 	struct Screen {
-		Object *menu, *pause, *win, *lose;
+		Object *menu, *pause, *win, *lose, *loading;
 		Camera *camera;
 		Light *light;
 		Object *playObj, *quitObj;

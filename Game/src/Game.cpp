@@ -39,7 +39,7 @@ Game::Game(int& argc, char** argv)
 	glutInitWindowSize(windowSize.x, windowSize.y);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
 	glutCreateWindow("Max Containment");
-	//glutFullScreen();
+	glutFullScreen();
 
 	glewExperimental = true;
 	if (glewInit() != GLEW_OK) {
@@ -56,6 +56,29 @@ Game::Game(int& argc, char** argv)
 	// Initialize game elements
 	timer = new Timer();
 	input.xBox = new Input::XBox();
+	
+	screen.camera = new Camera(windowSize);
+	screen.camera->setPosition({ 0.f, 5.f, 0.01f });
+	screen.camera->update({ 0.f, 0.f, 0.f });
+	screen.light = new Light();
+	screen.light->type = (unsigned int)Type::Light::DIRECTIONAL;
+	screen.light->posDir = { 0.f, -1.f, 0.f, 0.f };
+	screen.light->ambient = { 0.15f, 0.15f, 0.15f };
+	screen.light->diffuse = { 0.7f, 0.7f, 0.7f };
+	screen.light->specular = { 1.f, 1.f, 1.f };
+	screen.light->specularExponent = 50.f;
+	screen.light->attenuation = { 1.f, 0.1f, 0.01f };
+	screen.loading = new Object();
+	screen.loading->loadMesh("assets/meshes/screen.obj");
+	screen.loading->loadTexture(Type::DIFFUSE, "assets/textures/loading.png");
+	program["Phong"] = new Shader();
+	if (!program["Phong"]->load("assets/shaders/Phong.vert", "assets/shaders/Phong.frag")) {
+		std::cout << "Phong Shaders failed to initialize." << std::endl;
+		system("pause");
+		exit(0);
+	}
+	screen.loading->draw(program["Phong"], screen.camera, { *screen.light });
+	glutSwapBuffers();
 
 	// Initialize level
 	level.map = new Object();
@@ -79,6 +102,7 @@ Game::Game(int& argc, char** argv)
 	level.light->specularExponent = 50.f;
 	level.light->attenuation = { 1.f, 0.1f, 0.01f };
 
+	screen.light->originalPosition = level.light->posDir;
 
 	// Initialize images
 	screen.menu = new Object();
@@ -94,9 +118,6 @@ Game::Game(int& argc, char** argv)
 	screen.win->loadTexture(Type::DIFFUSE, "assets/textures/win.png");
 	screen.lose->loadTexture(Type::DIFFUSE, "assets/textures/lose.png");
 	// Initialize screens
-	screen.camera = new Camera(windowSize);
-	screen.camera->setPosition({ 0.f, 5.f, 0.01f });
-	screen.camera->update({ 0.f, 0.f, 0.f });
 	screen.playObj = new Object({ 0.f, 0.2f, 0.3f });
 	screen.quitObj = new Object({ 0.f, 0.2f, 1.75f });
 	screen.playObj->color = { 1.f, 1.f, 1.f, 1.f };
@@ -107,26 +128,11 @@ Game::Game(int& argc, char** argv)
 	screen.quitObj->setScale(glm::vec3(1.5f));
 	screen.playObj->update(0.f);
 	screen.quitObj->update(0.f);
-	screen.light = new Light();
-	screen.light->type = (unsigned int)Type::Light::DIRECTIONAL;
-	screen.light->posDir = { 0.f, -1.f, 0.f, 0.f };
-	screen.light->originalPosition = level.light->posDir;
-	screen.light->ambient = { 0.15f, 0.15f, 0.15f };
-	screen.light->diffuse = { 0.7f, 0.7f, 0.7f };
-	screen.light->specular = { 1.f, 1.f, 1.f };
-	screen.light->specularExponent = 50.f;
-	screen.light->attenuation = { 1.f, 0.1f, 0.01f };
 
 	// Initialize shaders
 	program["passThrough"] = new Shader();
 	if (!program["passThrough"]->load("assets/shaders/passThrough.vert", "assets/shaders/passThrough.frag")) {
 		std::cout << "PassThrough Shaders failed to initialize." << std::endl;
-		system("pause");
-		exit(0);
-	}
-	program["Phong"] = new Shader();
-	if (!program["Phong"]->load("assets/shaders/Phong.vert", "assets/shaders/Phong.frag")) {
-		std::cout << "Phong Shaders failed to initialize." << std::endl;
 		system("pause");
 		exit(0);
 	}
@@ -142,6 +148,15 @@ Game::Game(int& argc, char** argv)
 		system("pause");
 		exit(0);
 	}
+
+	Sound* sound = new Sound("assets/sounds/game soundtrack.wav", true);
+	soundList.push_back(sound);
+
+	sound = new Sound("assets/sounds/ambient machine noise.wav", true);
+	soundList.push_back(sound);
+
+	soundList[0]->createChannel();
+
 
 	// Initialize Player
 	player = new Player({ 4.f, 0.f, 6.f });
@@ -199,6 +214,8 @@ Game::Game(int& argc, char** argv)
 	loadEnemies();
 
 	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load in things" << std::endl;
+	soundList[0]->setVolume(0.1f);
+	//soundList[1]->createChannel();
 }
 
 void Game::loadEnemies() {
@@ -232,6 +249,7 @@ Game::~Game() {
 	delete screen.light;
 	delete screen.playObj;
 	delete screen.quitObj;
+	delete screen.loading;
 	delete hud.display;
 	delete hud.healthBar;
 	delete hud.light;
@@ -240,6 +258,10 @@ Game::~Game() {
 	for (auto& prog : program) {
 		prog.second->unload();
 		delete prog.second;
+	}
+	for (int i = 0; i < soundList.size(); i++)
+	{
+		soundList[i]->unload();
 	}
 	program.clear();
 	clearEnemies();
@@ -267,7 +289,21 @@ void Game::update() {
 
 	input.xBox->update();
 
+	for (int i = 0; i < soundList.size(); i++)
+	{
+		soundList[i]->update();
+	}
+
+	if (state == State::Menu)
+	{
+		//soundList[1]->stopSound();
+		//soundList[0]->playSound();
+	}
 	if (state == State::Play) {
+		//soundList[0]->stopSound();
+		//soundList[1]->playSound();
+
+		//soundList[1]->createChannel();
 		// player movement
 		if (input.keys & Input::Keys::KeyW && ~(input.keys & Input::Keys::KeyS))
 			player->acceleration.z = -1.f;
@@ -376,6 +412,10 @@ void Game::update() {
 							player->health += dropItems[i]->hp;
 						}
 					}
+					else if (player->health == 20.0f & dropItems[i]->hp > 0.0f)
+					{
+						dropItems[i]->collect = false;
+					}
 				}
 			}
 		}
@@ -457,6 +497,7 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 			clearEnemies();
 			loadEnemies();
 			state = State::Menu;
+			soundList[0]->playSound();
 			break;
 		default:
 			break;
@@ -475,6 +516,7 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 			clearEnemies();
 			loadEnemies();
 			state = State::Menu;
+			soundList[0]->playSound();
 			break;
 		}
 		break;
@@ -488,6 +530,7 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 
 			loadEnemies();
 			state = State::Menu;
+			soundList[0]->playSound();
 		}
 		//enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
 		break;
@@ -599,7 +642,10 @@ void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 			switch (state) {
 			case GLUT_DOWN:
 				if (mouse.x > screen.playPos.x * windowSize.x && mouse.x < screen.playPos.y * windowSize.x && mouse.y > screen.playPos.z * windowSize.y && mouse.y < screen.playPos.w * windowSize.y)
+				{
 					this->state = State::Play;
+					soundList[1]->playSound();
+				}
 				if (mouse.x > screen.quitPos.x * windowSize.x && mouse.x < screen.quitPos.y * windowSize.x && mouse.y > screen.quitPos.z * windowSize.y && mouse.y < screen.quitPos.w * windowSize.y)
 					glutExit();
 				break;
