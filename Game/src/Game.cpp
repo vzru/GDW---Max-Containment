@@ -60,7 +60,11 @@ Game::Game(int& argc, char** argv)
 	input.xBox = new Input::XBox();
 
 	srand(time(NULL));
-
+//}
+//
+//void Game::Initialize() {
+	glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	screen.camera = new Camera(windowSize);
 	screen.camera->setPosition({ 0.f, 5.f, 0.01f });
 	screen.camera->update({ 0.f, 0.f, 0.f });
@@ -72,6 +76,7 @@ Game::Game(int& argc, char** argv)
 	screen.light->specular = { 1.f, 1.f, 1.f };
 	screen.light->specularExponent = 50.f;
 	screen.light->attenuation = { 1.f, 0.1f, 0.01f };
+	screen.light->originalPosition = screen.light->posDir;
 	screen.loading = new Object();
 	screen.loading->loadMesh("assets/meshes/screen.obj");
 	screen.loading->loadTexture(Type::DIFFUSE, "assets/textures/loading.png");
@@ -106,7 +111,6 @@ Game::Game(int& argc, char** argv)
 	level.light->specularExponent = 50.f;
 	level.light->attenuation = { 1.f, 0.1f, 0.01f };
 
-	screen.light->originalPosition = level.light->posDir;
 
 	// Initialize images
 	screen.menu = new Object();
@@ -242,12 +246,17 @@ Game::Game(int& argc, char** argv)
 
 	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load in things" << std::endl;
 	//soundList[1]->createChannel();
+	state = State::Menu;
 }
 
 void Game::loadEnemies() {
 	for (auto position : std::get<0>(level.enemies)) {
 		std::get<0>(enemys)->setPosition({ position.x, 0.f, position.y });
 		enemies.push_back(new Enemy(*std::get<0>(enemys)));
+		//Sound* sound = new Sound("assets/sounds/game soundtrack.wav", true, 3);
+		//FMOD_VECTOR pos = { position.x, 0.0f, position.y };
+		//sound->changeSoundLoc(pos);
+		//soundList.push_back(sound);
 	}
 	for (auto position : std::get<1>(level.enemies)) {
 		std::get<1>(enemys)->setPosition({ position.x, 0.f, position.y });

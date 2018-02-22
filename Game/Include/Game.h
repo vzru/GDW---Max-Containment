@@ -39,7 +39,7 @@ namespace Input {
 		All = 0x3FFFFFF,
 	};
 }
-enum class State { Menu, Play, Pause, Win, Lose, Control };
+enum class State { Loading, Menu, Play, Pause, Win, Lose, Control };
 
 class Game {
 public:
@@ -48,6 +48,7 @@ public:
 	~Game();
 	void extraCallbacks(void(*_controllerInput)(unsigned short index, Input::Button button), void(*_controllerSpecial)(unsigned short index, Input::Triggers triggers, Input::Sticks sticks));
 
+	void Initialize();
 	// updates
 	void update();
 	void draw();
@@ -73,7 +74,7 @@ private:
 	// helpers
 	Timer* timer = nullptr;
 	float deltaTime = 0.f;
-	State state = State::Menu;
+	State state = State::Loading;
 	glm::vec2 windowSize;
 	// input
 	struct InputData {
