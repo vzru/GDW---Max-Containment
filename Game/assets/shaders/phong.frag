@@ -21,6 +21,7 @@ struct Light {
 	float spotExponent;
 	float innerCutoff;
 	float cutoff;
+	float partial;
 
 	vec3 attenuation;
 };
@@ -53,9 +54,9 @@ vec3 calculateLight(Light light, vec3 norm, vec4 diff, vec4 spec) {
 	case SPOT:
 		float spotDot = dot(normalize(light.direction.xyz), -lightDir);
 		if (spotDot < light.cutoff)
-			attenuation = 0.08;
+			attenuation = light.partial;
 		else {
-			float spotValue = smoothstep(-light.cutoff, light.cutoff, spotDot);
+			float spotValue = smoothstep(light.cutoff, light.innerCutoff, spotDot);
 			attenuation = pow(spotValue, light.spotExponent);
 		}
 	case POINT:

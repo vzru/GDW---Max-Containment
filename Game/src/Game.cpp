@@ -113,6 +113,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	level.light->spotExponent = 2.f;
 	level.light->cutoff = glm::radians(45.f);
 	level.light->innerCutoff = glm::radians(10.f);
+	level.light->partial = 0.1;
 	level.light->attenuation = { 1.f, 0.1f, 0.01f };
 
 	screen.light->original = level.light->position;

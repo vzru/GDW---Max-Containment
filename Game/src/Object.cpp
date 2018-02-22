@@ -158,6 +158,7 @@ void Object::draw(Shader* shader, Camera* camera, std::vector<Light> lights) {
 		shader->sendUniform(prefix + "spotExponent", lights[i].spotExponent);
 		shader->sendUniform(prefix + "cutoff", lights[i].cutoff);
 		shader->sendUniform(prefix + "innerCutoff", lights[i].innerCutoff);
+		shader->sendUniform(prefix + "partial", lights[i].partial);
 		shader->sendUniform(prefix + "attenuation", lights[i].attenuation);
 	}
 	// Textures
