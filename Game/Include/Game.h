@@ -46,7 +46,7 @@ public:
 	// construct & destruct
 	Game(int& argc, char **argv);
 	~Game();
-	void extraCallbacks(void(*_controllerInput)(unsigned short index, Input::Button button), void(*_controllerSpecial)(unsigned short index, Input::Triggers triggers, Input::Sticks sticks));
+	void init(void(*_controllerInput)(unsigned short index, Input::Button button), void(*_controllerSpecial)(unsigned short index, Input::Triggers triggers, Input::Sticks sticks));
 
 	// updates
 	void update();
