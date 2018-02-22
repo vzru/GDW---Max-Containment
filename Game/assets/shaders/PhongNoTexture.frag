@@ -11,7 +11,7 @@ struct Light {
 	vec3 diffuse;
 	vec3 specular;
 
-	float specularExponent;
+	float specExponent;
 	vec3 attenuation;
 };
 
@@ -42,13 +42,13 @@ vec3 calculateLight(Light light) {
 	vec3 lightVec = light.position.xyz - position;
 	float dist = length(lightVec);
 	vec3 lightDir = lightVec / dist;
-	
+
 	// whether light contributes to this surface
 	float NdotL = dot(norm, lightDir);
-		
+
 	// Attenuation (falloff)
 	float attenuation = 1.0 / (light.attenuation[0] + light.attenuation[1] * dist + light.attenuation[2] * dist * dist);
-		
+
 	// Ambient
 	vec3 ambient = attenuation * light.ambient;
 
@@ -57,8 +57,8 @@ vec3 calculateLight(Light light) {
 
 	// Blinn-Phong half vector
 	float NdotHV = max(dot(norm, normalize(lightDir + normalize(-position))), 0.0);
-	vec3 specular = light.specular * pow(NdotHV, light.specularExponent) * attenuation;
-	
+	vec3 specular = light.specular * pow(NdotHV, light.specExponent) * attenuation;
+
 	if (NdotL > 0.0)	return ambient + diffuse + specular;
 	else				return ambient;
 }

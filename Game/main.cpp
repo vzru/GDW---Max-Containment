@@ -50,14 +50,8 @@ void ControllerSpecialCallbackFunction(unsigned short index, Input::Triggers tri
 }
 
 int main(int argc, char **argv) {
-	// initialize game
+	// setup gl
 	game = new Game(argc, argv);
-
-	//if (glewInit() != GLEW_OK) {
-	//	std::cout << "GLEW could not be initialized." << std::endl;
-	//	system("pause");
-	//	return 0;
-	//}
 
 	// setup callback functions
 	glutDisplayFunc(DisplayCallbackFunction);
@@ -69,7 +63,9 @@ int main(int argc, char **argv) {
 	glutPassiveMotionFunc(MousePassiveMotionCallbackFunction);
 	glutTimerFunc(1, TimerCallbackFunction, 0);
 	glutSpecialFunc(SpecialInputCallbackFunction);
-	game->extraCallbacks(ControllerInputCallbackFunction, ControllerSpecialCallbackFunction);
+
+	// initialize game
+	game->init(ControllerInputCallbackFunction, ControllerSpecialCallbackFunction);
 
 	// start game
 	glutMainLoop();

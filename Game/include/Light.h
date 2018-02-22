@@ -8,15 +8,20 @@ public:
 	Light();
 	~Light();
 
-	unsigned int type; // point, directional
+	unsigned int type; // point, directional, spot
 
-	glm::vec4 posDir;
-	glm::vec4 originalPosition;
+	glm::vec4 position;
+	glm::vec4 direction;
+	glm::vec4 original;
+
 	glm::vec3 ambient;
 	glm::vec3 diffuse;
 	glm::vec3 specular;
 
-	float specularExponent;
+	float specExponent;
+	float spotExponent;
+	float cutoff; // angle
+	float innerCutoff; // inner angle
 
-	glm::vec3 attenuation; // constant,linear,quadratic
+	glm::vec3 attenuation; // constant, linear, quadratic
 };

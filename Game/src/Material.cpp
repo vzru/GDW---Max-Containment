@@ -9,7 +9,7 @@ Material::Material()
 }
 
 Material::Material(std::string diffusePath, std::string specularPath, std::string normalPath, float specExp,
-	glm::vec3 &hue)	: specularExponent(specExp), hue(hue)
+	glm::vec3 &hue)	: specExponent(specExp), hue(hue)
 {
 	load(Type::Texture::DIFFUSE, diffusePath);
 	load(Type::Texture::SPECULAR, specularPath);

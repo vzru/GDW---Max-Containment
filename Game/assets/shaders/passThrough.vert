@@ -10,8 +10,7 @@ layout(location = 2) in vec3 in_normal;
 
 out vec3 normal;
 
-void main()
-{
+void main() {
 	normal = (uModel * vec4(in_normal, 0.f)).xyz;
 	gl_Position = uProj * uView * uModel * vec4(in_vert, 1.0f);
 }

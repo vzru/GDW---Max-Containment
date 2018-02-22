@@ -18,5 +18,5 @@ public:
 	// Data members
 	Texture *diffuse, *specular, *normal;
 	glm::vec3 hue = glm::vec3(1.f);
-	float specularExponent = 50.f;
+	float specExponent = 50.f;
 };

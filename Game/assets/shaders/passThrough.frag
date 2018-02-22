@@ -4,7 +4,6 @@ in vec3 normal;
 
 out vec4 outColor;
 
-void main()
-{
+void main() {
 	outColor = vec4(normal, 1.0f);
 }

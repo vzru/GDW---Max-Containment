@@ -142,17 +142,22 @@ void Object::draw(Shader* shader, Camera* camera, std::vector<Light> lights) {
 	shader->sendUniform("material.specular", 1);
 	shader->sendUniform("material.normal", 2);
 	shader->sendUniform("material.hue", mat->hue);
-	shader->sendUniform("material.specularExponent", mat->specularExponent);
+	shader->sendUniform("material.specExponent", mat->specExponent);
 	// Lights
 	for (int i = 0; i < lights.size(); i++) {
 		std::string prefix = "lights[" + std::to_string(i) + "].";
-			
-		shader->sendUniform(prefix + "posDir", camera->getView() * lights[i].posDir);
+
 		shader->sendUniform(prefix + "type", lights[i].type);
+		shader->sendUniform(prefix + "position", camera->getView() * lights[i].position);
+		shader->sendUniform(prefix + "direction", camera->getView() * lights[i].direction);
+		shader->sendUniform(prefix + "original", camera->getView() * lights[i].original);
 		shader->sendUniform(prefix + "ambient", lights[i].ambient);
 		shader->sendUniform(prefix + "diffuse", lights[i].diffuse);
 		shader->sendUniform(prefix + "specular", lights[i].specular);
-		shader->sendUniform(prefix + "specularExponent", lights[i].specularExponent);
+		shader->sendUniform(prefix + "specExponent", lights[i].specExponent);
+		shader->sendUniform(prefix + "spotExponent", lights[i].spotExponent);
+		shader->sendUniform(prefix + "cutoff", lights[i].cutoff);
+		shader->sendUniform(prefix + "innerCutoff", lights[i].innerCutoff);
 		shader->sendUniform(prefix + "attenuation", lights[i].attenuation);
 	}
 	// Textures
@@ -175,4 +180,3 @@ void Object::draw(Shader* shader, Camera* camera, std::vector<Light> lights) {
 	// End
 	shader->unbind();
 }
-

@@ -13,28 +13,27 @@
 #define FRONT_COLOR vec3(0, 1, 1)
 #define BACK_COLOR vec3(1, 1, 0)
 
-struct Light
-{
-	vec4 posDir;
-	unsigned int type;
+struct Light {
+	uint type;
+
+	vec4 position;
 
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
 
-	float specularExponent;
+	float specExponent;
 
 	vec3 attenuation;
 };
 
-struct Material
-{
+struct Material {
 	sampler2D diffuse;
 	sampler2D specular;
 	sampler2D normal;
 
 	vec3 hue;
-	float specularExponent;
+	float specExponent;
 };
 
 uniform Light lights[NUM_LIGHTS];
@@ -68,7 +67,7 @@ void main() {
 }
 
 vec3 calculateLight(Light light, vec3 norm, vec4 diff, vec4 spec) {
-	vec3 lightVec = light.posDir.xyz - position;
+	vec3 lightVec = light.position.xyz - position;
 	float dist = length(lightVec);
 	vec3 lightDir = lightVec / dist;
 
@@ -87,9 +86,8 @@ vec3 calculateLight(Light light, vec3 norm, vec4 diff, vec4 spec) {
 		// Specular
 		vec3 reflectDir = reflect(-lightDir, norm);
 		float VdotR = max(dot(normalize(-position), -reflectDir), 0.0);
-		vec3 specular = light.specular * pow(VdotR, light.specularExponent) * attenuation;
+		vec3 specular = light.specular * pow(VdotR, light.specExponent) * attenuation;
 
 		return ambient + diffuse + specular;
 	//}
 }
-
