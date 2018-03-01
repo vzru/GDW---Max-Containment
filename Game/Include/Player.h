@@ -15,10 +15,13 @@ public:
 	virtual void draw(Shader* shader, Camera* camera, std::vector<Light> light);
 	void reset();
 	bool fire();
+
+	void reloading();
 	
 	float health, cooldown, ammo, ammoDepo, reloadCd;
 	bool firing = false;
 	bool reloaded = false;
+	bool reload = false;
 
 	glm::vec3 acceleration = { 0.f, 0.f, 0.f };
 	Bullet* bullet;

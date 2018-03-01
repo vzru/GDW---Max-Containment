@@ -78,6 +78,7 @@ Game::Game(int& argc, char** argv)
 	screen.light->attenuation = { 1.f, 0.1f, 0.01f };
 	screen.light->originalPosition = screen.light->posDir;
 	screen.loading = new Object();
+	screen.loading->setScale(glm::vec3(5.f));
 	screen.loading->loadMesh("assets/meshes/screen.obj");
 	screen.loading->loadTexture(Type::DIFFUSE, "assets/textures/loading.png");
 	program["Phong"] = new Shader();
@@ -627,8 +628,10 @@ void Game::keyboardUp(unsigned char key, glm::vec2 mouse) {
 	case 'S': case 's':	input.keys &= ~Input::Keys::KeyS; break;
 	case 'D': case 'd':	input.keys &= ~Input::Keys::KeyD; break;
 	case 'Q': case 'q':	input.keys &= ~Input::Keys::KeyQ; break;
-	case 'E': case 'e':	input.keys &= ~Input::Keys::KeyE; break;
-	case 'R': case 'r':	input.keys &= ~Input::Keys::KeyR; break;
+	case 'E': case 'e':	input.keys &= ~Input::Keys::KeyE; break; 
+	case 'R': case 'r':
+		player->reload = true;
+		input.keys |= Input::Keys::KeyR; break;
 	case 'F': case 'f':	input.keys &= ~Input::Keys::KeyF; break;
 	case 'Z': case 'z':	input.keys &= ~Input::Keys::KeyZ; break;
 	case 'X': case 'x':	input.keys &= ~Input::Keys::KeyX; break;

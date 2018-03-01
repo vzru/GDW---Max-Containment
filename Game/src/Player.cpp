@@ -44,6 +44,8 @@ void Player::update(float dt, Level* level) {
 	
 	if(reloadCd > 0)
 	reloadCd -= dt/1000.f;
+
+	reloading();
 	//std::cout << "Player Position: " << acceleration.x << '/' << acceleration.y << '/' << acceleration.z << std::endl;
 	//std::cout << "Player Velocity: " << velocity.x << '/' << velocity.y << '/' << velocity.z << std::endl;
 
@@ -93,9 +95,32 @@ bool Player::fire() {
 				ammo = ammoDepo;
 				ammoDepo = 0.0f;
 			}
-			reloadCd = 3.0f;
+			reloadCd = 2.5f;
 			std::cout << "Reload!" << std::endl;
 		}
 		return true;
 	} return false;
+}
+
+
+void Player::reloading()
+{
+	std::cout << ammo << '/' << ammoDepo << '/' << reload << std::endl;
+	if ((ammo <= 0 && ammoDepo > 0.0f) || reload == true)
+	{
+		float diff = 30.f - ammo;
+		if (ammoDepo > 30.0f)
+		{
+			ammo += diff;
+			ammoDepo -= diff;
+		}
+		else if (ammoDepo > 0.0f)
+		{
+			ammo = ammoDepo;
+			ammoDepo = 0.0f;
+		}
+		reloadCd = 2.5f;
+		reload = false;
+		std::cout << "Reload!" << std::endl;
+	}
 }
