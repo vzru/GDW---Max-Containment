@@ -198,6 +198,9 @@
     <None Include="assets\sounds\Slap.ogg">
       <Filter>Resource Files\sounds</Filter>
     </None>
+    <None Include="assets\shaders\phongSpot.frag">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\textures\fullSpecular.png">

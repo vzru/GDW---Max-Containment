@@ -146,7 +146,8 @@ void Object::draw(Shader* shader, Camera* camera, std::vector<Light> lights) {
 	// Lights
 	for (int i = 0; i < lights.size(); i++) {
 		std::string prefix = "lights[" + std::to_string(i) + "].";
-
+		
+		//shader->sendUniform("NUM_LIGHTS", lights.size());
 		shader->sendUniform(prefix + "type", lights[i].type);
 		shader->sendUniform(prefix + "position", camera->getView() * lights[i].position);
 		shader->sendUniform(prefix + "direction", camera->getView() * lights[i].direction);

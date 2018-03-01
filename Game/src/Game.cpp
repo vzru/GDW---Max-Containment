@@ -87,6 +87,12 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 		exit(0);
 	}
 	screen.loading->draw(program["Phong"], screen.camera, { *screen.light });
+	program["PhongSpot"] = new Shader();
+	if (!program["PhongSpot"]->load("assets/shaders/Phong.vert", "assets/shaders/phongSpot.frag")) {
+		std::cout << "Phong Shaders failed to initialize." << std::endl;
+		system("pause");
+		exit(0);
+	}
 	glutSwapBuffers();
 
 	// Initialize level
@@ -99,24 +105,50 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	level.map->loadTexture(Type::Texture::DIFFUSE, "assets/textures/lab_textures.png");
 	level.hitboxes->update(deltaTime);
 	level.camera = new Camera(windowSize);
-	level.camera->setPosition({ 0.f, 10.f, 2.f });
+	level.camera->setPosition({ 0.f, 12.5f, 2.5f });
 	level.camera->update({ 0.f,0.f,0.f });
 	level.light = new Light();
 	level.light->type = (unsigned int)Type::Light::SPOT;
-	level.light->position = { 0.f, 1.f, 0.f, 1.f };
-	level.light->direction = { 0.f, 1.f, 0.f, 0.f };
+	level.light->position = { 0.f, 0.0f, 0.f, 1.f };
+	level.light->direction = { 0.f, 0.5f, 0.f, 0.f };
 	level.light->original = level.light->position;
 	level.light->ambient = { 0.15f, 0.15f, 0.15f };
 	level.light->diffuse = { 0.7f, 0.7f, 0.7f };
 	level.light->specular = { 1.f, 1.f, 1.f };
 	level.light->specExponent = 50.f;
-	level.light->spotExponent = 2.f;
-	level.light->cutoff = glm::radians(45.f);
-	level.light->innerCutoff = glm::radians(10.f);
-	level.light->partial = 0.1;
-	level.light->attenuation = { 1.f, 0.1f, 0.01f };
+	level.light->spotExponent = 1.f;
+	level.light->cutoff = glm::radians(55.f);
+	level.light->innerCutoff = glm::radians(1.f);
+	level.light->partial = 0.3;
+	level.light->attenuation = { 0.5f, 0.1f, 0.01f };
+
+	level.light2 = new Light();
+	level.light2->type = (unsigned int)Type::Light::POINT;
+	level.light2->position = { 0.f, 1.f, 0.f, 1.f };
+	level.light2->original = level.light2->position;
+	level.light2->ambient = { 0.15f, 0.15f, 0.15f };
+	level.light2->diffuse = { 0.7f, 0.7f, 0.7f };
+	level.light2->specular = { 1.f, 1.f, 1.f };
+	level.light2->specExponent = 50.f;
+	level.light2->attenuation = { 1.f, 1.f, 1.f };
+
+	level.light3 = new Light();
+	level.light3->type = (unsigned int)Type::Light::SPOT;
+	level.light3->position = { 0.f, 0.0f, 0.f, 1.f };
+	level.light3->direction = { 0.f, 0.5f, 0.f, 0.f };
+	level.light3->original = level.light3->position;
+	level.light3->ambient = { 0.15f, 0.15f, 0.15f };
+	level.light3->diffuse = { 0.7f, 0.7f, 0.7f };
+	level.light3->specular = { 1.f, 1.f, 1.f };
+	level.light3->specExponent = 50.f;
+	level.light3->spotExponent = 1.f;
+	level.light3->cutoff = glm::radians(55.f);
+	level.light3->innerCutoff = glm::radians(1.f);
+	level.light3->partial = 0.3;
+	level.light3->attenuation = { 1.f, 0.5f, 0.1f };
 
 	screen.light->original = level.light->position;
+
 
 	// Initialize images
 	screen.menu = new Object();
@@ -277,6 +309,8 @@ Game::~Game() {
 	delete level.map;
 	delete level.camera;
 	delete level.light;
+	delete level.light2;
+	delete level.light3;
 	delete screen.menu;
 	delete screen.pause;
 	delete screen.win;
@@ -366,14 +400,19 @@ void Game::update() {
 
 		// stuff based on player
 		hud.display->setPosition(player->getPosition() + glm::vec3(0.f, 8.1f, 1.47f));
+		//hud.display->setPosition(player->getPosition() + glm::vec3(0.f, 14.f, 2.5f));
 		hud.healthBar->setPosition(player->getPosition() + glm::vec3(-1.85f, 7.9f, 2.53f));
 		hud.healthBar->setScale({ player->health * 0.0365f, 0.f, 0.035f });
 		hud.display->update(deltaTime);
 		hud.healthBar->update(deltaTime);
 		level.camera->update(player->getPosition());
-		level.light->position = glm::vec4(player->getPosition() + glm::vec3(0.f, 2.f, 0.f), 1.f);
+		level.light->position = glm::vec4(player->getPosition() + glm::vec3(0.f, 1.f, 0.f), 1.f);
+		level.light2->position = glm::vec4(player->getPosition() + glm::vec3(0.f, 2.f, 0.f), 1.f);
+		//level.light3->position = glm::vec4(player->getPosition() + glm::vec3(0.f, 0.1f, 0.f), 1.f);
 		float angle = glm::radians(player->getRotation().y);
-		level.light->direction = { cos(angle), 0.f, -sin(angle), 0.f };
+		level.light->direction = { cos(angle), -0.1f, -sin(angle), 0.f };
+		//level.light3->direction = { cos(angle), 0.45f, -sin(angle), 0.f };
+
 
 		// bullet collision
 		for (auto bullet : player->bullets) {
@@ -397,6 +436,8 @@ void Game::update() {
 				if (target != nullptr) {
 					target->health -= 2.5;
 					target->triggered = true;
+					target->knockbackCD = 0.2f;
+					target->setPosition(target->getPosition() - (target->getVelocity() * 0.5f));
 					bullet->cooldown = 1.f;
 				}
 			}
@@ -405,6 +446,10 @@ void Game::update() {
 		// enemy update
 		for (int i = 0; i < enemies.size(); i++) {
 			glm::vec3 diff = enemies[i]->getPosition() - player->getPosition();
+			if (enemies[i]->knockbackCD > 0)
+			{
+				enemies[i]->knockbackCD -= deltaTime/1000;
+			}
 			// aim towards player
 			enemies[i]->setRotation({ 0.f, glm::degrees(atan2f(-diff.z, diff.x)) - 90.f, 0.f });
 			// hurt player
@@ -414,10 +459,10 @@ void Game::update() {
 					enemies[i]->cooldown = enemies[i]->attackSpeed;
 				}
 			// seek towards player
-			if ((glm::length(diff) < 10.0f && glm::length(diff) > 0.5f) || enemies[i]->triggered)
+			if (((glm::length(diff) < 10.0f && glm::length(diff) > 0.5f) || enemies[i]->triggered) && enemies[i]->knockbackCD <= 0)
 				enemies[i]->setVelocity(-glm::normalize(diff));
 			else
-				enemies[i]->setVelocity({ 0.0f,0.0f,0.0f });
+				enemies[i]->setVelocity({ 0.0f, 0.0f, 0.0f });
 			// update enemy
 			enemies[i]->update(deltaTime, level.collision);
 			// kill enemy
@@ -464,19 +509,21 @@ void Game::draw() {
 	//gluPerspective(glm::radians(60.0f), windowSize.x / windowSize.y, 0.001f, 10000.0f);
 	//glMatrixMode(GL_MODELVIEW);
 
+	cout << glm::degrees(level.light->cutoff) << '/' << glm::degrees(level.light->innerCutoff) << endl;
+
 	switch (state) {
 	case State::Play:
-		player->draw(program["Phong"], level.camera, { *level.light });
+		player->draw(program["PhongSpot"], level.camera, { *level.light, *level.light2 });// , *level.light3 });
 		for (auto& enemy : enemies)
-			enemy->draw(program["Phong"], level.camera, { *level.light });
-		level.map->draw(program["Phong"], level.camera, { *level.light });
+			enemy->draw(program["PhongSpot"], level.camera, { *level.light, *level.light2 });// , *level.light3 });
+		level.map->draw(program["PhongSpot"], level.camera, { *level.light, *level.light2 });// , *level.light3 });
 		//level.hitboxes->draw(program["PhongColorSides"], level.camera, { *level.light });
 		hud.healthBar->draw(program["PhongNoTexture"], level.camera, { *hud.light });
 		hud.display->draw(program["Phong"], level.camera, { *hud.light });
 
 		for (int i = 0; i < dropItems.size(); i++)
 			if (!dropItems[i]->collect)
-				dropItems[i]->draw(program["Phong"], level.camera, { *level.light });
+				dropItems[i]->draw(program["PhongSpot"], level.camera, { *level.light, *level.light2 });// , *level.light3 });
 
 		break;
 	case State::Pause:
@@ -595,6 +642,20 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 	case '4':			input.keys |= Input::Keys::Num4; break;
 	case ' ':			input.keys |= Input::Keys::Space; break;
 	case 26:			input.keys |= Input::Keys::Esc; break;
+	case 'o':
+		level.light->cutoff += glm::radians(0.1f);
+		level.light3->cutoff += glm::radians(0.1f);
+		break;
+	case 'p':
+		level.light->cutoff -= glm::radians(0.1f);
+		level.light3->cutoff -= glm::radians(0.1f);
+		break;
+	case'k':
+		level.light->innerCutoff += glm::radians(0.1f);
+		break;
+	case 'l':
+		level.light->innerCutoff -= glm::radians(0.1f);
+		break;
 	default: break;
 	}
 }
@@ -618,6 +679,7 @@ void Game::keyboardUp(unsigned char key, glm::vec2 mouse) {
 	case '4':			input.keys &= ~Input::Keys::Num4; break;
 	case ' ':			input.keys &= ~Input::Keys::Space; break;
 	case 26:			input.keys &= ~Input::Keys::Esc; break;
+
 	default: break;
 	}
 }

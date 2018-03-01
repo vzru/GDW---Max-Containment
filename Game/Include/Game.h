@@ -88,7 +88,7 @@ private:
 		Level* collision;
 		Object *map, *hitboxes;
 		Camera *camera;
-		Light *light;
+		Light *light, *light2, *light3;
 		glm::vec4 exit = { 77.f, 81.f, 67.f, 70.f };
 		std::tuple<std::vector<glm::vec2>, std::vector<glm::vec2>, std::vector<glm::vec2>>
 			enemies = {

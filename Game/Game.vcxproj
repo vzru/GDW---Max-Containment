@@ -210,6 +210,7 @@
     <None Include="assets\shaders\PhongColorSides.frag" />
     <None Include="assets\shaders\PhongColorSIdes.vert" />
     <None Include="assets\shaders\PhongNoTexture.frag" />
+    <None Include="assets\shaders\phongSpot.frag" />
     <None Include="assets\sounds\Slap.ogg" />
   </ItemGroup>
   <ItemGroup>
