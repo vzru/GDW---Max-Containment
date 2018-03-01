@@ -1,24 +1,37 @@
+// Victor Zhang 100421055 Feb, 6, 2018
 #pragma once
-#include <FMOD/fmod.hpp>
-#include <string>
-#include <unordered_map>>
 
-class Sound {
-public:
-	static Sound* getInstance();
-	~Sound();
+#include "SoundE.h"
 
-	void createSound(std::string dir, std::string name, std::string extension);
-	void playSound(std::string, bool = false);
-	void releaseSound(std::string name);
-	
-	void update();
-private:
-	static Sound* m_instance;
-	Sound();
-
-	std::unordered_map<std::string, FMOD::Sound*> m_sounds;
-	FMOD::System* m_system;
-	FMOD::Channel* m_channel;
+struct Channel
+{
+	FMOD::Channel *channel = 0;
+	FMOD_VECTOR pos = { 0.0f, 0.0f, 0.0f };
+	FMOD_VECTOR vel = { 0.0f, 0.0f, 0.0f };
+	bool pause = false;
 };
 
+class Sound
+{
+public:
+	Sound();
+	Sound(char * filename, bool loop);
+	~Sound();
+	void loadSound(char * filename, bool loop);
+	void createChannel();
+	void pauseSound(int index);
+	void stopSound(int index);
+	void playSound();
+	void setVolume(int index, float l);
+	void changeSoundLoc(int index, FMOD_VECTOR pos);
+	void changeListenerLoc(FMOD_VECTOR p);
+	void changeRolloffMode(int index, bool l);
+	void update();
+	void unload();
+private:
+	FMOD::Sound *sound;
+	std::vector<Channel*> chList;
+
+	static FMOD_RESULT result;
+	static SoundE sSys;
+};

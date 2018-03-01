@@ -1,50 +1,119 @@
+// Victor Zhang 100421055 Feb. 6, 2018
 #include "Sound.h"
 
-Sound* Sound::m_instance = nullptr;
+FMOD_RESULT Sound::result;
+SoundE Sound::sSys;
 
-Sound::Sound() {
-	if (FMOD::System_Create(&m_system) != FMOD_OK)
-		throw;
-
-	int driverCount = 0;
-	m_system->getNumDrivers(&driverCount);
-	if (driverCount == 0)
-		throw;
-
-	m_system->init(32, FMOD_INIT_NORMAL, nullptr);
-}
-
-Sound::~Sound() {
-	delete m_system;
-	delete m_channel;
-}
-
-Sound* Sound::getInstance() {
-	if (!m_instance)
-		m_instance = new Sound();
-	return m_instance;
-}
-
-void Sound::createSound(std::string dir, std::string name, std::string extension) {
-	FMOD::Sound* sound = nullptr;
-	std::string path = dir + "/" + name + "." + extension;
-	m_system->createSound(path.c_str(), FMOD_DEFAULT, 0, &sound);
-	m_sounds[name] = sound;
-}
-
-void Sound::playSound(std::string name, bool loop) {
-	if (loop) {
-		m_sounds[name]->setMode(FMOD_LOOP_NORMAL);
-		m_sounds[name]->setLoopCount(-1);
+Sound::Sound()
+{
+	if (!sSys.init)
+	{
+		sSys.initializeS();
 	}
-	else m_sounds[name]->setMode(FMOD_LOOP_OFF);
-	m_system->playSound(m_sounds[name], nullptr, false, &m_channel);
 }
 
-void Sound::releaseSound(std::string name) {
-
+Sound::Sound(char * f, bool l)
+{
+	if (!sSys.init)
+	{
+		sSys.initializeS();
+	}
+	loadSound(f, l);
 }
 
-void Sound::update() {
-	m_system->update();
+Sound::~Sound()
+{
+	unload();
+}
+
+void Sound::loadSound(char * filename, bool loop)
+{
+	result = sSys.getSystem()->createSound(filename, FMOD_3D, 0, &sound);
+	sSys.fmodErrorCK(result);
+	result = sound->set3DMinMaxDistance(0.5f, 300.0f);
+	sSys.fmodErrorCK(result);
+	if (loop)
+	{
+		result = sound->setMode(FMOD_LOOP_NORMAL);
+	}
+	else
+	{
+		result = sound->setMode(FMOD_DEFAULT);
+	}
+	sSys.fmodErrorCK(result);
+}
+
+void Sound::createChannel()
+{
+	Channel* ch = new Channel;
+	result = sSys.getSystem()->playSound(sound, 0, true, &ch->channel);
+	sSys.fmodErrorCK(result);
+	result = ch->channel->set3DAttributes(&ch->pos, &ch->vel);
+	sSys.fmodErrorCK(result);
+	result = ch->channel->setPaused(false);
+	sSys.fmodErrorCK(result);
+	chList.push_back(ch);
+}
+
+void Sound::pauseSound(int index)
+{
+	chList[index]->channel->setPaused(!chList[index]->pause);
+	chList[index]->pause = !chList[index]->pause;
+}
+
+void Sound::stopSound(int index)
+{
+	chList[index]->channel->stop();
+}
+
+void Sound::playSound()
+{
+	Channel* ch = new Channel;
+	result = sSys.getSystem()->playSound(sound, 0, true, &ch->channel);
+	sSys.fmodErrorCK(result);
+	result = ch->channel->set3DAttributes(&ch->pos, &ch->vel);
+	sSys.fmodErrorCK(result);
+	result = ch->channel->setPaused(false);
+	sSys.fmodErrorCK(result);
+	chList.push_back(ch);
+}
+
+void Sound::setVolume(int index, float l)
+{
+	chList[index]->channel->setVolume(l);
+}
+
+void Sound::changeSoundLoc(int index, FMOD_VECTOR p)
+{
+	chList[index]->pos = p;
+	chList[index]->channel->set3DAttributes(&chList[index]->pos, &chList[index]->vel);
+}
+
+void Sound::changeListenerLoc(FMOD_VECTOR p)
+{
+	sSys.changeListenerLoc(p);
+}
+
+void Sound::changeRolloffMode(int index, bool l)
+{
+	if (l)
+	{
+		chList[index]->channel->setMode(FMOD_3D_LINEARSQUAREROLLOFF | FMOD_3D);
+	}
+	else
+	{
+		chList[index]->channel->setMode(FMOD_3D_LINEARROLLOFF);
+	}
+}
+
+void Sound::update()
+{
+	sSys.updateS();
+}
+
+void Sound::unload()
+{
+	result = sound->release();
+	sSys.fmodErrorCK(result);
+	sSys.unload();
 }
