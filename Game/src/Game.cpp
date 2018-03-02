@@ -100,8 +100,8 @@ Game::Game(int& argc, char** argv)
 	level.map->loadTexture(Type::Texture::DIFFUSE, "assets/textures/lab_textures.png");
 	level.hitboxes->update(deltaTime);
 	level.camera = new Camera(windowSize);
-	level.camera->setPosition({ 0.f, 10.f, 2.f });
-	level.camera->update({ 0.f,0.f,0.f });
+	level.camera->setPosition({ 0.f, 12.5f, 2.5f });
+	level.camera->update({ 0.f, 0.f, 0.f });
 	level.light = new Light();
 	level.light->type = (unsigned int)Type::Light::POINT;
 	level.light->posDir = { 0.f, 1.f, 0.f, 1.f };
@@ -176,8 +176,14 @@ Game::Game(int& argc, char** argv)
 	Sound* sound3 = new Sound("assets/sounds/Reload_sound.wav", false, 3);
 	soundList.push_back(sound3);
 
-	soundList[0]->createChannel(2);
-	soundList[0]->setVolume(0.05f);
+	Sound* soundE1 = new Sound("assets/sounds/Monster.wav", true, 3);
+	soundList.push_back(soundE1);
+
+	soundList[0]->createChannel(2, false);
+	soundList[1]->createChannel(2, true);
+	soundList[2]->createChannel(3, true);
+	soundList[3]->createChannel(3, true);
+	soundList[0]->setVolume(0, 0.05f);
 
 
 	// Initialize Player
@@ -240,10 +246,13 @@ Game::Game(int& argc, char** argv)
 	std::get<0>(enemys)->loadTexture(Type::Texture::DIFFUSE, "assets/textures/enemy3 texture.png");
 	std::get<1>(enemys)->loadTexture(Type::Texture::DIFFUSE, "assets/textures/enemy texture.png");
 	std::get<2>(enemys)->loadTexture(Type::Texture::DIFFUSE, "assets/textures/enemy2 texture.png");
-	std::get<0>(enemys)->loadTexture(Type::Texture::SPECULAR, "assets/textures/fullSpecular.png");
-	std::get<1>(enemys)->loadTexture(Type::Texture::SPECULAR, "assets/textures/fullSpecular.png");
-	std::get<2>(enemys)->loadTexture(Type::Texture::SPECULAR, "assets/textures/fullSpecular.png");
+	std::get<0>(enemys)->loadTexture(Type::Texture::SPECULAR, "assets/textures/noSpecular.png");
+	std::get<1>(enemys)->loadTexture(Type::Texture::SPECULAR, "assets/textures/noSpecular.png");
+	std::get<2>(enemys)->loadTexture(Type::Texture::SPECULAR, "assets/textures/noSpecular.png");
 	loadEnemies();
+
+	hud.display->setPosition(player->getPosition() + glm::vec3(0.f, 8.1f, 1.47f));
+	hud.healthBar->setPosition(player->getPosition() + glm::vec3(-1.85f, 7.9f, 2.53f));
 
 	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load in things" << std::endl;
 	//soundList[1]->createChannel();
@@ -254,6 +263,8 @@ void Game::loadEnemies() {
 	for (auto position : std::get<0>(level.enemies)) {
 		std::get<0>(enemys)->setPosition({ position.x, 0.f, position.y });
 		enemies.push_back(new Enemy(*std::get<0>(enemys)));
+		FMOD_VECTOR temp = { position.x, 0.0f, position.y };
+		soundList[4]->createChannel(3, false, temp);
 		//Sound* sound = new Sound("assets/sounds/game soundtrack.wav", true, 3);
 		//FMOD_VECTOR pos = { position.x, 0.0f, position.y };
 		//sound->changeSoundLoc(pos);
@@ -262,10 +273,14 @@ void Game::loadEnemies() {
 	for (auto position : std::get<1>(level.enemies)) {
 		std::get<1>(enemys)->setPosition({ position.x, 0.f, position.y });
 		enemies.push_back(new Enemy(*std::get<1>(enemys)));
+		FMOD_VECTOR temp = { position.x, 0.0f, position.y };
+		soundList[4]->createChannel(3, false, temp);
 	}
 	for (auto position : std::get<2>(level.enemies)) {
 		std::get<2>(enemys)->setPosition({ position.x, 0.f, position.y });
 		enemies.push_back(new Enemy(*std::get<2>(enemys)));
+		FMOD_VECTOR temp = { position.x, 0.0f, position.y };
+		soundList[4]->createChannel(3, false, temp);
 	}
 }
 
@@ -332,6 +347,11 @@ void Game::update() {
 		soundList[i]->update();
 	}
 
+	//for (int i = 0; i < soundList[4]->chList.size(); i++)
+	//{
+	//
+	//}
+
 	if (state == State::Menu)
 	{
 		//soundList[1]->stopSound();
@@ -342,10 +362,10 @@ void Game::update() {
 		//soundList[1]->playSound();
 	if (player->reloadCd > 0.0f && !player->reloaded)
 	{
-		soundList[2]->stopSound();
+		soundList[2]->pauseSound(0);
 		player->reloaded = true;
 		soundList[3]->playSound(3);
-		soundList[3]->setVolume(0.5f);
+		soundList[3]->setVolume(0, 0.5f);
 	}
 
 		//soundList[1]->createChannel();
@@ -366,9 +386,26 @@ void Game::update() {
 			player->acceleration = glm::normalize(player->acceleration);
 		player->update(deltaTime, level.collision);
 
+		FMOD_VECTOR playerPos = { player->getPosition().x, player->getPosition().y, player->getPosition().z };
+		soundList[4]->changeListenerLoc(playerPos);
+
+		std::cout << player->getPosition().x << '/' << player->getPosition().y << '/' << player->getPosition().z << std::endl;
+
 		// stuff based on player
-		hud.display->setPosition(player->getPosition() + glm::vec3(0.f, 8.1f, 1.47f));
-		hud.healthBar->setPosition(player->getPosition() + glm::vec3(-1.85f, 7.9f, 2.53f));
+		//hud.display->setPosition(player->getPosition() + glm::vec3(0.f, 8.1f, 1.47f));
+		//hud.healthBar->setPosition(player->getPosition() + glm::vec3(-1.85f, 7.9f, 2.53f));
+		hud.display->setPosition(player->getPosition() + glm::vec3(0.004f, 10.6f, 1.967f));
+		hud.healthBar->setPosition(player->getPosition() + glm::vec3(-1.846f, 10.4f, 3.027f));
+		glm::vec3 temp = hud.display->getPosition();
+		std::cout << "Hud: " << temp.x << '/' << temp.y << '/' << temp.z << std::endl;
+		temp = hud.healthBar->getPosition();
+		std::cout << "HP: " << temp.x << '/' << temp.y << '/' << temp.z << std::endl;
+		temp = player->getPosition();
+		std::cout << "player: " << temp.x << '/' << temp.y << '/' << temp.z << std::endl;
+		temp = hud.display->getPosition() - player->getPosition();
+		std::cout << "Hud Diff: " << temp.x << '/' << temp.y << '/' << temp.z << std::endl;
+		temp = hud.healthBar->getPosition() - player->getPosition();
+		std::cout << "HP Diff: " << temp.x << '/' << temp.y << '/' << temp.z << std::endl;
 		hud.healthBar->setScale({ player->health * 0.0365f, 0.f, 0.035f });
 		hud.display->update(deltaTime);
 		hud.healthBar->update(deltaTime);
@@ -544,9 +581,9 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 			player->reset();
 			clearEnemies();
 			loadEnemies();
-			soundList[1]->stopSound();
-			soundList[0]->playSound(2);
-			soundList[0]->setVolume(0.05f);
+			soundList[1]->pauseSound(0);
+			soundList[0]->pauseSound(0);
+			soundList[0]->setVolume(0, 0.05f);
 			state = State::Menu;
 			//soundList[0]->playSound();
 			break;
@@ -561,9 +598,9 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 			break;
 		case State::Control:
 			state = State::Play;
-			soundList[0]->stopSound();
-			soundList[1]->playSound(2);
-			soundList[1]->setVolume(0.01f);
+			soundList[0]->pauseSound(0);
+			soundList[1]->pauseSound(0);
+			soundList[1]->setVolume(0, 0.01f);
 			break;
 		case State::Pause:
 			state = State::Play;
@@ -572,9 +609,9 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 			player->reset();
 			clearEnemies();
 			loadEnemies();
-			soundList[1]->stopSound();
-			soundList[0]->playSound(2);
-			soundList[0]->setVolume(0.05f);
+			soundList[1]->pauseSound(0);
+			soundList[0]->pauseSound(0);
+			soundList[0]->setVolume(0, 0.05f);
 			state = State::Menu;
 			//soundList[0]->playSound();
 			break;
@@ -588,9 +625,9 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 			player->reset();
 			clearEnemies();
 			loadEnemies();
-			soundList[1]->stopSound();
-			soundList[0]->playSound(2);
-			soundList[0]->setVolume(0.05f);
+			soundList[1]->pauseSound(0);
+			soundList[0]->pauseSound(0);
+			soundList[0]->setVolume(0, 0.05f);
 			state = State::Menu;
 			//soundList[0]->playSound();
 		}
@@ -612,6 +649,30 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 	case 'X': case 'x': input.keys |= Input::Keys::KeyX; break;
 	case 'C': case 'c': input.keys |= Input::Keys::KeyC; break;
 	case 'V': case 'v': input.keys |= Input::Keys::KeyV; break;
+	case 'O': case 'o': 
+		hud.display->setPosition(hud.display->getPosition() + glm::vec3(deltaTime/1000.f, 0.f, 0.f));
+		hud.healthBar->setPosition(hud.healthBar->getPosition() + glm::vec3(deltaTime / 1000.f, 0.f, 0.f));
+		break;
+	case 'P': case 'p':
+		hud.display->setPosition(hud.display->getPosition() + glm::vec3(-deltaTime / 1000.f, 0.f, 0.f));
+		hud.healthBar->setPosition(hud.healthBar->getPosition() + glm::vec3(-deltaTime / 1000.f, 0.f, 0.f));
+		break;
+	case 'U': case 'u':
+		hud.display->setPosition(hud.display->getPosition() + glm::vec3(0.f, deltaTime / 1000.f, 0.f));
+		hud.healthBar->setPosition(hud.healthBar->getPosition() + glm::vec3(0.f, deltaTime / 1000.f, 0.f));
+		break;
+	case 'I': case 'i':
+		hud.display->setPosition(hud.display->getPosition() + glm::vec3(0.f, -deltaTime / 1000.f, 0.f));
+		hud.healthBar->setPosition(hud.healthBar->getPosition() + glm::vec3(0.f, -deltaTime / 1000.f, 0.f));
+		break;
+	case 'K': case 'k':
+		hud.display->setPosition(hud.display->getPosition() + glm::vec3(0.f, 0.f, deltaTime / 1000.f));
+		hud.healthBar->setPosition(hud.healthBar->getPosition() + glm::vec3(0.f, 0.f, deltaTime / 1000.f));
+		break;
+	case 'L': case 'l':
+		hud.display->setPosition(hud.display->getPosition() + glm::vec3(0.f, 0.f, -deltaTime / 1000.f));
+		hud.healthBar->setPosition(hud.healthBar->getPosition() + glm::vec3(0.f, 0.f, -deltaTime / 1000.f));
+		break;
 	case '1':			input.keys |= Input::Keys::Num1; break;
 	case '2':			input.keys |= Input::Keys::Num2; break;
 	case '3':			input.keys |= Input::Keys::Num3; break;
@@ -690,14 +751,14 @@ void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 				player->firing = true;
 				if (player->reloadCd <= 0.0f)
 				{
-					soundList[3]->stopSound();
+					soundList[3]->stopSound(0);
 					soundList[2]->playSound(3);
-					soundList[2]->setVolume(0.05f);
+					soundList[2]->setVolume(0, 0.05f);
 				}
 				break;
 			case GLUT_UP:
 				player->firing = false;
-				soundList[2]->stopSound();
+				soundList[2]->stopSound(0);
 				break;
 			default:
 				break;
@@ -858,7 +919,7 @@ void Game::controllerSpecial(unsigned short index, Input::Triggers triggers, Inp
 void Game::createDropItem(glm::vec3 pos)
 {
 	float temp = rand() % 100;
-	std::cout << temp << '/' << player->health << std::endl;
+	//std::cout << temp << '/' << player->health << std::endl;
 	if (temp > 50 & temp <= 80)
 	{
 		//drop->ammo = 30.0f;
