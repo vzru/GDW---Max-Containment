@@ -105,7 +105,6 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	level.collision->load("assets/meshes/Laboratory Level Hitboxes.obj");
 	level.hitboxes->loadMesh("assets/meshes/Laboratory Level Hitboxes Triangulated.obj");
 	level.map->loadTexture(Type::Texture::DIFFUSE, "assets/textures/lab_textures.png");
-	level.map->loadTexture(Type::Texture::NORMAL, "assets/textures/lab_normals.png");
 	level.hitboxes->update(deltaTime);
 	level.camera = new Camera(windowSize);
 	level.camera->setPosition({ 0.f, 12.5f, 2.5f });
@@ -224,7 +223,6 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	player = new Player({ 4.f, 0.f, 6.f });
 	player->loadMesh("assets/meshes/character_model.obj");
 	player->loadTexture(Type::Texture::DIFFUSE, "assets/textures/character texture.png");
-	player->loadTexture(Type::Texture::NORMAL, "assets/textures/character normals.png");
 	player->loadTexture(Type::Texture::SPECULAR, "assets/textures/fullSpecular.png");
 	player->bullet->loadMesh("assets/meshes/bullet.obj");
 	player->bullet->color = { 1.0f , 1.0f, 1.0f, 0.3f };
@@ -235,7 +233,6 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	dropHP = new Object();
 	dropHP->loadMesh("assets/meshes/health_pack.obj");
 	dropHP->loadTexture(Type::Texture::DIFFUSE, "assets/textures/items.png");
-	dropHP->loadTexture(Type::Texture::NORMAL, "assets/textures/items.png");
 	dropHP->loadTexture(Type::Texture::SPECULAR, "assets/textures/fullSpecular.png");
 	dropHP->update(0.f);
 	//dropHP->ammo = 30.0f;
@@ -245,7 +242,6 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	dropAmmo = new Object();
 	dropAmmo->loadMesh("assets/meshes/ammo_pack.obj");
 	dropAmmo->loadTexture(Type::Texture::DIFFUSE, "assets/textures/items.png");
-	dropAmmo->loadTexture(Type::Texture::NORMAL, "assets/textures/items.png");
 	dropAmmo->loadTexture(Type::Texture::SPECULAR, "assets/textures/fullSpecular.png");
 	dropAmmo->update(0.f);
 	dropAmmo->ammo = 30.0f;
@@ -283,12 +279,9 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	std::get<0>(enemys)->loadTexture(Type::Texture::DIFFUSE, "assets/textures/enemy3 texture.png");
 	std::get<1>(enemys)->loadTexture(Type::Texture::DIFFUSE, "assets/textures/enemy texture.png");
 	std::get<2>(enemys)->loadTexture(Type::Texture::DIFFUSE, "assets/textures/enemy2 texture.png");
-	std::get<0>(enemys)->loadTexture(Type::Texture::SPECULAR, "assets/textures/noSpecular.png");
-	std::get<1>(enemys)->loadTexture(Type::Texture::SPECULAR, "assets/textures/noSpecular.png");
-	std::get<2>(enemys)->loadTexture(Type::Texture::SPECULAR, "assets/textures/noSpecular.png");
-	std::get<0>(enemys)->loadTexture(Type::Texture::NORMAL, "assets/textures/enemy3N.png");
-	std::get<1>(enemys)->loadTexture(Type::Texture::NORMAL, "assets/textures/enemy1N.png");
-	std::get<2>(enemys)->loadTexture(Type::Texture::NORMAL, "assets/textures/enemy2N.png");
+	std::get<0>(enemys)->loadTexture(Type::Texture::SPECULAR, "assets/textures/fullSpecular.png");
+	std::get<1>(enemys)->loadTexture(Type::Texture::SPECULAR, "assets/textures/fullSpecular.png");
+	std::get<2>(enemys)->loadTexture(Type::Texture::SPECULAR, "assets/textures/fullSpecular.png");
 	loadEnemies();
 
 	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load in things" << std::endl;
@@ -410,9 +403,9 @@ void Game::update() {
 		player->update(deltaTime, level.collision);
 
 		// stuff based on player
-		hud.display->setPosition(player->getPosition() + glm::vec3(0.004f, 10.6f, 1.967f));
+		hud.display->setPosition(player->getPosition() + glm::vec3(0.f, 8.1f, 1.47f));
 		//hud.display->setPosition(player->getPosition() + glm::vec3(0.f, 14.f, 2.5f));
-		hud.healthBar->setPosition(player->getPosition() + glm::vec3(-1.846f, 10.4f, 3.027f));
+		hud.healthBar->setPosition(player->getPosition() + glm::vec3(-1.85f, 7.9f, 2.53f));
 		hud.healthBar->setScale({ player->health * 0.0365f, 0.f, 0.035f });
 		hud.display->update(deltaTime);
 		hud.healthBar->update(deltaTime);
