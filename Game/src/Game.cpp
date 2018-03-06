@@ -408,6 +408,8 @@ void Game::update() {
 		if (input.keys & Input::Keys::KeyR)
 			player->reload = true;
 		player->update(deltaTime, level.collision);
+		glm::vec3 temp = player->getPosition();
+		std::cout << temp.x << '/' << temp.y << '/' << temp.z << std::endl;
 
 		// stuff based on player
 		hud.display->setPosition(player->getPosition() + glm::vec3(0.004f, 10.6f, 1.967f));
@@ -726,6 +728,7 @@ void Game::windowReshape(glm::vec2 size) {
 	level.camera->reset(size);
 	screen.camera->reset(size);
 }
+
 // mouse callback functions
 void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 	input.mouse = mouse;	input.button = button;	input.state = state;
@@ -816,6 +819,7 @@ void Game::mouseMoved(glm::vec2 mouse) {
 		player->setRotation({ 0.f, glm::degrees(atan2(diff.y, -diff.x)), 0.f });
 	}
 }
+
 void Game::mousePassive(glm::vec2 mouse) {
 	input.mouse = mouse;
 	if (!input.xBox->getConnected(0))
@@ -899,17 +903,17 @@ void Game::controllerSpecial(unsigned short index, Input::Triggers triggers, Inp
 	}
 }
 
-void Game::createDropItem(glm::vec3 pos) {
+void Game::createDropItem(glm::vec3 pos, int type) {
 	float temp = rand() % 100;
 	std::cout << temp << '/' << player->health << std::endl;
-	if (temp > 50 & temp <= 80) {
+	if ((temp > 50 & temp <= 80) || type == 2) {
 		//drop->ammo = 30.0f;
 		//dropAmmo->color = glm::vec4(1.0f, 0.647f, 0.f, 0.5f);
 		dropAmmo->setPosition(pos);
 		dropAmmo->update(deltaTime);
 		//std::cout << "DROP!" << dropItems.size() << std::endl;
 		dropItems.push_back(new Object(*dropAmmo));
-	} else if (temp > 80) {
+	} else if (temp > 80 || type == 1) {
 		//drop->hp = 5.0f;
 		//dropHP->color = glm::vec4(0.0f, 1.0f, 0.f, 0.5f);
 		dropHP->setPosition(pos);
