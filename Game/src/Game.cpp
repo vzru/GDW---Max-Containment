@@ -66,6 +66,8 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	input.xBox->special = _controllerSpecial;
 
 	// Initialize loading screen
+	glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	screen.camera = new Camera(windowSize);
 	screen.camera->setPosition({ 0.f, 5.f, 0.01f });
 	screen.camera->update({ 0.f, 0.f, 0.f });
@@ -87,13 +89,13 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 		exit(0);
 	}
 	screen.loading->draw(program["Phong"], screen.camera, { *screen.light });
+	glutSwapBuffers();
 	program["PhongSpot"] = new Shader();
 	if (!program["PhongSpot"]->load("assets/shaders/Phong.vert", "assets/shaders/phongSpot.frag")) {
 		std::cout << "Phong Shaders failed to initialize." << std::endl;
 		system("pause");
 		exit(0);
 	}
-	glutSwapBuffers();
 
 	// Initialize level
 	level.map = new Object();
@@ -396,6 +398,8 @@ void Game::update() {
 			player->acceleration.x = 0.f;
 		if (glm::length(player->acceleration) > 0.f)
 			player->acceleration = glm::normalize(player->acceleration);
+		if (input.keys & Input::Keys::KeyR)
+			player->reload = true;
 		player->update(deltaTime, level.collision);
 
 		// stuff based on player
@@ -833,6 +837,8 @@ void Game::controllerInput(unsigned short index, Input::Button button) {
 		case State::Play:
 			if (button == Input::Button::Start)
 				state = State::Pause;
+			if (button == Input::Button::RB)
+				player->reload = true;
 			break;
 		case State::Pause:
 			if (button == Input::Button::A)
