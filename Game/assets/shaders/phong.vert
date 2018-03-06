@@ -14,7 +14,7 @@ out vec3 normal;
 
 void main() {
 	texCoord = in_uv;
-	normal = mat3(uView) * mat3(uModel) * in_normal;
+	normal = mat3(uView * uModel) * in_normal;
 	
 	vec4 viewSpacePos = uView * uModel * vec4(in_vert, 1.f);
 	position = viewSpacePos.xyz;

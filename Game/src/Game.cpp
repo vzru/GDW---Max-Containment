@@ -233,7 +233,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	dropHP = new Object();
 	dropHP->loadMesh("assets/meshes/health_pack.obj");
 	dropHP->loadTexture(Type::Texture::DIFFUSE, "assets/textures/items.png");
-	dropHP->loadTexture(Type::Texture::NORMAL, "assets/textures/items.png");
+	dropHP->loadTexture(Type::Texture::NORMAL, "assets/textures/enemy1N.png");
 	dropHP->loadTexture(Type::Texture::SPECULAR, "assets/textures/fullSpecular.png");
 	dropHP->update(0.f);
 	//dropHP->ammo = 30.0f;
@@ -243,7 +243,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	dropAmmo = new Object();
 	dropAmmo->loadMesh("assets/meshes/ammo_pack.obj");
 	dropAmmo->loadTexture(Type::Texture::DIFFUSE, "assets/textures/items.png");
-	dropAmmo->loadTexture(Type::Texture::NORMAL, "assets/textures/items.png");
+	dropAmmo->loadTexture(Type::Texture::NORMAL, "assets/textures/enemy1N.png");
 	dropAmmo->loadTexture(Type::Texture::SPECULAR, "assets/textures/fullSpecular.png");
 	dropAmmo->update(0.f);
 	dropAmmo->ammo = 30.0f;
@@ -281,9 +281,9 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	std::get<0>(enemys)->loadTexture(Type::Texture::DIFFUSE, "assets/textures/enemy3 texture.png");
 	std::get<1>(enemys)->loadTexture(Type::Texture::DIFFUSE, "assets/textures/enemy texture.png");
 	std::get<2>(enemys)->loadTexture(Type::Texture::DIFFUSE, "assets/textures/enemy2 texture.png");
-	std::get<0>(enemys)->loadTexture(Type::Texture::SPECULAR, "assets/textures/noSpecular.png");
-	std::get<1>(enemys)->loadTexture(Type::Texture::SPECULAR, "assets/textures/noSpecular.png");
-	std::get<2>(enemys)->loadTexture(Type::Texture::SPECULAR, "assets/textures/noSpecular.png");
+	std::get<0>(enemys)->loadTexture(Type::Texture::SPECULAR, "assets/textures/fullSpecular.png");
+	std::get<1>(enemys)->loadTexture(Type::Texture::SPECULAR, "assets/textures/fullSpecular.png");
+	std::get<2>(enemys)->loadTexture(Type::Texture::SPECULAR, "assets/textures/fullSpecular.png");
 	std::get<0>(enemys)->loadTexture(Type::Texture::NORMAL, "assets/textures/enemy3N.png");
 	std::get<1>(enemys)->loadTexture(Type::Texture::NORMAL, "assets/textures/enemy1N.png");
 	std::get<2>(enemys)->loadTexture(Type::Texture::NORMAL, "assets/textures/enemy2N.png");
@@ -444,7 +444,8 @@ void Game::update() {
 					target->health -= 2.5;
 					target->triggered = true;
 					target->knockbackCD = 0.2f;
-					target->setPosition(target->getPosition() - (target->getVelocity() * 0.5f));
+					glm::vec3 dif = target->getPosition() - player->getPosition();
+					target->setPosition(target->getPosition() + glm::normalize(dif) * 0.5f);
 					bullet->cooldown = 1.f;
 				}
 			}
@@ -516,7 +517,7 @@ void Game::draw() {
 	//gluPerspective(glm::radians(60.0f), windowSize.x / windowSize.y, 0.001f, 10000.0f);
 	//glMatrixMode(GL_MODELVIEW);
 
-	cout << glm::degrees(level.light->cutoff) << '/' << glm::degrees(level.light->innerCutoff) << endl;
+	//cout << glm::degrees(level.light->cutoff) << '/' << glm::degrees(level.light->innerCutoff) << endl;
 
 	switch (state) {
 	case State::Play:
