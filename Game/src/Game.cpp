@@ -90,6 +90,12 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	}
 	screen.loading->draw(program["Phong"], screen.camera, { *screen.light });
 	glutSwapBuffers();
+	
+	Sound* sound = new Sound("assets/sounds/game soundtrack.wav", true, 2);
+	soundList.push_back(sound);
+	soundList[0]->createChannel(2);
+	soundList[0]->setVolume(0.05f);
+	
 	program["PhongSpot"] = new Shader();
 	if (!program["PhongSpot"]->load("assets/shaders/Phong.vert", "assets/shaders/phongSpot.frag")) {
 		std::cout << "Phong Shaders failed to initialize." << std::endl;
@@ -205,8 +211,6 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 		exit(0);
 	}
 
-	Sound* sound = new Sound("assets/sounds/game soundtrack.wav", true, 2);
-	soundList.push_back(sound);
 
 	Sound* sound1 = new Sound("assets/sounds/ambient machine noise.wav", true, 2);
 	soundList.push_back(sound1);
@@ -217,8 +221,6 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	Sound* sound3 = new Sound("assets/sounds/Reload_sound.wav", false, 3);
 	soundList.push_back(sound3);
 
-	soundList[0]->createChannel(2);
-	soundList[0]->setVolume(0.05f);
 
 	// Initialize Player
 	player = new Player({ 4.f, 0.f, 6.f });
@@ -481,7 +483,7 @@ void Game::update() {
 			enemies[i]->update(deltaTime, level.collision);
 			// kill enemy
 			if (enemies[i]->health <= 0.f) {
-				createDropItem(enemies[i]->getPosition());
+				createDropItem(enemies[i]->getPosition(), 0);
 				delete enemies[i];
 				enemies.erase(i + enemies.begin());
 				i--;
