@@ -12,13 +12,13 @@ Sound::Sound()
 	}
 }
 
-Sound::Sound(char * f, bool l)
+Sound::Sound(char * f, bool l, int d)
 {
 	if (!sSys.init)
 	{
 		sSys.initializeS();
 	}
-	loadSound(f, l);
+	loadSound(f, l, d);
 }
 
 Sound::~Sound()
@@ -26,12 +26,20 @@ Sound::~Sound()
 	unload();
 }
 
-void Sound::loadSound(char * filename, bool loop)
+void Sound::loadSound(char * filename, bool loop, int dimension)
 {
-	result = sSys.getSystem()->createSound(filename, FMOD_3D, 0, &sound);
-	sSys.fmodErrorCK(result);
-	result = sound->set3DMinMaxDistance(0.5f, 300.0f);
-	sSys.fmodErrorCK(result);
+	if (dimension == 2)
+	{
+		result = sSys.getSystem()->createSound(filename, FMOD_2D, 0, &sound);
+		sSys.fmodErrorCK(result);
+	}
+	else if (dimension == 3)
+	{
+		result = sSys.getSystem()->createSound(filename, FMOD_3D, 0, &sound);
+		sSys.fmodErrorCK(result);
+		result = sound->set3DMinMaxDistance(0.5f, 100.0f);
+		sSys.fmodErrorCK(result);
+	}
 	if (loop)
 	{
 		result = sound->setMode(FMOD_LOOP_NORMAL);
@@ -43,13 +51,16 @@ void Sound::loadSound(char * filename, bool loop)
 	sSys.fmodErrorCK(result);
 }
 
-void Sound::createChannel()
+void Sound::createChannel(int mode)
 {
 	Channel* ch = new Channel;
 	result = sSys.getSystem()->playSound(sound, 0, true, &ch->channel);
 	sSys.fmodErrorCK(result);
-	result = ch->channel->set3DAttributes(&ch->pos, &ch->vel);
-	sSys.fmodErrorCK(result);
+	if (mode == 3)
+	{
+		result = ch->channel->set3DAttributes(&ch->pos, &ch->vel);
+		sSys.fmodErrorCK(result);
+	}
 	result = ch->channel->setPaused(false);
 	sSys.fmodErrorCK(result);
 	chList.push_back(ch);

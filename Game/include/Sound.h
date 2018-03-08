@@ -15,10 +15,10 @@ class Sound
 {
 public:
 	Sound();
-	Sound(char * filename, bool loop);
+	Sound(char * filename, bool loop, int dimension);
 	~Sound();
-	void loadSound(char * filename, bool loop);
-	void createChannel();
+	void loadSound(char * filename, bool loop, int dimension);
+	void createChannel(int mode);
 	void pauseSound(int index);
 	void stopSound(int index);
 	void playSound();

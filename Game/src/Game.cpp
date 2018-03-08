@@ -189,27 +189,14 @@ Game::Game(int& argc, char** argv)
 	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load in things" << std::endl;
 
 	//Sound
-	se.Init();
-	result = se.system->createSound("assets/sounds/GS.wav", FMOD_3D, 0, &sound);
-	FmodErrorCheck(result);
-	result = sound->set3DMinMaxDistance(0.0f, 30000.0f);
-	FmodErrorCheck(result);
-	result = sound->setMode(FMOD_LOOP_NORMAL);
-	FmodErrorCheck(result);
-	result = se.system->playSound(sound, 0, false, &channel);
-	FmodErrorCheck(result);
+	Sound* sound = new Sound("assets/sounds/GS.wav", true, 2);
+	soundList.push_back(sound);
+	
+	Sound* sound1 = new Sound("assets/sounds/SW.mp3", true, 2);
+	soundList.push_back(sound1);
 
-	channel->setVolume(0.2);
-
-	sound2.Init();
-	result = sound2.system->createSound("assets/sounds/SW.mp3", FMOD_3D, 0, &sound1);
-	FmodErrorCheck(result1);
-	result = sound->set3DMinMaxDistance(0.0f, 30000.0f);
-	FmodErrorCheck(result1);
-	result = sound->setMode(FMOD_LOOP_NORMAL);
-	FmodErrorCheck(result1);
-	result = sound2.system->playSound(sound1, 0, false, &channel1);
-	FmodErrorCheck(result1);
+	Sound* sound2 = new Sound("assets/sounds/Gunshot_sound.wav", false, 3);
+	soundList.push_back(sound2);
 	
 	
 	//result = channel->set3DAttributes(&soundpos, &soundvel);
@@ -276,11 +263,10 @@ void Game::clearEnemies() {
 void Game::update() {
 	deltaTime = timer->update();
 
-	result = se.system->update();
-	FmodErrorCheck(result);
-
-	result1 = sound2.system->update();
-	FmodErrorCheck(result1);
+	for (int i = 0; i < soundList.size(); i++)
+	{
+		soundList[i]->update();
+	}
 
 	//result = se.system->set3DListenerAttributes(0, &se.listener.pos, &se.listener.vel, &se.listener.forward, &se.listener.up);
 	//FmodErrorCheck(result);
@@ -456,6 +442,8 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 			player->reset();
 			clearEnemies();
 			loadEnemies();
+			soundList[0]->pauseSound(0);
+			soundList[0]->setVolume(0, 0.05f);
 			state = State::Menu;
 			break;
 		default:
@@ -469,11 +457,13 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 			break;
 		case State::Pause:
 			state = State::Play;
+			soundList[0]->pauseSound(0);
 			break;
 		case State::Lose: case State::Win:
 			player->reset();
 			clearEnemies();
 			loadEnemies();
+			soundList[0]->pauseSound(0);
 			state = State::Menu;
 			break;
 		}
@@ -486,6 +476,7 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 			player->reset();
 			clearEnemies();
 			loadEnemies();
+			soundList[0]->pauseSound(0);
 			state = State::Menu;
 		}
 		//enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
@@ -580,9 +571,12 @@ void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 			switch (state) {
 			case GLUT_DOWN:
 				player->firing = true;
+				soundList[2]->pauseSound(0);
+				soundList[2]->setVolume(0, 0.05f);
 				break;
 			case GLUT_UP:
 				player->firing = false;
+				soundList[2]->pauseSound(0);
 				break;
 			default:
 				break;
