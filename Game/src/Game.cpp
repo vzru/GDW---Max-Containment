@@ -91,7 +91,8 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	screen.loading->draw(program["Phong"], screen.camera, { *screen.light });
 	glutSwapBuffers();
 	
-	Sound* sound = new Sound("assets/sounds/game soundtrack.wav", true, 2);
+	//Sound* sound = new Sound("assets/sounds/game soundtrack.wav", true, 2);
+	Sound* sound = new Sound("assets/sounds/SW.mp3", true, 2);
 	soundList.push_back(sound);
 	soundList[0]->createChannel(2);
 	soundList[0]->setVolume(0.05f);
@@ -293,6 +294,20 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	std::get<2>(enemys)->loadTexture(Type::Texture::NORMAL, "assets/textures/enemy2N.png");
 	loadEnemies();
 
+	//health
+	createDropItem(glm::vec3(34.5, 0, 48), 1);
+	createDropItem(glm::vec3(30, 0, 3), 1);
+	createDropItem(glm::vec3(151.6, 0, 11.1), 1);
+	createDropItem(glm::vec3(123.6, 0, 64.2), 1);
+	createDropItem(glm::vec3(102.8, 0, 38.8), 1);
+
+	createDropItem(glm::vec3(16.7, 0, 10.4), 2);
+	createDropItem(glm::vec3(30.7, 0, 48), 2);
+	createDropItem(glm::vec3(67.3, 0, 3.4), 2);
+	createDropItem(glm::vec3(114.4, 0, 12.3), 2);
+	createDropItem(glm::vec3(139.7, 0, 58), 2);
+	createDropItem(glm::vec3(85.7, 0, 65), 2);
+
 	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load in things" << std::endl;
 	//soundList[1]->createChannel();
 }
@@ -348,6 +363,7 @@ Game::~Game() {
 	}
 	program.clear();
 	clearEnemies();
+	clearDrops();
 	enemies.clear();
 	clearDrops();
 	std::get<0>(level.enemies).clear();
@@ -476,7 +492,8 @@ void Game::update() {
 				}
 			// seek towards player
 			if (((glm::length(diff) < 10.0f && glm::length(diff) > 0.5f) || enemies[i]->triggered) && enemies[i]->knockbackCD <= 0)
-				enemies[i]->setVelocity(-glm::normalize(diff));
+				//enemies[i]->setVelocity(-glm::normalize(diff));
+				enemies[i]->setVelocity({ 0.0f, 0.0f, 0.0f });
 			else
 				enemies[i]->setVelocity({ 0.0f, 0.0f, 0.0f });
 			// update enemy
@@ -583,6 +600,7 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 		case State::Lose: case State::Win:
 			player->reset();
 			clearEnemies();
+			clearDrops();
 			loadEnemies();
 			soundList[1]->stopSound();
 			soundList[0]->playSound(2);
@@ -611,6 +629,7 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 		case State::Lose: case State::Win:
 			player->reset();
 			clearEnemies();
+			clearDrops();
 			loadEnemies();
 			soundList[1]->stopSound();
 			soundList[0]->playSound(2);
@@ -627,6 +646,7 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 		if (state == State::Pause) {
 			player->reset();
 			clearEnemies();
+			clearDrops();
 			loadEnemies();
 			soundList[1]->stopSound();
 			soundList[0]->playSound(2);
@@ -860,6 +880,7 @@ void Game::controllerInput(unsigned short index, Input::Button button) {
 			if (button == Input::Button::B) {
 				player->reset();
 				clearEnemies();
+				clearDrops();
 				loadEnemies();
 				state = State::Menu;
 			}
@@ -868,6 +889,7 @@ void Game::controllerInput(unsigned short index, Input::Button button) {
 			if (button == Input::Button::B) {
 				player->reset();
 				clearEnemies();
+				clearDrops();
 				loadEnemies();
 				state = State::Menu;
 			}
@@ -906,7 +928,11 @@ void Game::controllerSpecial(unsigned short index, Input::Triggers triggers, Inp
 }
 
 void Game::createDropItem(glm::vec3 pos, int type) {
-	float temp = rand() % 100;
+	float temp = 0;
+	if (type == 0)
+	{
+		temp = rand() % 100;
+	}
 	std::cout << temp << '/' << player->health << std::endl;
 	if ((temp > 50 & temp <= 80) || type == 2) {
 		//drop->ammo = 30.0f;
