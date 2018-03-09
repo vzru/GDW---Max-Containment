@@ -21,6 +21,7 @@ public:
 	GLuint vboUVs = 0;
 	GLuint vboNormals = 0;
 	GLuint vao = 0;
+
 protected:
 	unsigned int numFaces = 0;
 	unsigned int numVertices = 0;

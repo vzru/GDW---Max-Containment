@@ -84,6 +84,15 @@
     <ClInclude Include="Include\SoundE.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SkinnedObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\HTRLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\JointTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Object Include="assets\models\player.obj">
@@ -172,6 +181,12 @@
     <ClCompile Include="src\SoundE.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SkinnedObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HTRLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\passThrough.frag">
@@ -198,6 +213,7 @@
     <None Include="assets\sounds\Slap.ogg">
       <Filter>Resource Files\sounds</Filter>
     </None>
+    <None Include="assets\shaders\htr.vert" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\textures\fullSpecular.png">
