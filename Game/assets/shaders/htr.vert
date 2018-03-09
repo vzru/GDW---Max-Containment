@@ -14,8 +14,9 @@ uniform mat4 uProj;
 uniform mat4 Bone[MAX_ARRAY]; // Array of bones that you compute (animate) on the CPU and you upload to the shader
 uniform float numBones;
 // --------------------
-varying vec2 texCoord0;
-varying vec3 eyeNormal;
+out vec2 texCoord0;
+out vec3 eyeNormal;
+out vec3 position;
 // --------------------
 void main()
 {
@@ -26,9 +27,11 @@ void main()
     index = int(Index.x); // Cast to int
     newVertex = (Bone[index] * vert) * Weight.x;
     newNormal = (Bone[index] * vec4(normal, 0.0)) * weight.x;
+
     index = int(Index.y); //Cast to int
     newVertex = (Bone[index] * vert) * weight.y + newVertex;
     newNormal = (Bone[index] * vec4(normal, 0.0)) * weight.y + newNormal;
+
     eyeNormal = vec3(uView * newNormal);
     gl_Position = uProj * vec4(newVertex.xyz, 1.0);
     texCoord0 = texCoord;

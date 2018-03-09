@@ -3,9 +3,8 @@
 #include <GLM\gtx\transform.hpp>
 #include <iostream>
 #include <GLEW\glew.h>
-#include <tinyxml2\tinyxml2.h>
-#include "TTK/GraphicsUtils.h"
 #include "GLM/gtx/string_cast.hpp"
+#include <tinyxml2\tinyxml2.h>
 
 SkinnedObject::SkinnedObject()
 	: m_pCurrentFrame(0),
@@ -33,7 +32,7 @@ void SkinnedObject::setXRayJoints(bool xray)
 	}
 }
 
-void SkinnedObject::initializeSkeletonFromHTR(std::string htrFilePath, std::string skinWeightFilePath, std::shared_ptr<TTK::OBJMesh> bindMesh)
+void SkinnedObject::initializeSkeletonFromHTR(std::string htrFilePath, std::string skinWeightFilePath, std::shared_ptr<OBJMesh> bindMesh)
 {
 	// Load the HTR data
 	m_pHTRAnimation = new HTRLoader();
@@ -91,7 +90,7 @@ void SkinnedObject::initializeSkeletonFromHTR(std::string htrFilePath, std::stri
 
 	// Create an intermediate mesh for skinning
 	// We're essentially going to generate a new OBJ mesh every frame
-	m_pSkinnedMesh = std::make_shared<TTK::OBJMesh>();
+	m_pSkinnedMesh = std::make_shared<OBJMesh>();
 	m_pSkinnedMesh->objVertices.resize(m_pBindMesh->objVertices.size());
 	m_pSkinnedMesh->objNormals.resize(m_pBindMesh->objNormals.size());
 	m_pSkinnedMesh->objFaces.resize(m_pBindMesh->objFaces.size());
@@ -101,7 +100,7 @@ void SkinnedObject::initializeSkeletonFromHTR(std::string htrFilePath, std::stri
 	memcpy(&m_pSkinnedMesh->textureCoordinates[0], &m_pBindMesh->textureCoordinates[0], m_pSkinnedMesh->textureCoordinates.size() * sizeof(glm::vec2));
 
 	// Copy the face layout into the new mesh
-	memcpy(&m_pSkinnedMesh->objFaces[0], &m_pBindMesh->objFaces[0], m_pSkinnedMesh->objFaces.size() * sizeof(TTK::Face3));
+	memcpy(&m_pSkinnedMesh->objFaces[0], &m_pBindMesh->objFaces[0], m_pSkinnedMesh->objFaces.size() * sizeof(Face3));
 
 	// Tell all the children to use these meshes
 	auto gameObjects = m_pHTRAnimation->getGameObjects();
@@ -265,7 +264,7 @@ void SkinnedObject::draw()
 	// Only the root object will draw the final mesh
 	if (m_pParent == nullptr)
 	{
-		m_pSkinnedMesh->draw(glm::mat4(1.0f));
+		//m_pSkinnedMesh->draw(glm::mat4(1.0f));
 
 		// UpdateMesh is a new function added to the OBJMesh class
 		// Take a look at what it does.
@@ -275,7 +274,7 @@ void SkinnedObject::draw()
 			glDisable(GL_DEPTH_TEST);
 
 		// Draw the kinematic linkage lines by calling the base class' draw function
-		drawKinematicLinkage();
+		//drawKinematicLinkage();
 
 		if (m_pXrayJoints)
 			glEnable(GL_DEPTH_TEST);

@@ -143,6 +143,7 @@
     <ClInclude Include="Include\SoundE.h" />
     <ClInclude Include="include\Texture.h" />
     <ClInclude Include="Include\Timer.h" />
+    <ClInclude Include="Include\tinyxml2\tinyxml2.h" />
     <ClInclude Include="include\Type.h" />
     <ClInclude Include="SkinnedObject.h" />
   </ItemGroup>
@@ -185,6 +186,7 @@
     </Object>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Include\tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SkinnedObject.cpp" />
     <ClCompile Include="src\Bullet.cpp" />

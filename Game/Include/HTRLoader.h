@@ -8,7 +8,7 @@
 #include "SkinnedObject.h"
 #include "JointTypes.h"
 
-class SkinnedGameObject;
+class SkinnedObject;
 
 class HTRLoader
 {
@@ -24,13 +24,13 @@ public:
 	JointDescriptor* getJointDescriptorByName(std::string jointName);
 
 	GameObject* getGameObjectByName(std::string jointName);
-	SkinnedGameObject* getSkinnedGameObjectByName(std::string jointName);
+	SkinnedObject* getSkinnedGameObjectByName(std::string jointName);
 
 	void createGameObjects();
 
 	GameObject* getRootGameObject();
 
-	std::vector<SkinnedGameObject*> getGameObjects();
+	std::vector<SkinnedObject*> getGameObjects();
 
 private:
 
@@ -70,6 +70,6 @@ private:
 	// Actual animation data
 	std::vector<JointDescriptor> jointDescriptors;	// Stores each joint and its parent (could be an array since we know number of segments)
 
-	std::vector<SkinnedGameObject*> jointGameObjects;
-	SkinnedGameObject* rootGameObject;
+	std::vector<SkinnedObject*> jointGameObjects;
+	SkinnedObject* rootGameObject;
 };

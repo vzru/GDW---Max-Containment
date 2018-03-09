@@ -74,7 +74,7 @@ JointDescriptor* HTRLoader::getJointDescriptorByName(std::string jointName)
 	return nullptr;
 }
 
-Object* HTRLoader::getObjectByName(std::string jointName)
+GameObject* HTRLoader::getGameObjectByName(std::string jointName)
 {
 	int numJoints = jointGameObjects.size();
 
