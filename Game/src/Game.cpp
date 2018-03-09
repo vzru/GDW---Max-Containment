@@ -41,7 +41,7 @@ Game::Game(int& argc, char** argv)
 	glutCreateWindow("Max Containment");
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glutFullScreen();
+	//glutFullScreen();
 
 	glewExperimental = true;
 	if (glewInit() != GLEW_OK) {
@@ -427,7 +427,8 @@ void Game::update() {
 			player->reload = true;
 		player->update(deltaTime, level.collision);
 		glm::vec3 temp = player->getPosition();
-		std::cout << temp.x << '/' << temp.y << '/' << temp.z << std::endl;
+		//std::cout << temp.x << '/' << temp.y << '/' << temp.z << std::endl;
+		//std::cout << rand() % 100 << std::endl
 
 		// stuff based on player
 		hud.display->setPosition(player->getPosition() + glm::vec3(0.004f, 10.6f, 1.967f));
@@ -492,8 +493,8 @@ void Game::update() {
 				}
 			// seek towards player
 			if (((glm::length(diff) < 10.0f && glm::length(diff) > 0.5f) || enemies[i]->triggered) && enemies[i]->knockbackCD <= 0)
-				//enemies[i]->setVelocity(-glm::normalize(diff));
-				enemies[i]->setVelocity({ 0.0f, 0.0f, 0.0f });
+				enemies[i]->setVelocity(-glm::normalize(diff));
+				//enemies[i]->setVelocity({ 0.0f, 0.0f, 0.0f });
 			else
 				enemies[i]->setVelocity({ 0.0f, 0.0f, 0.0f });
 			// update enemy
@@ -671,7 +672,10 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 	case 'Z': case 'z': input.keys |= Input::Keys::KeyZ; break;
 	case 'X': case 'x': input.keys |= Input::Keys::KeyX; break;
 	case 'C': case 'c': input.keys |= Input::Keys::KeyC; break;
-	case 'V': case 'v': input.keys |= Input::Keys::KeyV; break;
+	case 'V': case 'v': 
+		std::cout << (rand() * rand()) % 100 << std::endl;
+
+		input.keys |= Input::Keys::KeyV; break;
 	case '1':			input.keys |= Input::Keys::Num1; break;
 	case '2':			input.keys |= Input::Keys::Num2; break;
 	case '3':			input.keys |= Input::Keys::Num3; break;
