@@ -12,6 +12,8 @@ Bullet::Bullet(glm::vec2 _start, glm::vec2 end)
 Bullet::Bullet(Object* origin) :
 	Object(origin->getPosition())
 {
+	cooldown = 0.f;
+	life = 0.05f;
 	rotation.y = origin->getRotation().y;
 }
 Bullet::~Bullet() {}

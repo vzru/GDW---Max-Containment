@@ -10,7 +10,7 @@ Shader::~Shader() {
 	if (loaded)	unload();
 }
 
-bool Shader::load(const std::string & vertFile, const std::string & fragFile) {
+bool Shader::load(const std::string &vertFile, const std::string &fragFile) {
 	// create shader and program objects
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	fragShader = glCreateShader(GL_FRAGMENT_SHADER);

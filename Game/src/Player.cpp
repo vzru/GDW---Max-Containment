@@ -6,7 +6,8 @@
 #include "Material.h"
 #include "Level.h"
 
-Player::Player(glm::vec3 pos) : Object(pos), bullet(new Bullet(this)), health(20.f) {
+Player::Player(glm::vec3 pos) : Object(pos), bullet(new Bullet(this)) {
+	life = 20.f;
 }
 Player::~Player() {
 	delete bullet;
@@ -61,12 +62,12 @@ void Player::draw(Shader* shader, Camera* camera, std::vector<Light> lights) {
 	Object::draw(shader, camera, lights);
 }
 
-void Player::reset() {
-	position = { 4.f, 0.f, 6.f };
+void Player::reset(glm::vec3 pos) {
+	position = pos;
 	velocity = { 0.f, 0.f, 0.f };
 	acceleration = { 0.f, 0.f, 0.f };
 	cooldown = 0.f;
-	health = 20.f;
+	life = 20.f;
 	ammo = 30.0f;
 	ammoDepo = 90.0f;
 	reloadCd = 0.0f;

@@ -13,7 +13,7 @@
 
 class Mesh;		class Shader;
 class Camera;	class Material;
-class Level;
+class Level;	class Texture;
 
 class Object {
 protected:
@@ -47,8 +47,10 @@ public:
 	glm::mat4 getTransformation();
 
 	// loading functions
-	void loadTexture(Type::Texture type, const std::string &texFile);
-	void loadMesh(const std::string &meshFile);
+	//void loadTexture(Type::Texture type, const std::string &texFile);
+	void loadTexture(Type::Texture type, Texture *texPtr);
+	//void loadMesh(const std::string &meshFile);
+	void loadMesh(Mesh *meshPtr);
 
 	// Updating functions
 	void collide(float dt, Level* level, bool ai = false);
@@ -60,6 +62,7 @@ public:
 	glm::vec4 color;
 	Mesh* mesh;
 	Material* mat;
-	int hp, ammo;
+	int ammo;
+	float life, cooldown;
 	bool collect;
 };

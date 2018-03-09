@@ -8,8 +8,6 @@ public:
 	~Enemy();
 
 	virtual void update(float dt, Level* level);
-	float cooldown;
-	float health = 10.f;
 
 	bool triggered = false;
 	float attackSpeed = 0.5f; // time between attacks (in seconds)

@@ -16,6 +16,7 @@
 //#include <GL\GLU.h>
 #include <GL\glut.h>
 #include <glm\vec2.hpp>
+#include <glm\vec3.hpp>
 #include <glm\vec4.hpp>
 //helpers
 class Timer;	class Camera;
@@ -68,6 +69,7 @@ public:
 	void controllerSpecial(unsigned short index, Input::Triggers triggers, Input::Sticks sticks);
 
 	void createDropItem(glm::vec3 pos);
+	void drawAmmo();
 private:
 	std::vector<Sound*> soundList;
 	// helpers
@@ -89,26 +91,27 @@ private:
 		Object *map, *hitboxes;
 		Camera *camera;
 		Light *light, *light2, *light3;
+		glm::vec3 start = { 4.f, 0.f, 6.f };
 		glm::vec4 exit = { 77.f, 81.f, 67.f, 70.f };
 		std::tuple<std::vector<glm::vec2>, std::vector<glm::vec2>, std::vector<glm::vec2>>
 			enemies = {
 			{
-				{ 2.86804,	30.8909 },		{ 32.4772, 47.1091 },		{ 63.368, 29.1091 },		{ 27.5863, 3.10911 },
-				{ 33.5863, 3.10911 },		{ 35.368, 9.10911 },		{ 29.5863, 8.89089 },		{ 57.368, 3.10911 },
+				{ 2.86804,	0.8909 },		{ 32.4772, 47.1091 },		{ 63.368,  29.1091 },		{ 27.5863, 3.10911 },
+				{ 33.5863, 3.10911 },		{ 35.368,  9.10911 },		{ 29.5863, 8.89089 },		{ 57.368,  3.10911 },
 				{ 33.5863, 8.89089 },		{ 151.368, 20.8909 },		{ 127.368, 4.89089 },		{ 133.368, 4.89089 },
 				{ 113.368, 4.89089 },		{ 105.368, 4.89089 },		{ 87.5863, 2.89089 },		{ 135.368, 11.1091 },
 				{ 136.477, 42.0 },			{ 132.477, 42.0 },			{ 136.477, 46.0 },			{ 98.4771, 64.0 },
 				{ 102.477, 64.0 },			{ 106.477, 64.0 },			{ 76.4771, 34.0 },			{ 80.4771, 34.0 },
-				{ 33.248, 34.821 },			{ 29.131,29.103 },			{ 50.228, 12.264 },			{ 111.795 ,17.262 },
-				{ 115.858 ,17.976 },		{ 106.910 ,37.245 },		{ 136.785 ,55.583 },		{ 111.646 ,63.259 }
+				{ 33.248,  34.821 },		{ 29.131,  29.103 },		{ 50.228,  12.264 },		{ 111.795, 17.262 },
+				{ 115.858, 17.976 },		{ 106.910, 37.245 },		{ 136.785, 55.583 },		{ 111.646, 63.259 }
 			},	{
-				{ 34.544	,28.836 },		{ 32.371	,18.886 },		{ 96.425	,22.153 },		{ 99.169	,19.952 },
-				{ 99.553	,22.368 },		{ 101.694	,21.489 },		{ 130.350	,16.604 },		{ 137.761	,16.219 },
-				{ 119.206	,27.034 },		{ 119.045	,53.868 },		{ 103.488	,52.919 }
+				{ 34.544,  28.836 },		{ 32.371,  18.886 },		{ 96.425,  22.153 },		{ 99.169,  19.952 },
+				{ 99.553,  22.368 },		{ 101.694, 21.489 },		{ 130.350, 16.604 },		{ 137.761, 16.219 },
+				{ 119.206, 27.034 },		{ 119.045, 53.868 },		{ 103.488, 52.919 }
 			},	{
-				{ 67.368, 15.1091 },		{ 51.5863, 44.8909 },		{ 151.586, 16.8909 },		{ 151.368, 12.8909 },
-				{ 141.368, 58.0 },			{ 101.586, 64.0 },			{ 102.477, 36.0 },			{ 79.368, 64.0 } ,
-				{ 71.923	,22.586 },		{ 147.219	,36.128 },		{ 149.117	,62.974 }
+				{ 67.368,  15.1091 },		{ 51.5863, 44.8909 },		{ 151.586, 16.8909 },		{ 151.368, 12.8909 },
+				{ 141.368, 58.0 },			{ 101.586, 64.0 },			{ 102.477, 36.0 },			{ 79.368,  64.0 } ,
+				{ 71.923,  22.586 },		{ 147.219, 36.128 },		{ 149.117, 62.974 }
 			}
 		};
 	} level;
@@ -121,20 +124,32 @@ private:
 	void loadEnemies(), clearEnemies();
 	void clearDrops();
 	// hud
-	struct HudData {
+	struct Hud {
 		Object *display;
 		Object *healthBar;
+		struct Ammo {
+			Object *number;
+			glm::vec3 positions[5] = {
+				{0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}
+			};
+			//Object *digit0, *digit1, *digit2, *digit3, *digit4, *digit5, *digit6, *digit7, *digit8, *digit9;
+			//glm::vec3 pos1, pos2, pos3, pos4, pos5;
+		} ammo;
+		glm::vec3 angle = { 10.f, 0.f, 0.f };
+		glm::vec4 red = { 1.f, 0.f, 0.f, 1.f };
 		Light *light;
 		Camera *camera;
 	} hud;
 	// screens
 	struct Screen {
 		Object *menu, *pause, *win, *lose, *loading, *controls;
+		struct Button {
+			Object *obj;
+			glm::vec4 pos;
+			float scale;
+		} play, quit;
 		Camera *camera;
 		Light *light;
-		Object *playObj, *quitObj;
-		glm::vec4 playPos = { 0.30677083f, 0.73802083f, 0.44351851f, 0.6648f };
-		glm::vec4 quitPos = { 0.36822917f, 0.64583333f, 0.72962963f, 0.99722223f };
 	} screen;
 	// shader programs
 	std::unordered_map<std::string, Shader*> program;

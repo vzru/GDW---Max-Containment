@@ -8,6 +8,7 @@
 
 #include <glm/glm.hpp>
 
+#include "Assets.h"
 #include "Level.h"
 #include "Mesh.h"
 #include "Game.h"
@@ -61,6 +62,7 @@ Game::Game(int& argc, char** argv)
 void Game::init(void(*_controllerInput)(unsigned short index, Input::Button button), void(*_controllerSpecial)(unsigned short index, Input::Triggers triggers, Input::Sticks sticks)) {
 	// Initialize game elements
 	timer = new Timer();
+	Assets *assets = Assets::getInstance();
 	input.xBox = new Input::XBox();
 	input.xBox->callback = _controllerInput;
 	input.xBox->special = _controllerSpecial;
@@ -79,9 +81,10 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	screen.light->specular = { 1.f, 1.f, 1.f };
 	screen.light->specExponent = 50.f;
 	screen.light->attenuation = { 1.f, 0.1f, 0.01f };
+	screen.light->original = screen.light->position;
 	screen.loading = new Object();
-	screen.loading->loadMesh("assets/meshes/screen.obj");
-	screen.loading->loadTexture(Type::DIFFUSE, "assets/textures/loading.png");
+	screen.loading->loadMesh(assets->loadMesh("screen", "screen.obj"));
+	screen.loading->loadTexture(Type::DIFFUSE, assets->loadTexture("loading", "loading.png"));
 	program["Phong"] = new Shader();
 	if (!program["Phong"]->load("assets/shaders/Phong.vert", "assets/shaders/Phong.frag")) {
 		std::cout << "Phong Shaders failed to initialize." << std::endl;
@@ -90,22 +93,60 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	}
 	screen.loading->draw(program["Phong"], screen.camera, { *screen.light });
 	glutSwapBuffers();
-	program["PhongSpot"] = new Shader();
-	if (!program["PhongSpot"]->load("assets/shaders/Phong.vert", "assets/shaders/phongSpot.frag")) {
-		std::cout << "Phong Shaders failed to initialize." << std::endl;
-		system("pause");
-		exit(0);
-	}
+
+	//Initialize Assets
+	// level
+	assets->loadMesh("level", "Laboratory Level Triangulated.obj");
+	assets->loadMesh("hitboxes", "Laboratory Level Hitboxes Triangulated.obj");
+	assets->loadTexture("level color", "Lab_textures.png");
+	assets->loadTexture("level normal", "Lab_normals.png");
+	// screens
+	assets->loadMesh("screen", "screen.obj");
+	assets->loadTexture("pause", "pause.png");
+	assets->loadTexture("win", "win.png");
+	assets->loadTexture("lose", "lose.png");
+	assets->loadTexture("controls", "controls.png");
+	assets->loadTexture("menu", "menu.png");
+	// buttons
+	assets->loadMesh("play", "Play Button.obj");
+	assets->loadMesh("quit", "Quit Button.obj");
+	// player
+	assets->loadMesh("player", "character_model.obj");
+	assets->loadTexture("player color", "character texture.png");
+	assets->loadTexture("player normal", "character normals.png");
+	// other
+	assets->loadTexture("fullSpecular", "fullSpecular.png");
+	assets->loadTexture("noSpecular", "noSpecular.png");
+	assets->loadMesh("bullet", "bullet.obj");
+	// hud
+	assets->loadMesh("hud", "hud.obj");
+	assets->loadMesh("hp bar", "hp bar.obj");
+	assets->loadTexture("hud", "hud.png");
+	assets->loadTexture("numbers", "Numbers.png");
+	// drops
+	assets->loadMesh("health", "health_pack.obj");
+	assets->loadMesh("ammo", "ammo_pack.obj");
+	assets->loadTexture("item", "items.png");
+	// enemy
+	assets->loadMesh("enemy0", "enemy3_model.obj");
+	assets->loadMesh("enemy1", "enemy_model.obj");
+	assets->loadMesh("enemy2", "enemy2_model.obj");
+	assets->loadTexture("enemy0 color", "enemy3 texture.png");
+	assets->loadTexture("enemy1 color", "enemy texture.png");
+	assets->loadTexture("enemy2 color", "enemy2 texture.png");
+	assets->loadTexture("enemy0 normal", "enemy3N.png");
+	assets->loadTexture("enemy1 normal", "enemy1N.png");
+	assets->loadTexture("enemy2 normal", "enemy2N.png");
 
 	// Initialize level
 	level.map = new Object();
 	level.collision = new Level(0.5f);
 	level.hitboxes = new Object({ 0.f, -8.f, 0.f });
-	level.map->loadMesh("assets/meshes/Laboratory Level Triangulated.obj");
+	level.map->loadMesh(assets->meshes["level"]);
 	level.collision->load("assets/meshes/Laboratory Level Hitboxes.obj");
-	level.hitboxes->loadMesh("assets/meshes/Laboratory Level Hitboxes Triangulated.obj");
-	level.map->loadTexture(Type::Texture::DIFFUSE, "assets/textures/lab_textures.png");
-	level.map->loadTexture(Type::Texture::NORMAL, "assets/textures/lab_normals.png");
+	level.hitboxes->loadMesh(assets->meshes["hitboxes"]);
+	level.map->loadTexture(Type::Texture::DIFFUSE, assets->textures["level color"]);
+	level.map->loadTexture(Type::Texture::NORMAL, assets->textures["level normal"]);
 	level.hitboxes->update(deltaTime);
 	level.camera = new Camera(windowSize);
 	level.camera->setPosition({ 0.f, 12.5f, 2.5f });
@@ -149,10 +190,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	level.light3->innerCutoff = glm::radians(1.f);
 	level.light3->partial = 0.3;
 	level.light3->attenuation = { 1.f, 0.5f, 0.1f };
-
-	screen.light->original = level.light->position;
-
-
+	
 	// Initialize images
 	screen.menu = new Object();
 	screen.pause = new Object();
@@ -160,93 +198,107 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	screen.win = new Object();
 	screen.controls = new Object();
 
-	screen.menu->loadMesh("assets/meshes/screen.obj");
-	screen.pause->loadMesh("assets/meshes/screen.obj");
-	screen.win->loadMesh("assets/meshes/screen.obj");
-	screen.lose->loadMesh("assets/meshes/screen.obj");
-	screen.controls->loadMesh("assets/meshes/screen.obj");
+	screen.menu->loadMesh(assets->meshes["screen"]);
+	screen.pause->loadMesh(assets->meshes["screen"]);
+	screen.win->loadMesh(assets->meshes["screen"]);
+	screen.lose->loadMesh(assets->meshes["screen"]);
+	screen.controls->loadMesh(assets->meshes["screen"]);
 
-	screen.menu->loadTexture(Type::DIFFUSE, "assets/textures/menu.png");
-	screen.pause->loadTexture(Type::DIFFUSE, "assets/textures/pause.png");
-	screen.win->loadTexture(Type::DIFFUSE, "assets/textures/win.png");
-	screen.lose->loadTexture(Type::DIFFUSE, "assets/textures/lose.png");
-	screen.controls->loadTexture(Type::DIFFUSE, "assets/textures/controls.png");
+	screen.menu->loadTexture(Type::DIFFUSE, assets->textures["menu"]);
+	screen.pause->loadTexture(Type::DIFFUSE, assets->textures["pause"]);
+	screen.win->loadTexture(Type::DIFFUSE, assets->textures["win"]);
+	screen.lose->loadTexture(Type::DIFFUSE, assets->textures["lose"]);
+	screen.controls->loadTexture(Type::DIFFUSE, assets->textures["controls"]);
 
+	//screen.pause->setRotation({ 10.f, 0.f, 0.f });
+	//screen.pause->setPosition({ 0.f, 10.f, 0.f });
+	//screen.pause->update(0.f);
+	
 	// Initialize buttons
-	screen.playObj = new Object({ 0.f, 0.2f, 0.3f });
-	screen.playObj->color = { 1.f, 1.f, 1.f, 1.f };
-	screen.playObj->loadMesh("assets/meshes/Play Button.obj");
-	screen.playObj->setScale(glm::vec3(1.7f));
-	screen.playObj->update(0.f);
+	screen.play.obj = new Object({ 0.f, 0.2f, 0.3f });
+	screen.play.pos = { 0.30677083f, 0.73802083f, 0.44351851f, 0.6648f };
+	screen.play.scale = 1.7f;
+	screen.play.obj->color = glm::vec4(1.f);
+	screen.play.obj->loadMesh(assets->meshes["play"]);
+	screen.play.obj->setScale(glm::vec3(1.7f));
+	screen.play.obj->update(0.f);
 
-	screen.quitObj = new Object({ 0.f, 0.2f, 1.75f });
-	screen.quitObj->color = { 1.f, 1.f, 1.f, 1.f };
-	screen.quitObj->loadMesh("assets/meshes/Quit Button.obj");
-	screen.quitObj->setScale(glm::vec3(1.5f));
-	screen.quitObj->update(0.f);
+	screen.quit.obj = new Object({ 0.f, 0.2f, 1.75f });
+	screen.quit.pos = { 0.36822917f, 0.64583333f, 0.72962963f, 0.99722223f };
+	screen.quit.scale = 1.5f;
+	screen.quit.obj->color = glm::vec4(1.f);
+	screen.quit.obj->loadMesh(assets->meshes["quit"]);
+	screen.quit.obj->setScale(glm::vec3(1.5f));
+	screen.quit.obj->update(0.f);
 
 	// Initialize shaders
+	program["PhongSpot"] = new Shader();
+	if (!program["PhongSpot"]->load("assets/shaders/Phong.vert", "assets/shaders/phongSpot.frag")) {
+		std::cout << "PhongSpot Shaders failed to initialize." << std::endl;
+		system("pause");	exit(0);
+	}
 	program["passThrough"] = new Shader();
 	if (!program["passThrough"]->load("assets/shaders/passThrough.vert", "assets/shaders/passThrough.frag")) {
 		std::cout << "PassThrough Shaders failed to initialize." << std::endl;
-		system("pause");
-		exit(0);
+		system("pause");	exit(0);
 	}
 	program["PhongNoTexture"] = new Shader();
 	if (!program["PhongNoTexture"]->load("assets/shaders/Phong.vert", "assets/shaders/PhongNoTexture.frag")) {
 		std::cout << "PhongNoTexture Shaders failed to initialize." << std::endl;
-		system("pause");
-		exit(0);
+		system("pause");	exit(0);
 	}
 	program["PhongColorSides"] = new Shader();
 	if (!program["PhongColorSides"]->load("assets/shaders/PhongColorSides.vert", "assets/shaders/PhongColorSides.frag")) {
 		std::cout << "PhongColorSides Shaders failed to initialize." << std::endl;
-		system("pause");
-		exit(0);
+		system("pause");	exit(0);
+	}
+	program["numbers"] = new Shader();
+	if (!program["numbers"]->load("assets/shaders/Phong.vert", "assets/shaders/numbers.frag")) {
+		std::cout << "Number Shaders failed to initialize." << std::endl;
+		system("pause");	exit(0);
 	}
 
+	// Initialize Sounds
 	Sound* sound = new Sound("assets/sounds/game soundtrack.wav", true, 2);
 	soundList.push_back(sound);
-
-	Sound* sound1 = new Sound("assets/sounds/ambient machine noise.wav", true, 2);
-	soundList.push_back(sound1);
-
-	Sound* sound2 = new Sound("assets/sounds/Gunshot_sound.wav", true, 3);
-	soundList.push_back(sound2);
-
-	Sound* sound3 = new Sound("assets/sounds/Reload_sound.wav", false, 3);
-	soundList.push_back(sound3);
+	sound = new Sound("assets/sounds/ambient machine noise.wav", true, 2);
+	soundList.push_back(sound);
+	sound = new Sound("assets/sounds/Gunshot_sound.wav", true, 3);
+	soundList.push_back(sound);
+	sound = new Sound("assets/sounds/Reload_sound.wav", false, 3);
+	soundList.push_back(sound);
 
 	soundList[0]->createChannel(2);
 	soundList[0]->setVolume(0.05f);
 
 	// Initialize Player
 	player = new Player({ 4.f, 0.f, 6.f });
-	player->loadMesh("assets/meshes/character_model.obj");
-	player->loadTexture(Type::Texture::DIFFUSE, "assets/textures/character texture.png");
-	player->loadTexture(Type::Texture::NORMAL, "assets/textures/character normals.png");
-	player->loadTexture(Type::Texture::SPECULAR, "assets/textures/fullSpecular.png");
-	player->bullet->loadMesh("assets/meshes/bullet.obj");
+	player->loadMesh(assets->meshes["player"]);
+	player->loadTexture(Type::Texture::DIFFUSE, assets->textures["player color"]);
+	player->loadTexture(Type::Texture::NORMAL, assets->textures["player normal"]);
+	player->loadTexture(Type::Texture::SPECULAR, assets->textures["fullSpecular"]);
+	player->bullet->loadMesh(assets->meshes["bullet"]);
 	player->bullet->color = { 1.0f , 1.0f, 1.0f, 0.3f };
 	player->ammo = 30.0f;
 	player->ammoDepo = 90.f;
 	player->reloadCd = 0.0f;
 
+	// Initialize Drops
 	dropHP = new Object();
-	dropHP->loadMesh("assets/meshes/health_pack.obj");
-	dropHP->loadTexture(Type::Texture::DIFFUSE, "assets/textures/items.png");
-	dropHP->loadTexture(Type::Texture::NORMAL, "assets/textures/items.png");
-	dropHP->loadTexture(Type::Texture::SPECULAR, "assets/textures/fullSpecular.png");
+	dropHP->loadMesh(assets->meshes["health"]);
+	dropHP->loadTexture(Type::Texture::DIFFUSE, assets->textures["item"]);
+	dropHP->loadTexture(Type::Texture::NORMAL, assets->textures["item"]);
+	dropHP->loadTexture(Type::Texture::SPECULAR, assets->textures["fullSpecular"]);
 	dropHP->update(0.f);
 	//dropHP->ammo = 30.0f;
-	dropHP->hp = 5.0f;
+	dropHP->life = 5.0f;
 	dropHP->collect = false;
 
 	dropAmmo = new Object();
-	dropAmmo->loadMesh("assets/meshes/ammo_pack.obj");
-	dropAmmo->loadTexture(Type::Texture::DIFFUSE, "assets/textures/items.png");
-	dropAmmo->loadTexture(Type::Texture::NORMAL, "assets/textures/items.png");
-	dropAmmo->loadTexture(Type::Texture::SPECULAR, "assets/textures/fullSpecular.png");
+	dropAmmo->loadMesh(assets->meshes["ammo"]);
+	dropAmmo->loadTexture(Type::Texture::DIFFUSE, assets->textures["item"]);
+	dropAmmo->loadTexture(Type::Texture::NORMAL, assets->textures["item"]);
+	dropAmmo->loadTexture(Type::Texture::SPECULAR, assets->textures["fullSpecular"]);
 	dropAmmo->update(0.f);
 	dropAmmo->ammo = 30.0f;
 	//dropAmmo->hp = 5.0f;
@@ -255,12 +307,12 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	// Initialize HUD
 	hud.display = new Object();
 	hud.healthBar = new Object();
-	hud.display->loadMesh("assets/meshes/hud.obj");
-	hud.healthBar->loadMesh("assets/meshes/hp bar.obj");
-	hud.display->loadTexture(Type::Texture::DIFFUSE, "assets/textures/hud.png");
-	hud.healthBar->color = { 1.f, 0.f, 0.f, 1.f };
-	hud.display->setRotation({ 10.f, 0.f, 0.f });
-	hud.healthBar->setRotation({ 10.f, 0.f, 0.f });
+	hud.display->loadMesh(assets->meshes["hud"]);
+	hud.healthBar->loadMesh(assets->meshes["hp bar"]);
+	hud.display->loadTexture(Type::Texture::DIFFUSE, assets->textures["hud"]);
+	hud.healthBar->color = hud.red;
+	hud.display->setRotation(hud.angle);
+	hud.healthBar->setRotation(hud.angle);
 	hud.display->setScale(glm::vec3(0.395f));
 	hud.light = new Light();
 	hud.light->type = (unsigned int)Type::Light::DIRECTIONAL;
@@ -271,24 +323,28 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	hud.light->specular = { 1.f, 1.f, 1.f };
 	hud.light->specExponent = 50.f;
 	hud.light->attenuation = { 1.f, 0.1f, 0.01f };
+	hud.ammo.number = new Object();
+	hud.ammo.number->loadMesh(assets->meshes["screen"]);
+	hud.ammo.number->setScale(glm::vec3(0.05f, 1.f, 0.1f));
+	hud.ammo.number->setRotation(hud.angle);
 
 	// Initialize Enemies
 	std::get<0>(enemys) = new Enemy();			std::get<1>(enemys) = new Enemy();			std::get<2>(enemys) = new Enemy();
-	std::get<0>(enemys)->health = 15.f;			std::get<1>(enemys)->health = 20.f;			std::get<2>(enemys)->health = 10.f;
+	std::get<0>(enemys)->life = 15.f;			std::get<1>(enemys)->life = 20.f;			std::get<2>(enemys)->life = 10.f;
 	std::get<0>(enemys)->movementSpeed = 250.f;	std::get<1>(enemys)->movementSpeed = 350.f;	std::get<2>(enemys)->movementSpeed = 150.f;
 	std::get<0>(enemys)->damage = 1.f;			std::get<1>(enemys)->damage = 3.f;			std::get<2>(enemys)->damage = 5.f;
-	std::get<0>(enemys)->loadMesh("assets/meshes/enemy3_model.obj");
-	std::get<1>(enemys)->loadMesh("assets/meshes/enemy_model.obj");
-	std::get<2>(enemys)->loadMesh("assets/meshes/enemy2_model.obj");
-	std::get<0>(enemys)->loadTexture(Type::Texture::DIFFUSE, "assets/textures/enemy3 texture.png");
-	std::get<1>(enemys)->loadTexture(Type::Texture::DIFFUSE, "assets/textures/enemy texture.png");
-	std::get<2>(enemys)->loadTexture(Type::Texture::DIFFUSE, "assets/textures/enemy2 texture.png");
-	std::get<0>(enemys)->loadTexture(Type::Texture::SPECULAR, "assets/textures/noSpecular.png");
-	std::get<1>(enemys)->loadTexture(Type::Texture::SPECULAR, "assets/textures/noSpecular.png");
-	std::get<2>(enemys)->loadTexture(Type::Texture::SPECULAR, "assets/textures/noSpecular.png");
-	std::get<0>(enemys)->loadTexture(Type::Texture::NORMAL, "assets/textures/enemy3N.png");
-	std::get<1>(enemys)->loadTexture(Type::Texture::NORMAL, "assets/textures/enemy1N.png");
-	std::get<2>(enemys)->loadTexture(Type::Texture::NORMAL, "assets/textures/enemy2N.png");
+	std::get<0>(enemys)->loadMesh(assets->meshes["enemy0"]);
+	std::get<1>(enemys)->loadMesh(assets->meshes["enemy1"]);
+	std::get<2>(enemys)->loadMesh(assets->meshes["enemy2"]);
+	std::get<0>(enemys)->loadTexture(Type::Texture::DIFFUSE, assets->textures["enemy0 color"]);
+	std::get<1>(enemys)->loadTexture(Type::Texture::DIFFUSE, assets->textures["enemy2 color"]);
+	std::get<2>(enemys)->loadTexture(Type::Texture::DIFFUSE, assets->textures["enemy2 color"]);
+	std::get<0>(enemys)->loadTexture(Type::Texture::SPECULAR, assets->textures["noSpecular"]);
+	std::get<1>(enemys)->loadTexture(Type::Texture::SPECULAR, assets->textures["noSpecular"]);
+	std::get<2>(enemys)->loadTexture(Type::Texture::SPECULAR, assets->textures["noSpecular"]);
+	std::get<0>(enemys)->loadTexture(Type::Texture::NORMAL, assets->textures["enemy0 normal"]);
+	std::get<1>(enemys)->loadTexture(Type::Texture::NORMAL, assets->textures["enemy1 normal"]);
+	std::get<2>(enemys)->loadTexture(Type::Texture::NORMAL, assets->textures["enemy2 normal"]);
 	loadEnemies();
 
 	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load in things" << std::endl;
@@ -327,8 +383,8 @@ Game::~Game() {
 	delete screen.controls;
 	delete screen.camera;
 	delete screen.light;
-	delete screen.playObj;
-	delete screen.quitObj;
+	delete screen.play.obj;
+	delete screen.quit.obj;
 	delete screen.loading;
 	delete hud.display;
 	delete hud.healthBar;
@@ -340,9 +396,9 @@ Game::~Game() {
 		prog.second->unload();
 		delete prog.second;
 	}
-	for (int i = 0; i < soundList.size(); i++)
-	{
+	for (int i = 0; i < soundList.size(); i++) {
 		soundList[i]->unload();
+		delete soundList[i];
 	}
 	program.clear();
 	clearEnemies();
@@ -411,11 +467,13 @@ void Game::update() {
 
 		// stuff based on player
 		hud.display->setPosition(player->getPosition() + glm::vec3(0.004f, 10.6f, 1.967f));
-		//hud.display->setPosition(player->getPosition() + glm::vec3(0.f, 14.f, 2.5f));
+		//screen.pause->setPosition(player->getPosition() + glm::vec3(0.f, 10.f, 0.f));
 		hud.healthBar->setPosition(player->getPosition() + glm::vec3(-1.846f, 10.4f, 3.027f));
-		hud.healthBar->setScale({ player->health * 0.0365f, 0.f, 0.035f });
+		hud.healthBar->setScale({ player->life * 0.0365f, 0.f, 0.035f });
 		hud.display->update(deltaTime);
+		//screen.pause->update(deltaTime);
 		hud.healthBar->update(deltaTime);
+		hud.ammo.number->update(deltaTime);
 		level.camera->update(player->getPosition());
 		level.light->position = glm::vec4(player->getPosition() + glm::vec3(0.f, 1.f, 0.f), 1.f);
 		level.light2->position = glm::vec4(player->getPosition() + glm::vec3(0.f, 2.f, 0.f), 1.f);
@@ -423,7 +481,6 @@ void Game::update() {
 		float angle = glm::radians(player->getRotation().y);
 		level.light->direction = { cos(angle), -0.1f, -sin(angle), 0.f };
 		//level.light3->direction = { cos(angle), 0.45f, -sin(angle), 0.f };
-
 
 		// bullet collision
 		for (auto bullet : player->bullets) {
@@ -436,8 +493,8 @@ void Game::update() {
 					float dang = atan2(-diff.z, diff.x);
 					float dist = abs(sin(bang - dang) * glm::length(diff));
 					float distToEnemy = cos(bang - dang) * glm::length(diff);
-					//std::cout << glm::degrees(bang) << '\t' << glm::degrees(dang) << '\t' << dist << '\t' << distFromPlayer << "vs" << distToEnemy << '\t' << enemies[j]->health << std::endl;
-					// check if enemy is along the bullet path &&
+					//std::cout << glm::degrees(bang) << '\t' << glm::degrees(dang) << '\t' << dist << '\t' << distFromPlayer << "vs" << distToEnemy << '\t' << enemies[j]->life << std::endl;
+					// check if enemy is along the bullet path && not too far away
 					if (dist < 0.5f && distFromPlayer > distToEnemy && distToEnemy > 0) {
 						target = enemy;
 						distFromPlayer = distToEnemy;
@@ -445,7 +502,7 @@ void Game::update() {
 				}
 				// enemy hit
 				if (target != nullptr) {
-					target->health -= 2.5;
+					target->life -= 2.5;
 					target->triggered = true;
 					target->knockbackCD = 0.2f;
 					target->setPosition(target->getPosition() - (target->getVelocity() * 0.5f));
@@ -458,15 +515,13 @@ void Game::update() {
 		for (int i = 0; i < enemies.size(); i++) {
 			glm::vec3 diff = enemies[i]->getPosition() - player->getPosition();
 			if (enemies[i]->knockbackCD > 0)
-			{
 				enemies[i]->knockbackCD -= deltaTime/1000;
-			}
 			// aim towards player
 			enemies[i]->setRotation({ 0.f, glm::degrees(atan2f(-diff.z, diff.x)) - 90.f, 0.f });
 			// hurt player
 			if (enemies[i]->cooldown <= 0.f)
 				if (glm::length(diff) < 1.f) {
-					player->health -= enemies[i]->damage;
+					player->life -= enemies[i]->damage;
 					enemies[i]->cooldown = enemies[i]->attackSpeed;
 				}
 			// seek towards player
@@ -477,7 +532,7 @@ void Game::update() {
 			// update enemy
 			enemies[i]->update(deltaTime, level.collision);
 			// kill enemy
-			if (enemies[i]->health <= 0.f) {
+			if (enemies[i]->life <= 0.f) {
 				createDropItem(enemies[i]->getPosition());
 				delete enemies[i];
 				enemies.erase(i + enemies.begin());
@@ -485,7 +540,7 @@ void Game::update() {
 			}
 		}
 		// player loses
-		if (player->health <= 0.f)
+		if (player->life <= 0.f)
 			state = State::Lose;
 		// player wins
 		glm::vec3 pPos = player->getPosition();
@@ -499,12 +554,12 @@ void Game::update() {
 					//std::cout << dropItems[i]->ammo << '/' << dropItems[i]->hp << std::endl;
 					dropItems[i]->collect = true;
 					player->ammoDepo += dropItems[i]->ammo;
-					if (player->health < 20.0f) {
-						if ((player->health + dropItems[i]->hp) > 20.0f)
-							player->health = 20.0f;
+					if (player->life < 20.0f) {
+						if ((player->life + dropItems[i]->life) > 20.0f)
+							player->life = 20.0f;
 						else
-							player->health += dropItems[i]->hp;
-					} else if (player->health == 20.0f & dropItems[i]->hp > 0.0f)
+							player->life += dropItems[i]->life;
+					} else if (player->life == 20.0f & dropItems[i]->life > 0.0f)
 						dropItems[i]->collect = false;
 				}
 			}
@@ -523,6 +578,10 @@ void Game::draw() {
 	cout << glm::degrees(level.light->cutoff) << '/' << glm::degrees(level.light->innerCutoff) << endl;
 
 	switch (state) {
+	case State::Pause:
+		//screen.pause->draw(program["Phong"], level.camera, { *hud.light });
+		screen.pause->draw(program["Phong"], screen.camera, { *screen.light });
+		break;
 	case State::Play:
 		player->draw(program["PhongSpot"], level.camera, { *level.light, *level.light2 });// , *level.light3 });
 		for (auto& enemy : enemies)
@@ -531,19 +590,17 @@ void Game::draw() {
 		//level.hitboxes->draw(program["PhongColorSides"], level.camera, { *level.light });
 		hud.healthBar->draw(program["PhongNoTexture"], level.camera, { *hud.light });
 		hud.display->draw(program["Phong"], level.camera, { *hud.light });
+		drawAmmo();
 
 		for (int i = 0; i < dropItems.size(); i++)
 			if (!dropItems[i]->collect)
 				dropItems[i]->draw(program["PhongSpot"], level.camera, { *level.light, *level.light2 });// , *level.light3 });
 
 		break;
-	case State::Pause:
-		screen.pause->draw(program["Phong"], screen.camera, { *screen.light });
-		break;
 	case State::Menu:
 		screen.menu->draw(program["Phong"], screen.camera, { *screen.light });
-		screen.playObj->draw(program["PhongNoTexture"], screen.camera, { *screen.light });
-		screen.quitObj->draw(program["PhongNoTexture"], screen.camera, { *screen.light });
+		screen.play.obj->draw(program["PhongNoTexture"], screen.camera, { *screen.light });
+		screen.quit.obj->draw(program["PhongNoTexture"], screen.camera, { *screen.light });
 		break;
 	case State::Win:
 		screen.win->draw(program["Phong"], screen.camera, { *screen.light });
@@ -576,7 +633,7 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 			glutExit();
 			break;
 		case State::Lose: case State::Win:
-			player->reset();
+			player->reset(level.start);
 			clearEnemies();
 			loadEnemies();
 			soundList[1]->stopSound();
@@ -604,7 +661,7 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 			state = State::Play;
 			break;
 		case State::Lose: case State::Win:
-			player->reset();
+			player->reset(level.start);
 			clearEnemies();
 			loadEnemies();
 			soundList[1]->stopSound();
@@ -620,7 +677,7 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 		break;
 	case 'Q': case 'q':
 		if (state == State::Pause) {
-			player->reset();
+			player->reset(level.start);
 			clearEnemies();
 			loadEnemies();
 			soundList[1]->stopSound();
@@ -736,8 +793,7 @@ void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 			switch (state) {
 			case GLUT_DOWN:
 				player->firing = true;
-				if (player->reloadCd <= 0.0f)
-				{
+				if (player->reloadCd <= 0.0f) {
 					soundList[3]->stopSound();
 					soundList[2]->playSound(3);
 					soundList[2]->setVolume(0.05f);
@@ -760,12 +816,10 @@ void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 		case GLUT_LEFT_BUTTON:
 			switch (state) {
 			case GLUT_DOWN:
-				if (mouse.x > screen.playPos.x * windowSize.x && mouse.x < screen.playPos.y * windowSize.x && mouse.y > screen.playPos.z * windowSize.y && mouse.y < screen.playPos.w * windowSize.y)
-				{
+				if (mouse.x > screen.play.pos.x * windowSize.x && mouse.x < screen.play.pos.y * windowSize.x && mouse.y > screen.play.pos.z * windowSize.y && mouse.y < screen.play.pos.w * windowSize.y)
 					this->state = State::Control;
 					//soundList[1]->playSound();
-				}
-				if (mouse.x > screen.quitPos.x * windowSize.x && mouse.x < screen.quitPos.y * windowSize.x && mouse.y > screen.quitPos.z * windowSize.y && mouse.y < screen.quitPos.w * windowSize.y)
+				if (mouse.x > screen.quit.pos.x * windowSize.x && mouse.x < screen.quit.pos.y * windowSize.x && mouse.y > screen.quit.pos.z * windowSize.y && mouse.y < screen.quit.pos.w * windowSize.y)
 					glutExit();
 				break;
 			case GLUT_UP:
@@ -825,13 +879,13 @@ void Game::mousePassive(glm::vec2 mouse) {
 			player->setRotation({ 0.f, glm::degrees(atan2(diff.y, -diff.x)), 0.f });
 			break;
 		} case State::Menu:
-			if (mouse.x > screen.playPos.x * windowSize.x && mouse.x < screen.playPos.y * windowSize.x && mouse.y > screen.playPos.z * windowSize.y && mouse.y < screen.playPos.w * windowSize.y)
-				screen.playObj->color.b = 0.f;
-			else screen.playObj->color.b = 1.f;
-			if (mouse.x > screen.quitPos.x * windowSize.x && mouse.x < screen.quitPos.y * windowSize.x && mouse.y > screen.quitPos.z * windowSize.y && mouse.y < screen.quitPos.w * windowSize.y)
-				screen.quitObj->color.b = 0.f;
+			if (mouse.x > screen.play.pos.x * windowSize.x && mouse.x < screen.play.pos.y * windowSize.x && mouse.y > screen.play.pos.z * windowSize.y && mouse.y < screen.play.pos.w * windowSize.y)
+				screen.play.obj->color.b = 0.f;
+			else screen.play.obj->color.b = 1.f;
+			if (mouse.x > screen.quit.pos.x * windowSize.x && mouse.x < screen.quit.pos.y * windowSize.x && mouse.y > screen.quit.pos.z * windowSize.y && mouse.y < screen.quit.pos.w * windowSize.y)
+				screen.quit.obj->color.b = 0.f;
 			else
-				screen.quitObj->color.b = 1.f;
+				screen.quit.obj->color.b = 1.f;
 			break;
 		default:
 			break;
@@ -851,7 +905,7 @@ void Game::controllerInput(unsigned short index, Input::Button button) {
 			if (button == Input::Button::A)
 				state = State::Play;
 			if (button == Input::Button::B) {
-				player->reset();
+				player->reset(level.start);
 				clearEnemies();
 				loadEnemies();
 				state = State::Menu;
@@ -859,7 +913,7 @@ void Game::controllerInput(unsigned short index, Input::Button button) {
 			break;
 		case State::Lose: case State::Win:
 			if (button == Input::Button::B) {
-				player->reset();
+				player->reset(level.start);
 				clearEnemies();
 				loadEnemies();
 				state = State::Menu;
@@ -900,7 +954,7 @@ void Game::controllerSpecial(unsigned short index, Input::Triggers triggers, Inp
 
 void Game::createDropItem(glm::vec3 pos) {
 	float temp = rand() % 100;
-	std::cout << temp << '/' << player->health << std::endl;
+	std::cout << temp << '/' << player->life << std::endl;
 	if (temp > 50 & temp <= 80) {
 		//drop->ammo = 30.0f;
 		//dropAmmo->color = glm::vec4(1.0f, 0.647f, 0.f, 0.5f);
@@ -921,4 +975,24 @@ void Game::createDropItem(glm::vec3 pos) {
 	//	drop->ammo = 0.0f;
 	//	drop->hp = 0.0f;
 	//}
+}
+
+void Game::drawAmmo() {
+	if (hud.ammo.number) {
+		hud.ammo.number->ammo = player->ammo / 10;
+		hud.ammo.number->setPosition(hud.ammo.positions[0]);
+		hud.ammo.number->draw(program["numbers"], level.camera, { *hud.light });
+		hud.ammo.number->ammo = player->ammo;
+		hud.ammo.number->setPosition(hud.ammo.positions[1]);
+		hud.ammo.number->draw(program["numbers"], level.camera, { *hud.light });
+		hud.ammo.number->ammo = player->ammoDepo / 100;
+		hud.ammo.number->setPosition(hud.ammo.positions[2]);
+		hud.ammo.number->draw(program["numbers"], level.camera, { *hud.light });
+		hud.ammo.number->ammo = player->ammoDepo / 10;
+		hud.ammo.number->setPosition(hud.ammo.positions[3]);
+		hud.ammo.number->draw(program["numbers"], level.camera, { *hud.light });
+		hud.ammo.number->ammo = player->ammoDepo;
+		hud.ammo.number->setPosition(hud.ammo.positions[4]);
+		hud.ammo.number->draw(program["numbers"], level.camera, { *hud.light });
+	}
 }

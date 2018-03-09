@@ -13,11 +13,11 @@ public:
 
 	virtual void update(float dt, Level* level);
 	virtual void draw(Shader* shader, Camera* camera, std::vector<Light> light);
-	void reset();
+	void reset(glm::vec3 pos);
 	bool fire();
 	void reloading();
 
-	float health, cooldown, ammo, ammoDepo, reloadCd;
+	float ammo, ammoDepo, reloadCd;
 	bool firing = false;
 	bool reloaded = false;
 	bool reload = false;

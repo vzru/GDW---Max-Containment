@@ -5,6 +5,7 @@
 Enemy::Enemy(glm::vec3 pos) : Object(pos) {
 	//mat = new Material();
 	//mesh->load("assets/models/enemy.obj");
+	life = 10.f;
 }
 Enemy::~Enemy() {}
 

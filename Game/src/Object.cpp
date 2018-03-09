@@ -53,15 +53,21 @@ glm::mat4 Object::getTransformation() {
 	return transform;
 }
 
-void Object::loadTexture(Type::Texture type, const std::string &texFile) {
-	mat->load(type, texFile);
+//void Object::loadTexture(Type::Texture type, const std::string &texFile) {
+//	mat->load(type, texFile);
+//}
+void Object::loadTexture(Type::Texture type, Texture *texture) {
+	mat->load(type, texture);
 }
-void Object::loadMesh(const std::string &meshFile) {
-	if (!mesh->load(meshFile)) {
-		std::cout << "Model failed to load." << std::endl;
-		system("pause");
-		exit(0);
-	}
+//void Object::loadMesh(const std::string &meshFile) {
+//	if (!mesh->load(meshFile)) {
+//		std::cout << "Model failed to load." << std::endl;
+//		system("pause");
+//		exit(0);
+//	}
+//}
+void Object::loadMesh(Mesh *meshPtr) {
+	mesh = meshPtr;
 }
 
 /*float lineCheck(glm::vec2 p, glm::vec2 p0, glm::vec2 p1) {
@@ -137,6 +143,7 @@ void Object::draw(Shader* shader, Camera* camera, std::vector<Light> lights) {
 	shader->sendUniformMat4("uView", glm::value_ptr(camera->getView()), false);
 	shader->sendUniformMat4("uProj", glm::value_ptr(camera->getProj()), false);
 	shader->sendUniform("objectColor", color);
+	shader->sendUniform("ammo", ammo);
 	// Material
 	shader->sendUniform("material.diffuse", 0);
 	shader->sendUniform("material.specular", 1);
