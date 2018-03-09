@@ -77,14 +77,15 @@ vec3 calculateLight(Light light, vec3 norm, vec4 diff, vec4 spec) {
 	// Reflection
 	vec3 reflectDir = reflect(-lightDir, norm);
 	float VdotR = max(dot(normalize(-position), -reflectDir), 0.0);
-	vec3 specular = light.specular * pow(VdotR, material.specExponent) * attenuation * spec.rgb;
+	float NdotHV = max(dot(norm, normalize(lightDir + normalize(-position))), 0.0);
+	vec3 specular = light.specular * pow(NdotHV, material.specExponent) * attenuation * spec.rgb;
 
 	return ambient + diffuse + specular;
 }
 
 void main() {
 	// account for rasterizer interpolating
-	vec3 norm = normalize(texture(material.normal, texCoord).rgb);
+	vec3 norm = normalize(texture(material.normal, texCoord).rgb * 2 - vec3(1.f));
 	vec4 diff = texture(material.diffuse, texCoord);
 	vec4 spec = texture(material.specular, texCoord);
 

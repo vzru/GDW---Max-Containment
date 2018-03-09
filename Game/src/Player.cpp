@@ -83,7 +83,7 @@ bool Player::fire() {
 		bullet->setRotation(rotation);
 		bullets.push_back(new Bullet(*bullet));
 		cooldown = RateOfFire;
-		std::cout << ammo << '/' << ammoDepo << std::endl;
+		//std::cout << ammo << '/' << ammoDepo << std::endl;
 		if (ammo <= 0 && ammoDepo > 0.0f)
 		{
 			if (ammoDepo > 30.0f)
@@ -105,7 +105,7 @@ bool Player::fire() {
 
 void Player::reloading()
 {
-	std::cout << ammo << '/' << ammoDepo << '/' << reload << std::endl;
+	//std::cout << ammo << '/' << ammoDepo << '/' << reload << std::endl;
 	if ((ammo <= 0 && ammoDepo > 0.0f) || reload == true)
 	{
 		float diff = 30.f - ammo;

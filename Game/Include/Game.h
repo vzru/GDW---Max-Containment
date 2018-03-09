@@ -1,9 +1,9 @@
 #pragma once
 //defines
-#define WINDOW_SCREEN_WIDTH 640
-#define WINDOW_SCREEN_HEIGHT 432
-#define WINDOW_WIDTH 800
-#define WINDOW_HEIGHT 600
+#define WINDOW_SCREEN_WIDTH 1920	
+#define WINDOW_SCREEN_HEIGHT 1080
+#define WINDOW_WIDTH 1920
+#define WINDOW_HEIGHT 1080
 #define FRAMES_PER_SECOND 60
 //core includes
 #include <vector>
@@ -70,6 +70,7 @@ public:
 
 	void createDropItem(glm::vec3 pos);
 	void drawAmmo();
+	void createDropItem(glm::vec3 pos, int type = 0);
 private:
 	std::vector<Sound*> soundList;
 	// helpers
