@@ -137,10 +137,9 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	assets->loadTexture("enemy0 normal", "enemy3N.png");
 	assets->loadTexture("enemy1 normal", "enemy1N.png");
 	assets->loadTexture("enemy2 normal", "enemy2N.png");
-=======
 	
-	//Sound* sound = new Sound("assets/sounds/game soundtrack.wav", true, 2);
-	Sound* sound = new Sound("assets/sounds/SW.mp3", true, 2);
+	Sound* sound = new Sound("assets/sounds/game soundtrack.wav", true, 2);
+	//Sound* sound = new Sound("assets/sounds/SW.mp3", true, 2);
 	soundList.push_back(sound);
 	soundList[0]->createChannel(2);
 	soundList[0]->setVolume(0.05f);
@@ -151,7 +150,6 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 		system("pause");
 		exit(0);
 	}
->>>>>>> 9d2ebc0ad5739a2add63a6c5e608e9107d73a930
 
 	// Initialize level
 	level.map = new Object();
@@ -166,32 +164,62 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	level.camera = new Camera(windowSize);
 	level.camera->setPosition({ 0.f, 12.5f, 2.5f });
 	level.camera->update({ 0.f,0.f,0.f });
+	
 	level.light = new Light();
-	level.light->type = (unsigned int)Type::Light::SPOT;
-	level.light->position = { 0.f, 0.0f, 0.f, 1.f };
-	level.light->direction = { 0.f, 0.5f, 0.f, 0.f };
+	level.light->type = (unsigned int)Type::Light::POINT;
+	level.light->position = { 0.f, 1.f, 0.f, 1.f };
 	level.light->original = level.light->position;
 	level.light->ambient = { 0.15f, 0.15f, 0.15f };
 	level.light->diffuse = { 0.7f, 0.7f, 0.7f };
 	level.light->specular = { 1.f, 1.f, 1.f };
 	level.light->specExponent = 50.f;
-	level.light->spotExponent = 1.f;
-	level.light->cutoff = glm::radians(55.f);
-	level.light->innerCutoff = glm::radians(1.f);
-	level.light->partial = 0.3;
-	level.light->attenuation = { 0.5f, 0.1f, 0.01f };
+	level.light->attenuation = { 1.f, 1.f, 1.f };
+	level.lightPointers.push_back(level.light);
+	
+	// @@@@@ FOR SEAN @@@@@@	Loads in the array containing all the lights in the level
+	for (int i = 0; i < level.lightsPos.size(); i++)
+	{
+		Light *light = new Light();
+		light->type = (unsigned int)Type::Light::SPOT;
+		light->position = {level.lightsPos[i], 1.f };
+		light->direction = { 0.f, -1.0f, 0.f, 0.f };
+		light->ambient = { 0.15f, 0.15f, 0.15f };
+		light->diffuse = { 0.7f, 0.7f, 0.7f };
+		light->specular = { 1.f, 1.f, 1.f };
+		light->specExponent = 50.f;
+		light->spotExponent = 1.f;
+		light->cutoff = glm::radians(55.f);
+		light->innerCutoff = glm::radians(1.f);
+		light->partial = 0.3;
+		light->attenuation = { 0.5f, 0.1f, 0.01f };
+		level.lightPointers.push_back(light);
+	}
 
+	// Flashlight gets put into the last slot
 	level.light2 = new Light();
-	level.light2->type = (unsigned int)Type::Light::POINT;
-	level.light2->position = { 0.f, 1.f, 0.f, 1.f };
+	level.light2->type = (unsigned int)Type::Light::SPOT;
+	level.light2->position = { 0.f, 0.0f, 0.f, 1.f };
+	level.light2->direction = { 0.f, 0.5f, 0.f, 0.f };
 	level.light2->original = level.light2->position;
 	level.light2->ambient = { 0.15f, 0.15f, 0.15f };
 	level.light2->diffuse = { 0.7f, 0.7f, 0.7f };
 	level.light2->specular = { 1.f, 1.f, 1.f };
 	level.light2->specExponent = 50.f;
-	level.light2->attenuation = { 1.f, 1.f, 1.f };
+	level.light2->spotExponent = 1.f;
+	level.light2->cutoff = glm::radians(55.f);
+	level.light2->innerCutoff = glm::radians(1.f);
+	level.light2->partial = 0.3;
+	level.light2->attenuation = { 0.5f, 0.1f, 0.01f };
+	level.lightPointers.push_back(level.light2);
 
-	level.light3 = new Light();
+	level.lights.reserve(level.lightPointers.size());// *sizeof(Light));
+
+	for (int i = 0; i < level.lightPointers.size(); i++)
+	{
+		level.lights[i] = *level.lightPointers[i];
+	}
+
+	/*level.light3 = new Light();
 	level.light3->type = (unsigned int)Type::Light::SPOT;
 	level.light3->position = { 0.f, 0.0f, 0.f, 1.f };
 	level.light3->direction = { 0.f, 0.5f, 0.f, 0.f };
@@ -204,7 +232,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	level.light3->cutoff = glm::radians(55.f);
 	level.light3->innerCutoff = glm::radians(1.f);
 	level.light3->partial = 0.3;
-	level.light3->attenuation = { 1.f, 0.5f, 0.1f };
+	level.light3->attenuation = { 1.f, 0.5f, 0.1f };*/
 	
 	// Initialize images
 	screen.menu = new Object();
@@ -274,15 +302,14 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	}
 
 	// Initialize Sounds
-	Sound* sound = new Sound("assets/sounds/game soundtrack.wav", true, 2);
-	soundList.push_back(sound);
+	//Sound* sound = new Sound("assets/sounds/game soundtrack.wav", true, 2);
+	//soundList.push_back(sound);
 	sound = new Sound("assets/sounds/ambient machine noise.wav", true, 2);
 	soundList.push_back(sound);
 	sound = new Sound("assets/sounds/Gunshot_sound.wav", true, 3);
 	soundList.push_back(sound);
 	sound = new Sound("assets/sounds/Reload_sound.wav", false, 3);
 	soundList.push_back(sound);
-=======
 
 	Sound* sound1 = new Sound("assets/sounds/ambient machine noise.wav", true, 2);
 	soundList.push_back(sound1);
@@ -411,6 +438,9 @@ Game::~Game() {
 	delete level.light;
 	delete level.light2;
 	delete level.light3;
+	for (int i = 0; i < level.lights.size(); i++) {
+		delete level.lightPointers[i];
+	}
 	delete screen.menu;
 	delete screen.pause;
 	delete screen.win;
@@ -439,7 +469,6 @@ Game::~Game() {
 	clearEnemies();
 	clearDrops();
 	enemies.clear();
-	clearDrops();
 	std::get<0>(level.enemies).clear();
 	std::get<1>(level.enemies).clear();
 	std::get<2>(level.enemies).clear();
@@ -624,10 +653,10 @@ void Game::draw() {
 		screen.pause->draw(program["Phong"], screen.camera, { *screen.light });
 		break;
 	case State::Play:
-		player->draw(program["PhongSpot"], level.camera, { *level.light, *level.light2 });// , *level.light3 });
+		player->draw(program["PhongSpot"], level.camera, level.lights); // @@@@@ FOR SEAN @@@@@ Extra argument to take in how many lights are in the array
 		for (auto& enemy : enemies)
-			enemy->draw(program["PhongSpot"], level.camera, { *level.light, *level.light2 });// , *level.light3 });
-		level.map->draw(program["PhongSpot"], level.camera, { *level.light, *level.light2 });// , *level.light3 });
+			enemy->draw(program["PhongSpot"], level.camera, level.lights);
+		level.map->draw(program["PhongSpot"], level.camera, level.lights);
 		//level.hitboxes->draw(program["PhongColorSides"], level.camera, { *level.light });
 		hud.healthBar->draw(program["PhongNoTexture"], level.camera, { *hud.light });
 		hud.display->draw(program["Phong"], level.camera, { *hud.light });
@@ -635,7 +664,7 @@ void Game::draw() {
 
 		for (int i = 0; i < dropItems.size(); i++)
 			if (!dropItems[i]->collect)
-				dropItems[i]->draw(program["PhongSpot"], level.camera, { *level.light, *level.light2 });// , *level.light3 });
+				dropItems[i]->draw(program["PhongSpot"], level.camera, level.lights);// , *level.light3 });
 
 		break;
 	case State::Menu:
@@ -1009,7 +1038,7 @@ void Game::createDropItem(glm::vec3 pos, int type) {
 	{
 		temp = rand() % 100;
 	}
-	std::cout << temp << '/' << player->health << std::endl;
+	//std::cout << temp << '/' << player->health << std::endl;
 	if ((temp > 50 & temp <= 80) || type == 2) {
 		//drop->ammo = 30.0f;
 		//dropAmmo->color = glm::vec4(1.0f, 0.647f, 0.f, 0.5f);

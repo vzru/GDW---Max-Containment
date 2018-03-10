@@ -1,6 +1,6 @@
 #version 420
 
-#define NUM_LIGHTS 2
+#define MAX_NUM_LIGHTS 128
 
 #define POINT 0
 #define DIRECT 1
@@ -35,9 +35,11 @@ struct Material {
 	float specExponent;
 };
 
-uniform Light lights[NUM_LIGHTS];
+uniform Light lights[MAX_NUM_LIGHTS];
 
 uniform Material material;
+
+uniform float numLights;
 
 in vec3 position;
 in vec2 texCoord;
@@ -89,7 +91,7 @@ void main() {
 	vec4 diff = texture(material.diffuse, texCoord);
 	vec4 spec = texture(material.specular, texCoord);
 
-	for(int i = 0; i < NUM_LIGHTS; i++) {
+	for(int i = 0; i < numLights; i++) {
 		outColor.rgb += calculateLight(lights[i], norm, diff, spec);
 	}
 

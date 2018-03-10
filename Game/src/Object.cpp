@@ -135,7 +135,7 @@ void Object::update(float dt) {
 	transform = tran * rotate * scal;
 }
 
-void Object::draw(Shader* shader, Camera* camera, std::vector<Light> lights) {
+void Object::draw(Shader* shader, Camera* camera, std::vector<Light> lights, float lightCount) {
 	// Start
 	shader->bind();
 	// Basic
@@ -143,7 +143,15 @@ void Object::draw(Shader* shader, Camera* camera, std::vector<Light> lights) {
 	shader->sendUniformMat4("uView", glm::value_ptr(camera->getView()), false);
 	shader->sendUniformMat4("uProj", glm::value_ptr(camera->getProj()), false);
 	shader->sendUniform("objectColor", color);
-	shader->sendUniform("ammo", ammo);
+	//shader->sendUniform("ammo", ammo);
+	if (lightCount == 0.0f)
+	{
+		shader->sendUniform("numLights", lights.size());
+	}
+	else
+	{
+		shader->sendUniform("numLights", lightCount);
+	}
 	// Material
 	shader->sendUniform("material.diffuse", 0);
 	shader->sendUniform("material.specular", 1);
@@ -153,7 +161,7 @@ void Object::draw(Shader* shader, Camera* camera, std::vector<Light> lights) {
 	// Lights
 	for (int i = 0; i < lights.size(); i++) {
 		std::string prefix = "lights[" + std::to_string(i) + "].";
-		
+	
 		//shader->sendUniform("NUM_LIGHTS", lights.size());
 		shader->sendUniform(prefix + "type", lights[i].type);
 		shader->sendUniform(prefix + "position", camera->getView() * lights[i].position);

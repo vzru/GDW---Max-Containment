@@ -68,7 +68,6 @@ public:
 	void controllerInput(unsigned short index, Input::Button button);
 	void controllerSpecial(unsigned short index, Input::Triggers triggers, Input::Sticks sticks);
 
-	void createDropItem(glm::vec3 pos);
 	void drawAmmo();
 	void createDropItem(glm::vec3 pos, int type = 0);
 private:
@@ -91,6 +90,18 @@ private:
 		Level* collision;
 		Object *map, *hitboxes;
 		Camera *camera;
+		
+		// @@@@@ FOR SEAN @@@@@ Light positions, have to move them up from floor position
+		std::vector<glm::vec3> lightsPos =
+		{
+			// Examples for formatting
+			{ 0.0f, 0.0f, 0.0f },		
+			{ 10.0f, 10.0f, 10.0f }
+
+		};
+
+		std::vector<Light*> lightPointers;
+		std::vector<Light> lights;
 		Light *light, *light2, *light3;
 		glm::vec3 start = { 4.f, 0.f, 6.f };
 		glm::vec4 exit = { 77.f, 81.f, 67.f, 70.f };
