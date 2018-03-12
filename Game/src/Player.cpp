@@ -7,7 +7,7 @@
 #include "Level.h"
 
 Player::Player(glm::vec3 pos) : Object(pos), bullet(new Bullet(this)) {
-	life = 20.f;
+	life = 15.f;
 }
 Player::~Player() {
 	delete bullet;
@@ -67,7 +67,7 @@ void Player::reset(glm::vec3 pos) {
 	velocity = { 0.f, 0.f, 0.f };
 	acceleration = { 0.f, 0.f, 0.f };
 	cooldown = 0.f;
-	life = 20.f;
+	life = 15.f;
 	ammo = 30.0f;
 	ammoDepo = 90.0f;
 	reloadCd = 0.0f;

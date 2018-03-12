@@ -97,7 +97,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	//Sound* sound = new Sound("assets/sounds/SW.mp3", true, 2);
 	soundList.push_back(sound);
 	soundList[0]->createChannel(2);
-	soundList[0]->setVolume(0.05f);
+	soundList[0]->setVolume(0.03f);
 
 	//Initialize Assets
 	// level
@@ -325,12 +325,12 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	// Initialize Sounds
 	//Sound* sound = new Sound("assets/sounds/game soundtrack.wav", true, 2);
 	//soundList.push_back(sound);
-	sound = new Sound("assets/sounds/ambient machine noise.wav", true, 2);
-	soundList.push_back(sound);
-	sound = new Sound("assets/sounds/Gunshot_sound.wav", true, 3);
-	soundList.push_back(sound);
-	sound = new Sound("assets/sounds/Reload_sound.wav", false, 3);
-	soundList.push_back(sound);
+	//sound = new Sound("assets/sounds/ambient machine noise.wav", true, 2);
+	//soundList.push_back(sound);
+	//sound = new Sound("assets/sounds/Gunshot_sound.wav", true, 3);
+	//soundList.push_back(sound);
+	//sound = new Sound("assets/sounds/Reload_sound.wav", false, 3);
+	//soundList.push_back(sound);
 
 	Sound* sound1 = new Sound("assets/sounds/ambient machine noise.wav", true, 2);
 	soundList.push_back(sound1);
@@ -338,6 +338,8 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	soundList.push_back(sound2);
 	Sound* sound3 = new Sound("assets/sounds/Reload_sound.wav", false, 3);
 	soundList.push_back(sound3);
+	Sound* sound4 = new Sound("assets/sounds/Dialogue Placeholder.wav", false, 2);
+	soundList.push_back(sound4);
 
 
 	// Initialize Player
@@ -767,6 +769,7 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 			soundList[0]->stopSound();
 			soundList[1]->playSound(2);
 			soundList[1]->setVolume(0.05f);
+			soundList[4]->playSound(2);
 			break;
 		case State::Pause:
 			state = State::Play;
@@ -1036,7 +1039,13 @@ void Game::controllerInput(unsigned short index, Input::Button button) {
 			break;
 		case State::Control:
 			if (button == Input::Button::B)
+			{
+				soundList[0]->stopSound();
+				soundList[1]->playSound(2);
+				soundList[1]->setVolume(0.05f);
+				soundList[4]->playSound(2);
 				state = State::Play;
+			}
 			break;
 		default:
 			break;
@@ -1135,5 +1144,6 @@ void Game::reset()
 	soundList[1]->stopSound();
 	soundList[0]->playSound(2);
 	soundList[0]->setVolume(0.05f);
+	soundList[4]->stopSound();
 	state = State::Menu;
 }

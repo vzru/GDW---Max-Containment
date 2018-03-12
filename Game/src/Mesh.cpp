@@ -18,6 +18,7 @@ struct Face {
 	unsigned int normals[3];
 };
 
+
 Mesh::Mesh() {}
 Mesh::~Mesh() {
 	unload();
@@ -31,7 +32,6 @@ bool Mesh::load(const std::string &file) {
 		std::cout << "Mesh.load: Could not open the file " << file << std::endl;
 		return false;
 	}
-
 	std::string inputString;
 
 	std::vector<glm::vec3> vertexData;
@@ -50,24 +50,28 @@ bool Mesh::load(const std::string &file) {
 		if (inputString[0] == '#') {
 			std::cout << "Line is comment, skipping: " << inputString << std::endl;
 			continue;
-		} else if (inputString[0] == 'v') {
+		}
+		else if (inputString[0] == 'v') {
 			if (inputString[1] == ' ') {
 				// this is a vertex data
 				glm::vec3 temp;
 				sscanf_s(inputString.c_str(), "v %f %f %f", &temp.x, &temp.y, &temp.z);
 				vertexData.push_back(temp);
-			} else if (inputString[1] == 't') {
+			}
+			else if (inputString[1] == 't') {
 				// this is UV data
 				glm::vec2 temp;
 				sscanf_s(inputString.c_str(), "vt %f %f", &temp.x, &temp.y);
 				textureData.push_back(temp);
-			} else if (inputString[1] == 'n') {
+			}
+			else if (inputString[1] == 'n') {
 				// this is normal data
 				glm::vec3 temp;
 				sscanf_s(inputString.c_str(), "vn %f %f %f", &temp.x, &temp.y, &temp.z);
 				normalData.push_back(temp);
 			}
-		} else if (inputString[0] == 'f') {
+		}
+		else if (inputString[0] == 'f') {
 			// this is face data
 			Face temp;
 			sscanf_s(inputString.c_str(), "f %u/%u/%u %u/%u/%u %u/%u/%u",
@@ -75,7 +79,8 @@ bool Mesh::load(const std::string &file) {
 				&temp.vertices[1], &temp.textureUVs[1], &temp.normals[1],
 				&temp.vertices[2], &temp.textureUVs[2], &temp.normals[2]);
 			faceData.push_back(temp);
-		} else {
+		}
+		else {
 			std::cout << "Line not recognized, skipping: " << inputString << std::endl;
 			continue;
 		}

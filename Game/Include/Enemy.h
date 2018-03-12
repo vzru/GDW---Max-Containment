@@ -14,5 +14,12 @@ public:
 	float movementSpeed; // amount to divide dt by
 	float damage; // damage dealt to the player per attack
 	float knockbackCD = 0.0f;
+
 private:
+	//void addMorphTarget(std::string filePath);
+	//std::vector<std::shared_ptr<Mesh>> m_pMorphTargets;
+	//int m_pCurrentKeyframe;
+	//int m_pNextKeyframe;
+	//float m_pLocalMorphTime; // the 't' value used for lerp between [0, 1]
+
 };
