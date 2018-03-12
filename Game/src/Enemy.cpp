@@ -9,15 +9,14 @@ Enemy::Enemy(glm::vec3 pos) : Object(pos) {
 }
 Enemy::~Enemy() {}
 
-Enemy* Enemy::update(float dt, Level* level) {
+void Enemy::update(float dt, Level* level) {
 	collide(dt, level, true);
 
-	position += velocity * (dt / moveSpeed);
+	position += velocity * (dt / movementSpeed);
 
 	// player is invincible
 	if (cooldown > 0.f)
 		cooldown -= dt / 1000.f;
 
 	Object::update(dt);
-	return this;
 }

@@ -49,7 +49,7 @@ Material::~Material() {
 //	}
 //}
 
-Material* Material::load(Type::Texture type, Texture *texture) {
+void Material::load(Type::Texture type, Texture *texture) {
 	switch (type) {
 	case Type::Texture::DIFFUSE:
 		diffuse = texture;
@@ -66,11 +66,9 @@ Material* Material::load(Type::Texture type, Texture *texture) {
 		exit(0);
 		break;
 	}
-	return this;
 }
 
-Material* Material::setData(float specExp, glm::vec3 &color) {
+void Material::setData(float specExp, glm::vec3 &color) {
 	specExponent = specExp;
 	hue = color;
-	return this;
 }
