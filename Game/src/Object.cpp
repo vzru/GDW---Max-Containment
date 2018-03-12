@@ -135,7 +135,7 @@ void Object::update(float dt) {
 	transform = tran * rotate * scal;
 }
 
-void Object::draw(Shader* shader, Camera* camera, std::vector<Light> lights, float lightCount) {
+void Object::draw(Shader* shader, Camera* camera, std::vector<Light*> lights, float lightCount) {
 	// Start
 	shader->bind();
 	// Basic
@@ -144,14 +144,15 @@ void Object::draw(Shader* shader, Camera* camera, std::vector<Light> lights, flo
 	shader->sendUniformMat4("uProj", glm::value_ptr(camera->getProj()), false);
 	shader->sendUniform("objectColor", color);
 	//shader->sendUniform("ammo", ammo);
-	if (lightCount == 0.0f)
-	{
-		shader->sendUniform("numLights", lights.size());
-	}
-	else
-	{
-		shader->sendUniform("numLights", lightCount);
-	}
+	//if (lightCount == 0.0f)
+	//{
+	//	std::cout << lights.size() << std::endl;
+	//	shader->sendUniform("numLights", lights.size());
+	//}
+	//else
+	//{
+	//	shader->sendUniform("numLights", lightCount);
+	//}
 	// Material
 	shader->sendUniform("material.diffuse", 0);
 	shader->sendUniform("material.specular", 1);
@@ -163,19 +164,19 @@ void Object::draw(Shader* shader, Camera* camera, std::vector<Light> lights, flo
 		std::string prefix = "lights[" + std::to_string(i) + "].";
 	
 		//shader->sendUniform("NUM_LIGHTS", lights.size());
-		shader->sendUniform(prefix + "type", lights[i].type);
-		shader->sendUniform(prefix + "position", camera->getView() * lights[i].position);
-		shader->sendUniform(prefix + "direction", camera->getView() * lights[i].direction);
-		shader->sendUniform(prefix + "original", camera->getView() * lights[i].original);
-		shader->sendUniform(prefix + "ambient", lights[i].ambient);
-		shader->sendUniform(prefix + "diffuse", lights[i].diffuse);
-		shader->sendUniform(prefix + "specular", lights[i].specular);
-		shader->sendUniform(prefix + "specExponent", lights[i].specExponent);
-		shader->sendUniform(prefix + "spotExponent", lights[i].spotExponent);
-		shader->sendUniform(prefix + "cutoff", lights[i].cutoff);
-		shader->sendUniform(prefix + "innerCutoff", lights[i].innerCutoff);
-		shader->sendUniform(prefix + "partial", lights[i].partial);
-		shader->sendUniform(prefix + "attenuation", lights[i].attenuation);
+		shader->sendUniform(prefix + "type", lights[i]->type);
+		shader->sendUniform(prefix + "position", camera->getView() * lights[i]->position);
+		shader->sendUniform(prefix + "direction", camera->getView() * lights[i]->direction);
+		shader->sendUniform(prefix + "original", camera->getView() * lights[i]->original);
+		shader->sendUniform(prefix + "ambient", lights[i]->ambient);
+		shader->sendUniform(prefix + "diffuse", lights[i]->diffuse);
+		shader->sendUniform(prefix + "specular", lights[i]->specular);
+		shader->sendUniform(prefix + "specExponent", lights[i]->specExponent);
+		shader->sendUniform(prefix + "spotExponent", lights[i]->spotExponent);
+		shader->sendUniform(prefix + "cutoff", lights[i]->cutoff);
+		shader->sendUniform(prefix + "innerCutoff", lights[i]->innerCutoff);
+		shader->sendUniform(prefix + "partial", lights[i]->partial);
+		shader->sendUniform(prefix + "attenuation", lights[i]->attenuation);
 	}
 	// Textures
 	glActiveTexture(GL_TEXTURE0);

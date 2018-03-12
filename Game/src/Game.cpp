@@ -81,7 +81,6 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	screen.light->specular = { 1.f, 1.f, 1.f };
 	screen.light->specExponent = 50.f;
 	screen.light->attenuation = { 1.f, 0.1f, 0.01f };
-	screen.light->original = screen.light->position;
 	screen.loading = new Object();
 	screen.loading->loadMesh(assets->loadMesh("screen", "screen.obj"));
 	screen.loading->loadTexture(Type::DIFFUSE, assets->loadTexture("loading", "loading.png"));
@@ -91,7 +90,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 		system("pause");
 		exit(0);
 	}
-	screen.loading->draw(program["Phong"], screen.camera, { *screen.light });
+	screen.loading->draw(program["Phong"], screen.camera, { screen.light });
 	glutSwapBuffers();
 
 	//Initialize Assets
@@ -168,7 +167,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	level.light = new Light();
 	level.light->type = (unsigned int)Type::Light::POINT;
 	level.light->position = { 0.f, 1.f, 0.f, 1.f };
-	level.light->original = level.light->position;
+	//level.light->original = level.light->position;
 	level.light->ambient = { 0.15f, 0.15f, 0.15f };
 	level.light->diffuse = { 0.7f, 0.7f, 0.7f };
 	level.light->specular = { 1.f, 1.f, 1.f };
@@ -179,6 +178,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	// @@@@@ FOR SEAN @@@@@@	Loads in the array containing all the lights in the level
 	for (int i = 0; i < level.lightsPos.size(); i++)
 	{
+		std::cout << "Load Light " << i << std::endl;
 		Light *light = new Light();
 		light->type = (unsigned int)Type::Light::SPOT;
 		light->position = {level.lightsPos[i], 1.f };
@@ -212,12 +212,12 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	level.light2->attenuation = { 0.5f, 0.1f, 0.01f };
 	level.lightPointers.push_back(level.light2);
 
-	level.lights.reserve(level.lightPointers.size());// *sizeof(Light));
-
-	for (int i = 0; i < level.lightPointers.size(); i++)
-	{
-		level.lights[i] = *level.lightPointers[i];
-	}
+	//level.lights.reserve(level.lightPointers.size());// *sizeof(Light));
+	//
+	//for (int i = 0; i < level.lightPointers.size(); i++)
+	//{
+	//	level.lights[i] = *level.lightPointers[i];
+	//}
 
 	/*level.light3 = new Light();
 	level.light3->type = (unsigned int)Type::Light::SPOT;
@@ -335,7 +335,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	dropHP = new Object();
 	dropHP->loadMesh(assets->meshes["health"]);
 	dropHP->loadTexture(Type::Texture::DIFFUSE, assets->textures["item"]);
-	dropHP->loadTexture(Type::Texture::NORMAL, assets->textures["item"]);
+	//dropHP->loadTexture(Type::Texture::NORMAL, assets->textures["item"]);
 	dropHP->loadTexture(Type::Texture::SPECULAR, assets->textures["fullSpecular"]);
 	dropHP->update(0.f);
 	//dropHP->ammo = 30.0f;
@@ -345,7 +345,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	dropAmmo = new Object();
 	dropAmmo->loadMesh(assets->meshes["ammo"]);
 	dropAmmo->loadTexture(Type::Texture::DIFFUSE, assets->textures["item"]);
-	dropAmmo->loadTexture(Type::Texture::NORMAL, assets->textures["item"]);
+	//dropAmmo->loadTexture(Type::Texture::NORMAL, assets->textures["item"]);
 	dropAmmo->loadTexture(Type::Texture::SPECULAR, assets->textures["fullSpecular"]);
 	dropAmmo->update(0.f);
 	dropAmmo->ammo = 30.0f;
@@ -365,7 +365,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	hud.light = new Light();
 	hud.light->type = (unsigned int)Type::Light::DIRECTIONAL;
 	hud.light->direction = { 0.f, -1.f, 0.f, 0.f };
-	hud.light->original = level.light->direction;
+	//hud.light->original = level.light->direction;
 	hud.light->ambient = { 0.15f, 0.15f, 0.15f };
 	hud.light->diffuse = { 0.7f, 0.7f, 0.7f };
 	hud.light->specular = { 1.f, 1.f, 1.f };
@@ -438,7 +438,7 @@ Game::~Game() {
 	delete level.light;
 	delete level.light2;
 	delete level.light3;
-	for (int i = 0; i < level.lights.size(); i++) {
+	for (int i = 0; i < level.lightPointers.size(); i++) {
 		delete level.lightPointers[i];
 	}
 	delete screen.menu;
@@ -543,11 +543,13 @@ void Game::update() {
 		hud.healthBar->update(deltaTime);
 		hud.ammo.number->update(deltaTime);
 		level.camera->update(player->getPosition());
-		level.light->position = glm::vec4(player->getPosition() + glm::vec3(0.f, 1.f, 0.f), 1.f);
-		level.light2->position = glm::vec4(player->getPosition() + glm::vec3(0.f, 2.f, 0.f), 1.f);
-		//level.light3->position = glm::vec4(player->getPosition() + glm::vec3(0.f, 0.1f, 0.f), 1.f);
+		// Point Light Position
+		level.lightPointers[0]->position = glm::vec4(player->getPosition() + glm::vec3(0.f, 2.f, 0.f), 1.f);
+		// Spot Light Position and Rotation
+		level.lightPointers[6]->position = glm::vec4(player->getPosition() + glm::vec3(0.f, 1.f, 0.f), 1.f);
 		float angle = glm::radians(player->getRotation().y);
-		level.light->direction = { cos(angle), -0.1f, -sin(angle), 0.f };
+		level.lightPointers[6]->direction = { cos(angle), -0.1f, -sin(angle), 0.f };
+		//level.light3->position = glm::vec4(player->getPosition() + glm::vec3(0.f, 0.1f, 0.f), 1.f);
 		//level.light3->direction = { cos(angle), 0.45f, -sin(angle), 0.f };
 
 		// bullet collision
@@ -650,36 +652,36 @@ void Game::draw() {
 	switch (state) {
 	case State::Pause:
 		//screen.pause->draw(program["Phong"], level.camera, { *hud.light });
-		screen.pause->draw(program["Phong"], screen.camera, { *screen.light });
+		screen.pause->draw(program["Phong"], screen.camera, { screen.light });
 		break;
 	case State::Play:
-		player->draw(program["PhongSpot"], level.camera, level.lights); // @@@@@ FOR SEAN @@@@@ Extra argument to take in how many lights are in the array
+		player->draw(program["PhongSpot"], level.camera, level.lightPointers ); // @@@@@ FOR SEAN @@@@@ Extra argument to take in how many lights are in the array
 		for (auto& enemy : enemies)
-			enemy->draw(program["PhongSpot"], level.camera, level.lights);
-		level.map->draw(program["PhongSpot"], level.camera, level.lights);
+			enemy->draw(program["PhongSpot"], level.camera, level.lightPointers);
+		level.map->draw(program["PhongSpot"], level.camera, level.lightPointers);
 		//level.hitboxes->draw(program["PhongColorSides"], level.camera, { *level.light });
-		hud.healthBar->draw(program["PhongNoTexture"], level.camera, { *hud.light });
-		hud.display->draw(program["Phong"], level.camera, { *hud.light });
+		hud.healthBar->draw(program["PhongNoTexture"], level.camera, { hud.light });
+		hud.display->draw(program["Phong"], level.camera, { hud.light });
 		drawAmmo();
 
 		for (int i = 0; i < dropItems.size(); i++)
 			if (!dropItems[i]->collect)
-				dropItems[i]->draw(program["PhongSpot"], level.camera, level.lights);// , *level.light3 });
+				dropItems[i]->draw(program["PhongSpot"], level.camera, level.lightPointers);// , *level.light3 });
 
 		break;
 	case State::Menu:
-		screen.menu->draw(program["Phong"], screen.camera, { *screen.light });
-		screen.play.obj->draw(program["PhongNoTexture"], screen.camera, { *screen.light });
-		screen.quit.obj->draw(program["PhongNoTexture"], screen.camera, { *screen.light });
+		screen.menu->draw(program["Phong"], screen.camera, { screen.light });
+		screen.play.obj->draw(program["PhongNoTexture"], screen.camera, { screen.light });
+		screen.quit.obj->draw(program["PhongNoTexture"], screen.camera, { screen.light });
 		break;
 	case State::Win:
-		screen.win->draw(program["Phong"], screen.camera, { *screen.light });
+		screen.win->draw(program["Phong"], screen.camera, { screen.light });
 		break;
 	case State::Lose:
-		screen.lose->draw(program["Phong"], screen.camera, { *screen.light });
+		screen.lose->draw(program["Phong"], screen.camera, { screen.light });
 		break;
 	case State::Control:
-		screen.controls->draw(program["Phong"], screen.camera, { *screen.light });
+		screen.controls->draw(program["Phong"], screen.camera, { screen.light });
 		break;
 	default:
 		break;
@@ -1065,18 +1067,18 @@ void Game::drawAmmo() {
 	if (hud.ammo.number) {
 		hud.ammo.number->ammo = player->ammo / 10;
 		hud.ammo.number->setPosition(hud.ammo.positions[0]);
-		hud.ammo.number->draw(program["numbers"], level.camera, { *hud.light });
+		hud.ammo.number->draw(program["numbers"], level.camera, { hud.light });
 		hud.ammo.number->ammo = player->ammo;
 		hud.ammo.number->setPosition(hud.ammo.positions[1]);
-		hud.ammo.number->draw(program["numbers"], level.camera, { *hud.light });
+		hud.ammo.number->draw(program["numbers"], level.camera, { hud.light });
 		hud.ammo.number->ammo = player->ammoDepo / 100;
 		hud.ammo.number->setPosition(hud.ammo.positions[2]);
-		hud.ammo.number->draw(program["numbers"], level.camera, { *hud.light });
+		hud.ammo.number->draw(program["numbers"], level.camera, { hud.light });
 		hud.ammo.number->ammo = player->ammoDepo / 10;
 		hud.ammo.number->setPosition(hud.ammo.positions[3]);
-		hud.ammo.number->draw(program["numbers"], level.camera, { *hud.light });
+		hud.ammo.number->draw(program["numbers"], level.camera, { hud.light });
 		hud.ammo.number->ammo = player->ammoDepo;
 		hud.ammo.number->setPosition(hud.ammo.positions[4]);
-		hud.ammo.number->draw(program["numbers"], level.camera, { *hud.light });
+		hud.ammo.number->draw(program["numbers"], level.camera, { hud.light });
 	}
 }

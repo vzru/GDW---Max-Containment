@@ -54,7 +54,7 @@ void Player::update(float dt, Level* level) {
 	Object::update(dt);
 }
 
-void Player::draw(Shader* shader, Camera* camera, std::vector<Light> lights) {
+void Player::draw(Shader* shader, Camera* camera, std::vector<Light*> lights) {
 	for (auto bullet : bullets) {
 		bullet->draw(shader, camera, lights);
 	}

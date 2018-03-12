@@ -56,7 +56,7 @@ public:
 	void collide(float dt, Level* level, bool ai = false);
 	virtual void update(float dt);
 	//virtual void physics(float dt);
-	virtual void draw(Shader *shader, Camera *camera, std::vector<Light> lights, float lightCount = 0.0f);
+	virtual void draw(Shader *shader, Camera *camera, std::vector<Light*> lights, float lightCount = 0.0f);
 
 	// Physical properties
 	glm::vec4 color;

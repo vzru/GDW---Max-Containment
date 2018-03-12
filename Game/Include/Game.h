@@ -95,13 +95,15 @@ private:
 		std::vector<glm::vec3> lightsPos =
 		{
 			// Examples for formatting
-			{ 0.0f, 0.0f, 0.0f },		
-			{ 10.0f, 10.0f, 10.0f }
-
+			{ 16.0f, 10.0f, 10.0f },		
+			{ 33.0f, 15.0f, 49.0f },
+			{ 151.0f, 10.0f, 11.0f },
+			{ 2.0f, 10.0f, 25.0f },
+			{ 86.0f, 10.0f, 65.0f },
 		};
 
 		std::vector<Light*> lightPointers;
-		std::vector<Light> lights;
+		//std::vector<Light> lights;
 		Light *light, *light2, *light3;
 		glm::vec3 start = { 4.f, 0.f, 6.f };
 		glm::vec4 exit = { 77.f, 81.f, 67.f, 70.f };

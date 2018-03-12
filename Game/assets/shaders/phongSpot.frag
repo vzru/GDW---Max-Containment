@@ -1,6 +1,6 @@
 #version 420
 
-#define MAX_NUM_LIGHTS 128
+#define MAX_NUM_LIGHTS 7
 
 #define POINT 0
 #define DIRECT 1
@@ -35,11 +35,11 @@ struct Material {
 	float specExponent;
 };
 
-uniform Light lights[MAX_NUM_LIGHTS];
+#define numLights 7
+
+uniform Light lights[numLights];
 
 uniform Material material;
-
-uniform float numLights;
 
 in vec3 position;
 in vec2 texCoord;
