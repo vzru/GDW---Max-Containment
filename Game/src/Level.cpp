@@ -13,7 +13,7 @@ bool Level::load(const std::string & file) {
 	std::ifstream input;
 	input.open(file);
 	if (!input) {
-		std::cout << "Level.loadFromFile: Could not open the file " << file << std::endl;
+		std::cout << "Level.load: Could not open the file " << file << std::endl;
 		return false;
 	}
 

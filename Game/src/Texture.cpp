@@ -29,15 +29,18 @@ bool Texture::load(const std::string &file) {
 	return true;
 }
 
-void Texture::unload() {
+Texture* Texture::unload() {
 	if (texObj) glDeleteTextures(1, &texObj);
 	texObj = 0;
+	return this;
 }
 
-void Texture::bind() {
+Texture* Texture::bind() {
 	glBindTexture(GL_TEXTURE_2D, texObj);
+	return this;
 }
 
-void Texture::unbind() {
+Texture* Texture::unbind() {
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
+	return this;
 }

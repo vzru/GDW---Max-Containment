@@ -17,7 +17,7 @@ Player::~Player() {
 	}
 }
 
-void Player::update(float dt, Level* level) {
+Player* Player::update(float dt, Level* level) {
 	// movement
 	velocity += acceleration * (dt / 200.f);
 	//if (glm::length(velocity) > 4.f)
@@ -25,7 +25,7 @@ void Player::update(float dt, Level* level) {
 	collide(dt, level);
 	if (glm::length(velocity) > 0.f)
 
-	position += velocity * (dt / 200.f);
+		position += velocity * (dt / 200.f);
 	if (glm::length(velocity) > 0.f)
 		velocity = glm::normalize(velocity) * glm::length(velocity) * 0.9f;
 
@@ -43,8 +43,8 @@ void Player::update(float dt, Level* level) {
 		}
 	}
 
-	if(reloadCd > 0)
-		reloadCd -= dt/1000.f;
+	if (reloadCd > 0)
+		reloadCd -= dt / 1000.f;
 
 	reloading();
 	//std::cout << "Player Position: " << acceleration.x << '/' << acceleration.y << '/' << acceleration.z << std::endl;
@@ -52,17 +52,27 @@ void Player::update(float dt, Level* level) {
 
 	// create transformation matrix
 	Object::update(dt);
+	return this;
 }
 
+<<<<<<< HEAD
 void Player::draw(Shader* shader, Camera* camera, std::vector<Light*> lights, float lightCount) {
+=======
+Player* Player::draw(Shader* shader, Camera* camera, std::vector<Light*> lights) {
+>>>>>>> ca276360e1b38360d81f291610aa3ba3e36982b5
 	for (auto bullet : bullets) {
 		bullet->draw(shader, camera, lights, lightCount);
 	}
 
+<<<<<<< HEAD
 	Object::draw(shader, camera, lights, lightCount);
+=======
+	Object::draw(shader, camera, lights);
+	return this;
+>>>>>>> ca276360e1b38360d81f291610aa3ba3e36982b5
 }
 
-void Player::reset(glm::vec3 pos) {
+Player* Player::reset(glm::vec3 pos) {
 	position = pos;
 	velocity = { 0.f, 0.f, 0.f };
 	acceleration = { 0.f, 0.f, 0.f };
@@ -72,6 +82,7 @@ void Player::reset(glm::vec3 pos) {
 	ammoDepo = 90.0f;
 	reloadCd = 0.0f;
 	firing = false;
+	return this;
 }
 
 bool Player::fire() {
@@ -84,6 +95,7 @@ bool Player::fire() {
 		bullets.push_back(new Bullet(*bullet));
 		cooldown = RateOfFire;
 		//std::cout << ammo << '/' << ammoDepo << std::endl;
+<<<<<<< HEAD
 		//if (ammo <= 0 && ammoDepo > 0.0f)
 		//{
 		//	if (ammoDepo > 30.0f)
@@ -100,22 +112,29 @@ bool Player::fire() {
 		//	std::cout << "Reload!" << std::endl;
 		//}
 		return true;
+=======
+		if (ammo <= 0 && ammoDepo > 0.0f) {
+			if (ammoDepo > 30.0f) {
+				ammo = 30.0f;
+				ammoDepo -= 30.0f;
+			} else if (ammoDepo > 0.0f) {
+				ammo = ammoDepo;
+				ammoDepo = 0.0f;
+			} reloadCd = 3.0f;
+			std::cout << "Reload!" << std::endl;
+		} return true;
+>>>>>>> ca276360e1b38360d81f291610aa3ba3e36982b5
 	} return false;
 }
 
-void Player::reloading()
-{
+Player* Player::reloading() {
 	//std::cout << ammo << '/' << ammoDepo << '/' << reload << std::endl;
-	if ((ammo <= 0 && ammoDepo > 0.0f) || reload == true)
-	{
+	if ((ammo <= 0 && ammoDepo > 0.0f) || reload == true) {
 		float diff = 30.f - ammo;
-		if (ammoDepo > 30.0f)
-		{
+		if (ammoDepo > 30.0f) {
 			ammo += diff;
 			ammoDepo -= diff;
-		}
-		else if (ammoDepo > 0.0f)
-		{
+		} else if (ammoDepo > 0.0f) {
 			ammo = ammoDepo;
 			ammoDepo = 0.0f;
 		}
@@ -123,4 +142,5 @@ void Player::reloading()
 		reload = false;
 		std::cout << "Reload!" << std::endl;
 	}
+	return this;
 }
