@@ -69,6 +69,7 @@ public:
 	void controllerSpecial(unsigned short index, Input::Triggers triggers, Input::Sticks sticks);
 
 	void drawAmmo();
+	void reset();
 	void createDropItem(glm::vec3 pos, int type = 0);
 private:
 	std::vector<Sound*> soundList;
@@ -95,14 +96,15 @@ private:
 		std::vector<glm::vec3> lightsPos =
 		{
 			// Examples for formatting
-			{ 16.0f, 10.0f, 10.0f },		
-			{ 33.0f, 15.0f, 49.0f },
-			{ 151.0f, 10.0f, 11.0f },
-			{ 2.0f, 10.0f, 25.0f },
-			{ 86.0f, 10.0f, 65.0f },
+			{ 4.25f, 10.0f, 29.5f },		
+			{ 32.75f, 10.0f, 48.0f },
+			//{ 151.0f, 10.0f, 11.0f },
+			//{ 2.0f, 10.0f, 25.0f },
+			{ 79.5f, 10.0f, 68.0f }
 		};
 
 		std::vector<Light*> lightPointers;
+		//std::vector<Light*> lightNoFlash;
 		//std::vector<Light> lights;
 		Light *light, *light2, *light3;
 		glm::vec3 start = { 4.f, 0.f, 6.f };
@@ -110,7 +112,7 @@ private:
 		std::tuple<std::vector<glm::vec2>, std::vector<glm::vec2>, std::vector<glm::vec2>>
 			enemies = {
 			{
-				{ 2.86804,	0.8909 },		{ 32.4772, 47.1091 },		{ 63.368,  29.1091 },		{ 27.5863, 3.10911 },
+				{ 2.86804, 30.8909 },		{ 32.4772, 47.1091 },		{ 63.368,  29.1091 },		{ 27.5863, 3.10911 },
 				{ 33.5863, 3.10911 },		{ 35.368,  9.10911 },		{ 29.5863, 8.89089 },		{ 57.368,  3.10911 },
 				{ 33.5863, 8.89089 },		{ 151.368, 20.8909 },		{ 127.368, 4.89089 },		{ 133.368, 4.89089 },
 				{ 113.368, 4.89089 },		{ 105.368, 4.89089 },		{ 87.5863, 2.89089 },		{ 135.368, 11.1091 },
@@ -135,6 +137,8 @@ private:
 	std::tuple<Enemy*, Enemy*, Enemy*> enemys;
 	Object *dropHP, *dropAmmo;
 	std::vector<Object*> dropItems;
+	bool lightOn = false;
+	void loadDrops();
 	void loadEnemies(), clearEnemies();
 	void clearDrops();
 	// hud

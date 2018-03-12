@@ -93,6 +93,12 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	screen.loading->draw(program["Phong"], screen.camera, { screen.light });
 	glutSwapBuffers();
 
+	Sound* sound = new Sound("assets/sounds/game soundtrack.wav", true, 2);
+	//Sound* sound = new Sound("assets/sounds/SW.mp3", true, 2);
+	soundList.push_back(sound);
+	soundList[0]->createChannel(2);
+	soundList[0]->setVolume(0.05f);
+
 	//Initialize Assets
 	// level
 	assets->loadMesh("level", "Laboratory Level Triangulated.obj");
@@ -104,7 +110,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	assets->loadTexture("pause", "pause.png");
 	assets->loadTexture("win", "win.png");
 	assets->loadTexture("lose", "lose.png");
-	assets->loadTexture("controls", "controls.png");
+	assets->loadTexture("controls", "controlsNew.png");
 	assets->loadTexture("menu", "menu.png");
 	// buttons
 	assets->loadMesh("play", "Play Button.obj");
@@ -136,19 +142,14 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	assets->loadTexture("enemy0 normal", "enemy3N.png");
 	assets->loadTexture("enemy1 normal", "enemy1N.png");
 	assets->loadTexture("enemy2 normal", "enemy2N.png");
-	
-	Sound* sound = new Sound("assets/sounds/game soundtrack.wav", true, 2);
-	//Sound* sound = new Sound("assets/sounds/SW.mp3", true, 2);
-	soundList.push_back(sound);
-	soundList[0]->createChannel(2);
-	soundList[0]->setVolume(0.05f);
-	
-	program["PhongSpot"] = new Shader();
+
+
+	/*program["PhongSpot"] = new Shader();
 	if (!program["PhongSpot"]->load("assets/shaders/Phong.vert", "assets/shaders/phongSpot.frag")) {
 		std::cout << "Phong Shaders failed to initialize." << std::endl;
 		system("pause");
 		exit(0);
-	}
+	}*/
 
 	// Initialize level
 	level.map = new Object();
@@ -163,7 +164,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	level.camera = new Camera(windowSize);
 	level.camera->setPosition({ 0.f, 12.5f, 2.5f });
 	level.camera->update({ 0.f,0.f,0.f });
-	
+
 	level.light = new Light();
 	level.light->type = (unsigned int)Type::Light::POINT;
 	level.light->position = { 0.f, 1.f, 0.f, 1.f };
@@ -174,14 +175,15 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	level.light->specExponent = 50.f;
 	level.light->attenuation = { 1.f, 1.f, 1.f };
 	level.lightPointers.push_back(level.light);
-	
+	//level.lightNoFlash.push_back(level.light);
+
 	// @@@@@ FOR SEAN @@@@@@	Loads in the array containing all the lights in the level
 	for (int i = 0; i < level.lightsPos.size(); i++)
 	{
-		std::cout << "Load Light " << i << std::endl;
 		Light *light = new Light();
 		light->type = (unsigned int)Type::Light::SPOT;
-		light->position = {level.lightsPos[i], 1.f };
+		light->position = { level.lightsPos[i], 1.f };
+		std::cout << "Load Light " << i << ':' << light->position.x << '/' << light->position.z << std::endl;
 		light->direction = { 0.f, -1.0f, 0.f, 0.f };
 		light->ambient = { 0.15f, 0.15f, 0.15f };
 		light->diffuse = { 0.7f, 0.7f, 0.7f };
@@ -190,9 +192,10 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 		light->spotExponent = 1.f;
 		light->cutoff = glm::radians(55.f);
 		light->innerCutoff = glm::radians(1.f);
-		light->partial = 0.3;
+		light->partial = 0.1;
 		light->attenuation = { 0.5f, 0.1f, 0.01f };
 		level.lightPointers.push_back(light);
+		//level.lightNoFlash.push_back(light);
 	}
 
 	// Flashlight gets put into the last slot
@@ -208,7 +211,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	level.light2->spotExponent = 1.f;
 	level.light2->cutoff = glm::radians(55.f);
 	level.light2->innerCutoff = glm::radians(1.f);
-	level.light2->partial = 0.3;
+	level.light2->partial = 0.1;
 	level.light2->attenuation = { 0.5f, 0.1f, 0.01f };
 	level.lightPointers.push_back(level.light2);
 
@@ -233,7 +236,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	level.light3->innerCutoff = glm::radians(1.f);
 	level.light3->partial = 0.3;
 	level.light3->attenuation = { 1.f, 0.5f, 0.1f };*/
-	
+
 	// Initialize images
 	screen.menu = new Object();
 	screen.pause = new Object();
@@ -256,7 +259,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	//screen.pause->setRotation({ 10.f, 0.f, 0.f });
 	//screen.pause->setPosition({ 0.f, 10.f, 0.f });
 	//screen.pause->update(0.f);
-	
+
 	// Initialize buttons
 	screen.play.obj = new Object({ 0.f, 0.2f, 0.3f });
 	screen.play.pos = { 0.30677083f, 0.73802083f, 0.44351851f, 0.6648f };
@@ -299,6 +302,24 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	if (!program["numbers"]->load("assets/shaders/Phong.vert", "assets/shaders/numbers.frag")) {
 		std::cout << "Number Shaders failed to initialize." << std::endl;
 		system("pause");	exit(0);
+	}
+	program["DropItems"] = new Shader();
+	if (!program["DropItems"]->load("assets/shaders/Phong.vert", "assets/shaders/DropItems.frag")) {
+		std::cout << "Phong Shaders failed to initialize." << std::endl;
+		system("pause");
+		exit(0);
+	}
+	program["NoFlash"] = new Shader();
+	if (!program["NoFlash"]->load("assets/shaders/Phong.vert", "assets/shaders/NoFlash.frag")) {
+		std::cout << "Phong Shaders failed to initialize." << std::endl;
+		system("pause");
+		exit(0);
+	}
+	program["NoFlashNoNorm"] = new Shader();
+	if (!program["NoFlashNoNorm"]->load("assets/shaders/Phong.vert", "assets/shaders/NoFlashNoNorm.frag")) {
+		std::cout << "Phong Shaders failed to initialize." << std::endl;
+		system("pause");
+		exit(0);
 	}
 
 	// Initialize Sounds
@@ -387,14 +408,24 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	std::get<0>(enemys)->loadTexture(Type::Texture::DIFFUSE, assets->textures["enemy0 color"]);
 	std::get<1>(enemys)->loadTexture(Type::Texture::DIFFUSE, assets->textures["enemy2 color"]);
 	std::get<2>(enemys)->loadTexture(Type::Texture::DIFFUSE, assets->textures["enemy2 color"]);
-	std::get<0>(enemys)->loadTexture(Type::Texture::SPECULAR, assets->textures["noSpecular"]);
-	std::get<1>(enemys)->loadTexture(Type::Texture::SPECULAR, assets->textures["noSpecular"]);
-	std::get<2>(enemys)->loadTexture(Type::Texture::SPECULAR, assets->textures["noSpecular"]);
+	std::get<0>(enemys)->loadTexture(Type::Texture::SPECULAR, assets->textures["fullSpecular"]);
+	std::get<1>(enemys)->loadTexture(Type::Texture::SPECULAR, assets->textures["fullSpecular"]);
+	std::get<2>(enemys)->loadTexture(Type::Texture::SPECULAR, assets->textures["fullSpecular"]);
 	std::get<0>(enemys)->loadTexture(Type::Texture::NORMAL, assets->textures["enemy0 normal"]);
 	std::get<1>(enemys)->loadTexture(Type::Texture::NORMAL, assets->textures["enemy1 normal"]);
 	std::get<2>(enemys)->loadTexture(Type::Texture::NORMAL, assets->textures["enemy2 normal"]);
 	loadEnemies();
 
+	loadDrops();
+
+	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load in things" << std::endl;
+	//soundList[1]->createChannel();
+}
+
+
+
+void Game::loadDrops()
+{
 	//health
 	createDropItem(glm::vec3(34.5, 0, 48), 1);
 	createDropItem(glm::vec3(30, 0, 3), 1);
@@ -408,9 +439,6 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	createDropItem(glm::vec3(114.4, 0, 12.3), 2);
 	createDropItem(glm::vec3(139.7, 0, 58), 2);
 	createDropItem(glm::vec3(85.7, 0, 65), 2);
-
-	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load in things" << std::endl;
-	//soundList[1]->createChannel();
 }
 
 void Game::loadEnemies() {
@@ -497,10 +525,11 @@ void Game::update() {
 	for (int i = 0; i < soundList.size(); i++)
 		soundList[i]->update();
 
-	if (state == State::Menu)	{
+	if (state == State::Menu) {
 		//soundList[1]->stopSound();
 		//soundList[0]->playSound();
-	} else if (state == State::Play) {
+	}
+	else if (state == State::Play) {
 		//soundList[0]->stopSound();
 		//soundList[1]->playSound();
 		if (player->reloadCd > 0.0f && !player->reloaded) {
@@ -546,9 +575,9 @@ void Game::update() {
 		// Point Light Position
 		level.lightPointers[0]->position = glm::vec4(player->getPosition() + glm::vec3(0.f, 2.f, 0.f), 1.f);
 		// Spot Light Position and Rotation
-		level.lightPointers[6]->position = glm::vec4(player->getPosition() + glm::vec3(0.f, 1.f, 0.f), 1.f);
+		level.lightPointers[level.lightPointers.size() - 1]->position = glm::vec4(player->getPosition() + glm::vec3(0.f, 1.f, 0.f), 1.f);
 		float angle = glm::radians(player->getRotation().y);
-		level.lightPointers[6]->direction = { cos(angle), -0.1f, -sin(angle), 0.f };
+		level.lightPointers[level.lightPointers.size() - 1]->direction = { cos(angle), -0.1f, -sin(angle), 0.f };
 		//level.light3->position = glm::vec4(player->getPosition() + glm::vec3(0.f, 0.1f, 0.f), 1.f);
 		//level.light3->direction = { cos(angle), 0.45f, -sin(angle), 0.f };
 
@@ -565,7 +594,7 @@ void Game::update() {
 					float distToEnemy = cos(bang - dang) * glm::length(diff);
 					//std::cout << glm::degrees(bang) << '\t' << glm::degrees(dang) << '\t' << dist << '\t' << distFromPlayer << "vs" << distToEnemy << '\t' << enemies[j]->life << std::endl;
 					// check if enemy is along the bullet path && not too far away
-					if (dist < 0.5f && distFromPlayer > distToEnemy && distToEnemy > 0) {
+					if (dist < 1.f && distFromPlayer > distToEnemy && distToEnemy > 0) {
 						target = enemy;
 						distFromPlayer = distToEnemy;
 					}
@@ -576,17 +605,16 @@ void Game::update() {
 					target->triggered = true;
 					target->knockbackCD = 0.2f;
 					glm::vec3 dif = target->getPosition() - player->getPosition();
-					target->setPosition(target->getPosition() + glm::normalize(dif) * 0.5f);
+					target->setPosition(target->getPosition() + glm::normalize(dif) * 0.1f);
 					bullet->cooldown = 1.f;
 				}
 			}
 		}
-
 		// enemy update
 		for (int i = 0; i < enemies.size(); i++) {
 			glm::vec3 diff = enemies[i]->getPosition() - player->getPosition();
 			if (enemies[i]->knockbackCD > 0)
-				enemies[i]->knockbackCD -= deltaTime/1000;
+				enemies[i]->knockbackCD -= deltaTime / 1000;
 			// aim towards player
 			enemies[i]->setRotation({ 0.f, glm::degrees(atan2f(-diff.z, diff.x)) - 90.f, 0.f });
 			// hurt player
@@ -595,10 +623,13 @@ void Game::update() {
 					player->life -= enemies[i]->damage;
 					enemies[i]->cooldown = enemies[i]->attackSpeed;
 				}
+			float bang = glm::radians(player->getRotation().y);
+			float dang = atan2(-diff.z, diff.x);
+			float dist = abs(sin(bang - dang) * glm::length(diff));
+			//std::cout << bang << '/' << dang << '/' << dist << std::endl;
 			// seek towards player
-			if (((glm::length(diff) < 10.0f && glm::length(diff) > 0.5f) || enemies[i]->triggered) && enemies[i]->knockbackCD <= 0)
+			if (((glm::length(diff) < 5.0f) || enemies[i]->triggered || glm::length(diff) < 10.0f && dist < 2.f && lightOn) && glm::length(diff) > 1.0f && enemies[i]->knockbackCD <= 0)
 				enemies[i]->setVelocity(-glm::normalize(diff));
-				//enemies[i]->setVelocity({ 0.0f, 0.0f, 0.0f });
 			else
 				enemies[i]->setVelocity({ 0.0f, 0.0f, 0.0f });
 			// update enemy
@@ -631,7 +662,8 @@ void Game::update() {
 							player->life = 20.0f;
 						else
 							player->life += dropItems[i]->life;
-					} else if (player->life == 20.0f & dropItems[i]->life > 0.0f)
+					}
+					else if (player->life == 20.0f & dropItems[i]->life > 0.0f)
 						dropItems[i]->collect = false;
 				}
 			}
@@ -655,18 +687,30 @@ void Game::draw() {
 		screen.pause->draw(program["Phong"], screen.camera, { screen.light });
 		break;
 	case State::Play:
-		player->draw(program["PhongSpot"], level.camera, level.lightPointers ); // @@@@@ FOR SEAN @@@@@ Extra argument to take in how many lights are in the array
-		for (auto& enemy : enemies)
-			enemy->draw(program["PhongSpot"], level.camera, level.lightPointers);
-		level.map->draw(program["PhongSpot"], level.camera, level.lightPointers);
+		if (lightOn)
+		{
+			player->draw(program["PhongSpot"], level.camera, level.lightPointers); // @@@@@ FOR SEAN @@@@@ Extra argument to take in how many lights are in the array
+			for (auto& enemy : enemies)
+				enemy->draw(program["DropItems"], level.camera, level.lightPointers);
+			level.map->draw(program["PhongSpot"], level.camera, level.lightPointers);
+			for (int i = 0; i < dropItems.size(); i++)
+				if (!dropItems[i]->collect)
+					dropItems[i]->draw(program["DropItems"], level.camera, level.lightPointers);
+		}
+		else
+		{
+			player->draw(program["NoFlash"], level.camera, level.lightPointers); // @@@@@ FOR SEAN @@@@@ Extra argument to take in how many lights are in the array
+			for (auto& enemy : enemies)
+				enemy->draw(program["NoFlashNoNorm"], level.camera, level.lightPointers);
+			level.map->draw(program["NoFlash"], level.camera, level.lightPointers);
+			for (int i = 0; i < dropItems.size(); i++)
+				if (!dropItems[i]->collect)
+					dropItems[i]->draw(program["NoFlashNoNorm"], level.camera, level.lightPointers);
+		}
 		//level.hitboxes->draw(program["PhongColorSides"], level.camera, { *level.light });
 		hud.healthBar->draw(program["PhongNoTexture"], level.camera, { hud.light });
 		hud.display->draw(program["Phong"], level.camera, { hud.light });
 		drawAmmo();
-
-		for (int i = 0; i < dropItems.size(); i++)
-			if (!dropItems[i]->collect)
-				dropItems[i]->draw(program["PhongSpot"], level.camera, level.lightPointers);// , *level.light3 });
 
 		break;
 	case State::Menu:
@@ -705,14 +749,7 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 			glutExit();
 			break;
 		case State::Lose: case State::Win:
-			player->reset(level.start);
-			clearEnemies();
-			clearDrops();
-			loadEnemies();
-			soundList[1]->stopSound();
-			soundList[0]->playSound(2);
-			soundList[0]->setVolume(0.05f);
-			state = State::Menu;
+			reset();
 			//soundList[0]->playSound();
 			break;
 		default:
@@ -728,20 +765,13 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 			state = State::Play;
 			soundList[0]->stopSound();
 			soundList[1]->playSound(2);
-			soundList[1]->setVolume(0.01f);
+			soundList[1]->setVolume(0.05f);
 			break;
 		case State::Pause:
 			state = State::Play;
 			break;
 		case State::Lose: case State::Win:
-			player->reset(level.start);
-			clearEnemies();
-			clearDrops();
-			loadEnemies();
-			soundList[1]->stopSound();
-			soundList[0]->playSound(2);
-			soundList[0]->setVolume(0.05f);
-			state = State::Menu;
+			reset();
 			//soundList[0]->playSound();
 			break;
 		}
@@ -751,14 +781,7 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 		break;
 	case 'Q': case 'q':
 		if (state == State::Pause) {
-			player->reset(level.start);
-			clearEnemies();
-			clearDrops();
-			loadEnemies();
-			soundList[1]->stopSound();
-			soundList[0]->playSound(2);
-			soundList[0]->setVolume(0.05f);
-			state = State::Menu;
+			reset();
 			//soundList[0]->playSound();
 		}
 		//enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
@@ -778,7 +801,7 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 	case 'Z': case 'z': input.keys |= Input::Keys::KeyZ; break;
 	case 'X': case 'x': input.keys |= Input::Keys::KeyX; break;
 	case 'C': case 'c': input.keys |= Input::Keys::KeyC; break;
-	case 'V': case 'v': 
+	case 'V': case 'v':
 		std::cout << (rand() * rand()) % 100 << std::endl;
 
 		input.keys |= Input::Keys::KeyV; break;
@@ -871,8 +894,8 @@ void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 		case GLUT_LEFT_BUTTON:
 			switch (state) {
 			case GLUT_DOWN:
-				player->firing = true;
 				if (player->reloadCd <= 0.0f) {
+					player->firing = true;
 					soundList[3]->stopSound();
 					soundList[2]->playSound(3);
 					soundList[2]->setVolume(0.05f);
@@ -881,6 +904,17 @@ void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 			case GLUT_UP:
 				player->firing = false;
 				soundList[2]->stopSound();
+				break;
+			default:
+				break;
+			}
+			break;
+		case GLUT_RIGHT_BUTTON:
+			switch (state) {
+			case GLUT_DOWN:
+				break;
+			case GLUT_UP:
+				lightOn = !lightOn;
 				break;
 			default:
 				break;
@@ -897,7 +931,7 @@ void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 			case GLUT_DOWN:
 				if (mouse.x > screen.play.pos.x * windowSize.x && mouse.x < screen.play.pos.y * windowSize.x && mouse.y > screen.play.pos.z * windowSize.y && mouse.y < screen.play.pos.w * windowSize.y)
 					this->state = State::Control;
-					//soundList[1]->playSound();
+				//soundList[1]->playSound();
 				if (mouse.x > screen.quit.pos.x * windowSize.x && mouse.x < screen.quit.pos.y * windowSize.x && mouse.y > screen.quit.pos.z * windowSize.y && mouse.y < screen.quit.pos.w * windowSize.y)
 					glutExit();
 				break;
@@ -985,20 +1019,12 @@ void Game::controllerInput(unsigned short index, Input::Button button) {
 			if (button == Input::Button::A)
 				state = State::Play;
 			if (button == Input::Button::B) {
-				player->reset(level.start);
-				clearEnemies();
-				clearDrops();
-				loadEnemies();
-				state = State::Menu;
+				reset();
 			}
 			break;
 		case State::Lose: case State::Win:
 			if (button == Input::Button::B) {
-				player->reset(level.start);
-				clearEnemies();
-				clearDrops();
-				loadEnemies();
-				state = State::Menu;
+				reset();
 			}
 			break;
 		case State::Menu:
@@ -1026,7 +1052,19 @@ void Game::controllerSpecial(unsigned short index, Input::Triggers triggers, Inp
 			if (glm::length(sticks.second) > 0.5f)
 				player->setRotation({ 0.0f, glm::degrees(atan2(sticks.second.y, sticks.second.x)), 0.0f });
 			if (triggers.second > 0.2)
-				player->fire();
+			{
+				if (player->reloadCd <= 0.0f) {
+					player->firing = true;
+					soundList[3]->stopSound();
+					soundList[2]->playSound(3);
+					soundList[2]->setVolume(0.05f);
+				}
+			}
+			else
+			{
+				player->firing = false;
+				soundList[2]->stopSound();
+			}
 		}
 		break;
 	default:
@@ -1048,7 +1086,8 @@ void Game::createDropItem(glm::vec3 pos, int type) {
 		dropAmmo->update(deltaTime);
 		//std::cout << "DROP!" << dropItems.size() << std::endl;
 		dropItems.push_back(new Object(*dropAmmo));
-	} else if (temp > 80 || type == 1) {
+	}
+	else if (temp > 80 || type == 1) {
 		//drop->hp = 5.0f;
 		//dropHP->color = glm::vec4(0.0f, 1.0f, 0.f, 0.5f);
 		dropHP->setPosition(pos);
@@ -1081,4 +1120,19 @@ void Game::drawAmmo() {
 		hud.ammo.number->setPosition(hud.ammo.positions[4]);
 		hud.ammo.number->draw(program["numbers"], level.camera, { hud.light });
 	}
+}
+
+// Resets the level
+void Game::reset()
+{
+	player->reset(level.start);
+	clearEnemies();
+	clearDrops();
+	loadEnemies();
+	loadDrops();
+	lightOn = false;
+	soundList[1]->stopSound();
+	soundList[0]->playSound(2);
+	soundList[0]->setVolume(0.05f);
+	state = State::Menu;
 }

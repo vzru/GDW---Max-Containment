@@ -144,15 +144,16 @@ void Object::draw(Shader* shader, Camera* camera, std::vector<Light*> lights, fl
 	shader->sendUniformMat4("uProj", glm::value_ptr(camera->getProj()), false);
 	shader->sendUniform("objectColor", color);
 	//shader->sendUniform("ammo", ammo);
-	//if (lightCount == 0.0f)
-	//{
-	//	std::cout << lights.size() << std::endl;
-	//	shader->sendUniform("numLights", lights.size());
-	//}
-	//else
-	//{
-	//	shader->sendUniform("numLights", lightCount);
-	//}
+	if (lightCount == 0.0f)
+	{
+		//std::cout << lights.size() << std::endl;
+		shader->sendUniform("numLights", lights.size());
+	}
+	else
+	{
+		//std::cout << lightCount << std::endl;
+		shader->sendUniform("numLights", lightCount);
+	}
 	// Material
 	shader->sendUniform("material.diffuse", 0);
 	shader->sendUniform("material.specular", 1);
