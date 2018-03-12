@@ -203,9 +203,6 @@
     <ClCompile Include="src\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\shaders\DropItems.frag" />
-    <None Include="assets\shaders\NoFlash.frag" />
-    <None Include="assets\shaders\NoFlashNoNorm.frag" />
     <None Include="assets\shaders\numbers.frag" />
     <None Include="assets\shaders\passThrough.frag" />
     <None Include="assets\shaders\passThrough.vert" />

@@ -204,15 +204,6 @@
     <None Include="assets\shaders\numbers.frag">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="assets\shaders\DropItems.frag">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="assets\shaders\NoFlash.frag">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="assets\shaders\NoFlashNoNorm.frag">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\textures\fullSpecular.png">

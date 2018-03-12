@@ -1,6 +1,6 @@
 #version 420
 
-#define MAX_NUM_LIGHTS 10
+#define MAX_NUM_LIGHTS 7
 
 #define POINT 0
 #define DIRECT 1
@@ -35,9 +35,9 @@ struct Material {
 	float specExponent;
 };
 
-#define numLights 5
+#define numLights 7
 
-uniform Light lights[MAX_NUM_LIGHTS];
+uniform Light lights[numLights];
 
 uniform Material material;
 

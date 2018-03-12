@@ -54,12 +54,12 @@ void Player::update(float dt, Level* level) {
 	Object::update(dt);
 }
 
-void Player::draw(Shader* shader, Camera* camera, std::vector<Light*> lights, float lightCount) {
+void Player::draw(Shader* shader, Camera* camera, std::vector<Light*> lights) {
 	for (auto bullet : bullets) {
-		bullet->draw(shader, camera, lights, lightCount);
+		bullet->draw(shader, camera, lights);
 	}
 
-	Object::draw(shader, camera, lights, lightCount);
+	Object::draw(shader, camera, lights);
 }
 
 void Player::reset(glm::vec3 pos) {
@@ -84,21 +84,21 @@ bool Player::fire() {
 		bullets.push_back(new Bullet(*bullet));
 		cooldown = RateOfFire;
 		//std::cout << ammo << '/' << ammoDepo << std::endl;
-		//if (ammo <= 0 && ammoDepo > 0.0f)
-		//{
-		//	if (ammoDepo > 30.0f)
-		//	{
-		//		ammo = 30.0f;
-		//		ammoDepo -= 30.0f;
-		//	}
-		//	else if (ammoDepo > 0.0f)
-		//	{
-		//		ammo = ammoDepo;
-		//		ammoDepo = 0.0f;
-		//	}
-		//	reloadCd = 3.0f;
-		//	std::cout << "Reload!" << std::endl;
-		//}
+		if (ammo <= 0 && ammoDepo > 0.0f)
+		{
+			if (ammoDepo > 30.0f)
+			{
+				ammo = 30.0f;
+				ammoDepo -= 30.0f;
+			}
+			else if (ammoDepo > 0.0f)
+			{
+				ammo = ammoDepo;
+				ammoDepo = 0.0f;
+			}
+			reloadCd = 3.0f;
+			std::cout << "Reload!" << std::endl;
+		}
 		return true;
 	} return false;
 }
@@ -119,7 +119,7 @@ void Player::reloading()
 			ammo = ammoDepo;
 			ammoDepo = 0.0f;
 		}
-		reloadCd = 2.0f;
+		reloadCd = 2.5f;
 		reload = false;
 		std::cout << "Reload!" << std::endl;
 	}
