@@ -86,35 +86,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Object Include="assets\models\player.obj">
-      <Filter>Resource Files\meshes</Filter>
-    </Object>
-    <Object Include="assets\models\enemy.obj">
-      <Filter>Resource Files\meshes</Filter>
-    </Object>
-    <Object Include="assets\models\Cube.obj">
-      <Filter>Resource Files\meshes</Filter>
-    </Object>
-    <Object Include="assets\models\human.obj">
-      <Filter>Resource Files\meshes</Filter>
-    </Object>
-    <Object Include="assets\models\monkey.obj">
-      <Filter>Resource Files\meshes</Filter>
-    </Object>
-    <Object Include="assets\meshes\character_model.obj">
-      <Filter>Resource Files\meshes</Filter>
-    </Object>
-    <Object Include="assets\meshes\Hitbox Base.obj">
-      <Filter>Resource Files\meshes</Filter>
-    </Object>
-    <Object Include="assets\meshes\Hitbox Triangle.obj">
-      <Filter>Resource Files\meshes</Filter>
-    </Object>
-    <Object Include="assets\meshes\Level Triangle.obj">
-      <Filter>Resource Files\meshes</Filter>
-    </Object>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="src\Bullet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -195,33 +166,142 @@
     <None Include="assets\shaders\PhongNoTexture.frag">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="assets\sounds\Slap.ogg">
-      <Filter>Resource Files\sounds</Filter>
-    </None>
     <None Include="assets\shaders\phongSpot.frag">
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="assets\shaders\numbers.frag">
       <Filter>Resource Files\shaders</Filter>
     </None>
+    <None Include="assets\sounds\Slap.ogg">
+      <Filter>Resource Files\sounds</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
+    <Object Include="assets\meshes\ammo_pack.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="assets\meshes\bullet.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="assets\meshes\character_model.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="assets\meshes\cube.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="assets\meshes\enemy_model.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="assets\meshes\enemy2_model.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="assets\meshes\enemy3_model.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="assets\meshes\health_pack.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="assets\meshes\hp bar.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="assets\meshes\hud.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="assets\meshes\Laboratory Level Hitboxes Triangulated.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="assets\meshes\Laboratory Level Hitboxes.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="assets\meshes\Laboratory Level Triangulated.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="assets\meshes\Play Button.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="assets\meshes\Quit Button.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+    <Object Include="assets\meshes\screen.obj">
+      <Filter>Resource Files\meshes</Filter>
+    </Object>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="assets\sounds\ambient machine noise.wav">
+      <Filter>Resource Files\sounds</Filter>
+    </Media>
+    <Media Include="assets\sounds\game soundtrack.wav">
+      <Filter>Resource Files\sounds</Filter>
+    </Media>
+    <Media Include="assets\sounds\Gunshot_sound.wav">
+      <Filter>Resource Files\sounds</Filter>
+    </Media>
+    <Media Include="assets\sounds\Reload_sound.wav">
+      <Filter>Resource Files\sounds</Filter>
+    </Media>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\textures\character normals.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="assets\textures\character texture.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="assets\textures\controls.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="assets\textures\enemy texture.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="assets\textures\enemy1N.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="assets\textures\enemy2 texture.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="assets\textures\enemy2N.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="assets\textures\enemy3 texture.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="assets\textures\enemy3N.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
     <Image Include="assets\textures\fullSpecular.png">
       <Filter>Resource Files\textures</Filter>
     </Image>
-    <Image Include="assets\textures\fur.png">
+    <Image Include="assets\textures\HUD.png">
       <Filter>Resource Files\textures</Filter>
     </Image>
-    <Image Include="assets\textures\monkeySpecular.png">
+    <Image Include="assets\textures\items.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="assets\textures\lab_normals.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="assets\textures\lab_textures.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="assets\textures\loading.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="assets\textures\lose.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="assets\textures\menu.png">
       <Filter>Resource Files\textures</Filter>
     </Image>
     <Image Include="assets\textures\noSpecular.png">
       <Filter>Resource Files\textures</Filter>
     </Image>
-    <Image Include="assets\textures\normal.jpg">
+    <Image Include="assets\textures\Numbers.png">
       <Filter>Resource Files\textures</Filter>
     </Image>
-    <Image Include="assets\textures\character texture.png">
+    <Image Include="assets\textures\pause.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="assets\textures\win.png">
       <Filter>Resource Files\textures</Filter>
     </Image>
   </ItemGroup>

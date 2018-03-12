@@ -1,7 +1,5 @@
 #version 420
 
-#define NUM_LIGHTS 1
-
 #define POINT 0
 #define DIRECT 1
 #define SPOT 2
@@ -35,7 +33,7 @@ struct Material {
 	float specExponent;
 };
 
-uniform Light lights[NUM_LIGHTS];
+uniform Light light;
 
 uniform Material material;
 
@@ -88,10 +86,7 @@ void main() {
 	vec4 diff = texture(material.diffuse, texCoord);
 	vec4 spec = texture(material.specular, texCoord);
 
-	for(int i = 0; i < NUM_LIGHTS; i++) {
-		outColor.rgb += calculateLight(lights[i], norm, diff, spec);
-	}
-
+	outColor.rgb += calculateLight(light, norm, diff, spec);
 	outColor.rgb *= material.hue;
 	outColor.a = diff.a;
 }

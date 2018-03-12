@@ -18,8 +18,9 @@ Bullet::Bullet(Object* origin) :
 }
 Bullet::~Bullet() {}
 
-void Bullet::update(float dt) {
+Bullet* Bullet::update(float dt) {
 	life -= dt;
 
 	Object::update(dt);
+	return this;
 }

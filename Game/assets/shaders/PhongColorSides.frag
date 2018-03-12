@@ -1,7 +1,5 @@
 #version 420
 
-#define NUM_LIGHTS 1
-
 #define POINT 0
 #define DIRECT 1
 #define SPOT 2
@@ -36,7 +34,7 @@ struct Material {
 	float specExponent;
 };
 
-uniform Light lights[NUM_LIGHTS];
+uniform Light light;
 
 uniform Material material;
 
@@ -46,25 +44,6 @@ in vec3 normal;
 in vec3 modelNormal;
 
 out vec4 outColor;
-
-vec3 calculateLight(Light light, vec3 norm, vec4 diff, vec4 spec);
-
-void main() {
-	// account for rasterizer interpolating
-	vec3 norm = normalize(texture(material.normal, texCoord).rgb);
-	vec4 diff = texture(material.diffuse, texCoord);
-	vec4 spec = texture(material.specular, texCoord);
-
-	for(int i = 0; i < NUM_LIGHTS; i++) {
-		outColor.rgb += calculateLight(lights[i], norm, diff, spec);
-	}
-
-	vec3 color = max(modelNormal.x, 0.0) * RIGHT_COLOR + max(-modelNormal.x, 0.0) * LEFT_COLOR +
-		max(modelNormal.y, 0.0) * UP_COLOR + max(-modelNormal.y, 0.0) * DOWN_COLOR +
-		max(modelNormal.z, 0.0) * FRONT_COLOR + max(-modelNormal.z, 0.0) * BACK_COLOR;
-	outColor.rgb *= color;
-	outColor.a = 1.0;
-}
 
 vec3 calculateLight(Light light, vec3 norm, vec4 diff, vec4 spec) {
 	vec3 lightVec = light.position.xyz - position;
@@ -90,4 +69,19 @@ vec3 calculateLight(Light light, vec3 norm, vec4 diff, vec4 spec) {
 
 		return ambient + diffuse + specular;
 	//}
+}
+
+void main() {
+	// account for rasterizer interpolating
+	vec3 norm = normalize(texture(material.normal, texCoord).rgb);
+	vec4 diff = texture(material.diffuse, texCoord);
+	vec4 spec = texture(material.specular, texCoord);
+
+	outColor.rgb += calculateLight(light, norm, diff, spec);
+	
+	vec3 color = max(modelNormal.x, 0.0) * RIGHT_COLOR + max(-modelNormal.x, 0.0) * LEFT_COLOR +
+		max(modelNormal.y, 0.0) * UP_COLOR + max(-modelNormal.y, 0.0) * DOWN_COLOR +
+		max(modelNormal.z, 0.0) * FRONT_COLOR + max(-modelNormal.z, 0.0) * BACK_COLOR;
+	outColor.rgb *= color;
+	outColor.a = 1.0;
 }

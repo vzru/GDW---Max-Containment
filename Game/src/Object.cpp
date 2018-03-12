@@ -23,17 +23,21 @@ Object::~Object() {
 	//delete mat;
 }
 
-void Object::setPosition(glm::vec3 newPosition) {
+Object* Object::setPosition(glm::vec3 newPosition) {
 	position = newPosition;
+	return this;
 }
-void Object::setRotation(glm::vec3 newAngles) {
+Object* Object::setRotation(glm::vec3 newAngles) {
 	rotation = newAngles;
+	return this;
 }
-void Object::setScale(glm::vec3 newScale) {
+Object* Object::setScale(glm::vec3 newScale) {
 	scale = newScale;
+	return this;
 }
-void Object::setVelocity(glm::vec3 newVelocity) {
+Object* Object::setVelocity(glm::vec3 newVelocity) {
 	velocity = newVelocity;
+	return this;
 }
 
 glm::vec3 Object::getPosition() {
@@ -56,8 +60,9 @@ glm::mat4 Object::getTransformation() {
 //void Object::loadTexture(Type::Texture type, const std::string &texFile) {
 //	mat->load(type, texFile);
 //}
-void Object::loadTexture(Type::Texture type, Texture *texture) {
+Object* Object::loadTexture(Type::Texture type, Texture *texture) {
 	mat->load(type, texture);
+	return this;
 }
 //void Object::loadMesh(const std::string &meshFile) {
 //	if (!mesh->load(meshFile)) {
@@ -66,15 +71,16 @@ void Object::loadTexture(Type::Texture type, Texture *texture) {
 //		exit(0);
 //	}
 //}
-void Object::loadMesh(Mesh *meshPtr) {
+Object* Object::loadMesh(Mesh *meshPtr) {
 	mesh = meshPtr;
+	return this;
 }
 
 /*float lineCheck(glm::vec2 p, glm::vec2 p0, glm::vec2 p1) {
 	return (p1.y - p0.y) * p.x + (p0.x - p1.x) * p.y + (p1.x * p0.y - p0.x * p1.y);
 }*/
 
-void Object::collide(float dt, Level* level, bool ai) {
+Object* Object::collide(float dt, Level* level, bool ai) {
 	glm::vec3 vOrig = velocity;
 	glm::vec2 pX = { position.x + velocity.x * dt / 200.f, position.z };
 	glm::vec2 pY = { position.x, position.z + velocity.z * dt / 200.f };
@@ -109,9 +115,10 @@ void Object::collide(float dt, Level* level, bool ai) {
 	//	collided = true;
 	//}
 	//return collided;
+	return this;
 }
 
-void Object::update(float dt) {
+Object* Object::update(float dt) {
 	// Create 4x4 transformation matrix
 
 	// 1. Create the X,Y, and Z rotation matrices
@@ -133,42 +140,40 @@ void Object::update(float dt) {
 	glm::mat4 scal = glm::scale(scale);
 	// 5. Combine all above transforms into a single matrix
 	transform = tran * rotate * scal;
+
+	return this;
 }
 
-void Object::draw(Shader* shader, Camera* camera, std::vector<Light> lights) {
+Object* Object::draw(Shader* shader, Camera* camera, Light *light) {
 	// Start
-	shader->bind();
+	shader->bind()
 	// Basic
-	shader->sendUniformMat4("uModel", glm::value_ptr(transform), false);
-	shader->sendUniformMat4("uView", glm::value_ptr(camera->getView()), false);
-	shader->sendUniformMat4("uProj", glm::value_ptr(camera->getProj()), false);
-	shader->sendUniform("objectColor", color);
-	shader->sendUniform("ammo", ammo);
+		->sendUniformMat4("uModel", glm::value_ptr(transform), false)
+		->sendUniformMat4("uView", glm::value_ptr(camera->getView()), false)
+		->sendUniformMat4("uProj", glm::value_ptr(camera->getProj()), false)
+		->sendUniform("objectColor", color)
+		->sendUniform("ammo", ammo)
 	// Material
-	shader->sendUniform("material.diffuse", 0);
-	shader->sendUniform("material.specular", 1);
-	shader->sendUniform("material.normal", 2);
-	shader->sendUniform("material.hue", mat->hue);
-	shader->sendUniform("material.specExponent", mat->specExponent);
-	// Lights
-	for (int i = 0; i < lights.size(); i++) {
-		std::string prefix = "lights[" + std::to_string(i) + "].";
-		
-		//shader->sendUniform("NUM_LIGHTS", lights.size());
-		shader->sendUniform(prefix + "type", lights[i].type);
-		shader->sendUniform(prefix + "position", camera->getView() * lights[i].position);
-		shader->sendUniform(prefix + "direction", camera->getView() * lights[i].direction);
-		shader->sendUniform(prefix + "original", camera->getView() * lights[i].original);
-		shader->sendUniform(prefix + "ambient", lights[i].ambient);
-		shader->sendUniform(prefix + "diffuse", lights[i].diffuse);
-		shader->sendUniform(prefix + "specular", lights[i].specular);
-		shader->sendUniform(prefix + "specExponent", lights[i].specExponent);
-		shader->sendUniform(prefix + "spotExponent", lights[i].spotExponent);
-		shader->sendUniform(prefix + "cutoff", lights[i].cutoff);
-		shader->sendUniform(prefix + "innerCutoff", lights[i].innerCutoff);
-		shader->sendUniform(prefix + "partial", lights[i].partial);
-		shader->sendUniform(prefix + "attenuation", lights[i].attenuation);
-	}
+		->sendUniform("material.diffuse", 0)
+		->sendUniform("material.specular", 1)
+		->sendUniform("material.normal", 2)
+		->sendUniform("material.hue", mat->hue)
+		->sendUniform("material.specExponent", mat->specExponent)
+	// Light
+		->sendUniform("light.type", light->type)
+		->sendUniform("light.position", camera->getView() * light->position)
+		->sendUniform("light.direction", camera->getView() * light->direction)
+		->sendUniform("light.original", camera->getView() * light->original)
+		->sendUniform("light.ambient", light->ambient)
+		->sendUniform("light.diffuse", light->diffuse)
+		->sendUniform("light.specular", light->specular)
+		->sendUniform("light.specExponent", light->specExponent)
+		->sendUniform("light.spotExponent", light->spotExponent)
+		->sendUniform("light.cutoff", light->cutoff)
+		->sendUniform("light.innerCutoff", light->innerCutoff)
+		->sendUniform("light.partial", light->partial)
+		->sendUniform("light.attenuation", light->attenuation);
+
 	// Textures
 	glActiveTexture(GL_TEXTURE0);
 	mat->diffuse->bind();
@@ -188,4 +193,62 @@ void Object::draw(Shader* shader, Camera* camera, std::vector<Light> lights) {
 	mat->diffuse->unbind();
 	// End
 	shader->unbind();
+	return this;
+}
+
+Object* Object::draw(Shader* shader, Camera* camera, std::vector<Light*> lights) {
+	// Start
+	shader->bind()
+	// Basic
+		->sendUniformMat4("uModel", glm::value_ptr(transform), false)
+		->sendUniformMat4("uView", glm::value_ptr(camera->getView()), false)
+		->sendUniformMat4("uProj", glm::value_ptr(camera->getProj()), false)
+		->sendUniform("objectColor", color)
+		->sendUniform("ammo", ammo)
+	// Material
+		->sendUniform("material.diffuse", 0)
+		->sendUniform("material.specular", 1)
+		->sendUniform("material.normal", 2)
+		->sendUniform("material.hue", mat->hue)
+		->sendUniform("material.specExponent", mat->specExponent);
+	// Lights
+	for (int i = 0; i < lights.size(); i++) {
+		std::string prefix = "lights[" + std::to_string(i) + "].";
+		
+		//shader->sendUniform("NUM_LIGHTS", lights.size());
+		shader->sendUniform(prefix + "type", lights[i]->type)
+			->sendUniform(prefix + "position", camera->getView() * lights[i]->position)
+			->sendUniform(prefix + "direction", camera->getView() * lights[i]->direction)
+			->sendUniform(prefix + "original", camera->getView() * lights[i]->original)
+			->sendUniform(prefix + "ambient", lights[i]->ambient)
+			->sendUniform(prefix + "diffuse", lights[i]->diffuse)
+			->sendUniform(prefix + "specular", lights[i]->specular)
+			->sendUniform(prefix + "specExponent", lights[i]->specExponent)
+			->sendUniform(prefix + "spotExponent", lights[i]->spotExponent)
+			->sendUniform(prefix + "cutoff", lights[i]->cutoff)
+			->sendUniform(prefix + "innerCutoff", lights[i]->innerCutoff)
+			->sendUniform(prefix + "partial", lights[i]->partial)
+			->sendUniform(prefix + "attenuation", lights[i]->attenuation);
+	}
+
+	// Textures
+	glActiveTexture(GL_TEXTURE0);
+	mat->diffuse->bind();
+	glActiveTexture(GL_TEXTURE1);
+	mat->specular->bind();
+	glActiveTexture(GL_TEXTURE2);
+	mat->normal->bind();
+	// Mesh
+	glBindVertexArray(mesh->vao);
+	glDrawArrays(GL_TRIANGLES, 0, mesh->getNumVertices());
+	glBindVertexArray(GL_NONE);
+	// Textures
+	mat->normal->unbind();
+	glActiveTexture(GL_TEXTURE1);
+	mat->specular->unbind();
+	glActiveTexture(GL_TEXTURE0);
+	mat->diffuse->unbind();
+	// End
+	shader->unbind();
+	return this;
 }
