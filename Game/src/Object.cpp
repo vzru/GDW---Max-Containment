@@ -146,11 +146,12 @@ void Object::draw(Shader* shader, Camera* camera, std::vector<Light*> lights, fl
 	//shader->sendUniform("ammo", ammo);
 	//if (lightCount == 0.0f)
 	//{
-	//	std::cout << lights.size() << std::endl;
+	//	//std::cout << lights.size() << std::endl;
 	//	shader->sendUniform("numLights", lights.size());
 	//}
 	//else
 	//{
+	//	//std::cout << lightCount << std::endl;
 	//	shader->sendUniform("numLights", lightCount);
 	//}
 	// Material

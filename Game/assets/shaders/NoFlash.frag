@@ -35,7 +35,7 @@ struct Material {
 	float specExponent;
 };
 
-#define numLights 5
+#define numLights 4
 
 uniform Light lights[MAX_NUM_LIGHTS];
 

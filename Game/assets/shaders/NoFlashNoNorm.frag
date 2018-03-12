@@ -35,7 +35,7 @@ struct Material {
 	float specExponent;
 };
 
-#define numLights 5
+#define numLights 4
 
 uniform Light lights[MAX_NUM_LIGHTS];
 
@@ -87,7 +87,7 @@ vec3 calculateLight(Light light, vec3 norm, vec4 diff, vec4 spec) {
 
 void main() {
 	// account for rasterizer interpolating
-	vec3 norm = normalize(texture(material.normal, texCoord).rgb * 2 - vec3(1.f));
+	vec3 norm = normalize(normal);//normalize(texture(material.normal, texCoord).rgb * 2 - vec3(1.f));
 	vec4 diff = texture(material.diffuse, texCoord);
 	vec4 spec = texture(material.specular, texCoord);
 
