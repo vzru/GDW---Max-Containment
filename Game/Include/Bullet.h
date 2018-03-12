@@ -9,7 +9,7 @@ public:
 	Bullet(Object* origin);
 	~Bullet();
 
-	virtual void update(float dt);
+	virtual Bullet* update(float dt);
 	//virtual void draw(Shader *shader, Camera *camera, std::vector<Light> lights);
 private:
 };

@@ -13,8 +13,8 @@ public:
 
 	// loaders
 	//void load(Type::Texture type, std::string texFile);
-	void load(Type::Texture type, Texture *texPtr);
-	void setData(float specExp = 50.f, glm::vec3 &hue = glm::vec3(1.0f));
+	Material* load(Type::Texture type, Texture *texPtr);
+	Material* setData(float specExp = 50.f, glm::vec3 &hue = glm::vec3(1.0f));
 
 	// Data members
 	Texture *diffuse, *specular, *normal;

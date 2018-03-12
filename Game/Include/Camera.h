@@ -11,18 +11,18 @@ public:
 	~Camera();
 
 	// updates the view matrix and applies it to OpenGL
-	void update(glm::vec3 center);
+	Camera* update(glm::vec3 center);
 	// reset the window position
-	void reset(glm::vec2 size);
+	Camera* reset(glm::vec2 size);
 
 	// rotate the window
-	void processMotion(glm::vec2 change, float dt);
+	Camera* processMotion(glm::vec2 change, float dt);
 	// move the camera
-	void pan(glm::vec3 amount);
-	void move(glm::vec3 amount);
+	Camera* setPosition(glm::vec3 pos);
+	Camera* pan(glm::vec3 amount);
+	Camera* move(glm::vec3 amount);
 	// getters
 	glm::vec3 getPosition();
-	void setPosition(glm::vec3 pos);
 	glm::mat4& getView();
 	glm::mat4& getProj();
 private:

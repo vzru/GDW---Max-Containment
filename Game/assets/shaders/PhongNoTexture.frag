@@ -1,7 +1,5 @@
 #version 420
 
-#define NUM_LIGHTS 1
-
 uniform vec4 lightPos;
 
 struct Light {
@@ -15,25 +13,14 @@ struct Light {
 	vec3 attenuation;
 };
 
-uniform Light lights[NUM_LIGHTS];
+uniform Light light;
+
 uniform vec4 objectColor;
 
 in vec3 position;
 in vec3 normal;
 
 out vec4 outColor;
-
-vec3 calculateLight(Light light);
-
-void main() {
-	outColor.rgb = objectColor.rgb;
-
-	for(int i = 0; i < NUM_LIGHTS; i++) {
-		outColor.rgb += calculateLight(lights[i]);
-	}
-
-	outColor.a = objectColor.a;
-}
 
 vec3 calculateLight(Light light) {
 	// account for rasterizer interpolating
@@ -61,4 +48,10 @@ vec3 calculateLight(Light light) {
 
 	if (NdotL > 0.0)	return ambient + diffuse + specular;
 	else				return ambient;
+}
+
+void main() {
+	outColor.rgb = objectColor.rgb;
+	outColor.rgb += calculateLight(light);
+	outColor.a = objectColor.a;
 }

@@ -15,14 +15,14 @@ public:
 	Sound(char * filename, bool loop, int dimension);
 	~Sound();
 	//void fmodErrorCK(FMOD_RESULT result);
-	void loadSound(char * filename, bool loop, int dimension);
-	void createChannel(int mode);
-	void stopSound();
-	void playSound(int mode);
-	void setVolume(float l);
-	void changeSoundLoc(FMOD_VECTOR pos);
-	void update();
-	void unload();
+	Sound* loadSound(char * filename, bool loop, int dimension);
+	Sound* createChannel(int mode);
+	Sound* stopSound();
+	Sound* playSound(int mode);
+	Sound* setVolume(float l);
+	Sound* changeSoundLoc(FMOD_VECTOR pos);
+	Sound* update();
+	Sound* unload();
 private:
 	FMOD::Sound *sound;
 
