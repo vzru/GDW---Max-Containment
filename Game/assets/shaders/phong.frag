@@ -1,5 +1,7 @@
 #version 420
 
+#define NUM_LIGHTS 1
+#define MAX_NUM_LIGHTS 128
 #define POINT 0
 #define DIRECT 1
 #define SPOT 2

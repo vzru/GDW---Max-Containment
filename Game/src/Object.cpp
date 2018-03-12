@@ -153,6 +153,15 @@ Object* Object::draw(Shader* shader, Camera* camera, Light *light) {
 		->sendUniformMat4("uProj", glm::value_ptr(camera->getProj()), false)
 		->sendUniform("objectColor", color)
 		->sendUniform("ammo", ammo)
+	//if (lightCount == 0.0f)
+	//{
+	//	std::cout << lights.size() << std::endl;
+	//	shader->sendUniform("numLights", lights.size());
+	//}
+	//else
+	//{
+	//	shader->sendUniform("numLights", lightCount);
+	//}
 	// Material
 		->sendUniform("material.diffuse", 0)
 		->sendUniform("material.specular", 1)
@@ -204,6 +213,7 @@ Object* Object::draw(Shader* shader, Camera* camera, std::vector<Light*> lights)
 		->sendUniformMat4("uView", glm::value_ptr(camera->getView()), false)
 		->sendUniformMat4("uProj", glm::value_ptr(camera->getProj()), false)
 		->sendUniform("objectColor", color)
+		->sendUniform("numLights", lights.size())
 		->sendUniform("ammo", ammo)
 	// Material
 		->sendUniform("material.diffuse", 0)
@@ -214,7 +224,7 @@ Object* Object::draw(Shader* shader, Camera* camera, std::vector<Light*> lights)
 	// Lights
 	for (int i = 0; i < lights.size(); i++) {
 		std::string prefix = "lights[" + std::to_string(i) + "].";
-		
+	
 		//shader->sendUniform("NUM_LIGHTS", lights.size());
 		shader->sendUniform(prefix + "type", lights[i]->type)
 			->sendUniform(prefix + "position", camera->getView() * lights[i]->position)

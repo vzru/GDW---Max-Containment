@@ -215,9 +215,9 @@ void Game::initLevel() {
 	// lights
 	level.light = new Light();
 	level.light->type = (unsigned int)Type::Light::SPOT;
-	level.light->position = { 0.f, 0.0f, 0.f, 1.f };
-	level.light->direction = { 0.f, 0.5f, 0.f, 0.f };
-	level.light->original = level.light->position;
+	level.light->type = (unsigned int)Type::Light::POINT;
+	level.light->position = { 0.f, 1.f, 0.f, 1.f };
+	//level.light->original = level.light->position;
 	level.light->ambient = { 0.15f, 0.15f, 0.15f };
 	level.light->diffuse = { 0.7f, 0.7f, 0.7f };
 	level.light->specular = { 1.f, 1.f, 1.f };
@@ -227,18 +227,46 @@ void Game::initLevel() {
 	level.light->innerCutoff = glm::radians(1.f);
 	level.light->partial = 0.3;
 	level.light->attenuation = { 0.5f, 0.1f, 0.01f };
+	level.lights.push_back(level.light);
+	
+	// @@@@@ FOR SEAN @@@@@@	Loads in the array containing all the lights in the level
+	for (auto& pos : level.lightPos) {
+		std::cout << "Load Light " << lights.size() << std::endl;
+		Light *light = new Light();
+		light->type = (unsigned int)Type::Light::SPOT;
+		light->position = glm::vec4(pos, 1.f);
+		light->direction = glm::vec4(consts.direction.down, 0.f);
+		light->ambient = { 0.15f, 0.15f, 0.15f };
+		light->diffuse = { 0.7f, 0.7f, 0.7f };
+		light->specular = { 1.f, 1.f, 1.f };
+		light->specExponent = 50.f;
+		light->spotExponent = 1.f;
+		light->cutoff = glm::radians(55.f);
+		light->innerCutoff = glm::radians(1.f);
+		light->partial = 0.3;
+		light->attenuation = { 0.5f, 0.1f, 0.01f };
+		level.lights.push_back(light);
+	}
 
+	// Flashlight gets put into the last slot
 	level.light2 = new Light();
-	level.light2->type = (unsigned int)Type::Light::POINT;
-	level.light2->position = { 0.f, 1.f, 0.f, 1.f };
+	level.light2->type = (unsigned int)Type::Light::SPOT;
+	level.light2->position = { 0.f, 0.0f, 0.f, 1.f };
+	level.light2->direction = { 0.f, 0.5f, 0.f, 0.f };
 	level.light2->original = level.light2->position;
 	level.light2->ambient = { 0.15f, 0.15f, 0.15f };
 	level.light2->diffuse = { 0.7f, 0.7f, 0.7f };
 	level.light2->specular = { 1.f, 1.f, 1.f };
 	level.light2->specExponent = 50.f;
 	level.light2->attenuation = { 1.f, 1.f, 1.f }; // WHY!!
+	level.light2->spotExponent = 1.f;
+	level.light2->cutoff = glm::radians(55.f);
+	level.light2->innerCutoff = glm::radians(1.f);
+	level.light2->partial = 0.3;
+	level.light2->attenuation = { 0.5f, 0.1f, 0.01f };
+	level.lights.push_back(level.light2);
 
-	level.light3 = new Light();
+	/*level.light3 = new Light();
 	level.light3->type = (unsigned int)Type::Light::SPOT;
 	level.light3->position = { 0.f, 0.0f, 0.f, 1.f };
 	level.light3->direction = { 0.f, 0.5f, 0.f, 0.f };
@@ -378,6 +406,7 @@ Game* Game::load() {
 		->loadTexture(Type::Texture::SPECULAR, assets->textures["fullSpecular"]);
 	dropAmmo->ammo = 30.0f;
 
+<<<<<<< HEAD
 	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load in things" << std::endl;
 	return this;
 }
@@ -544,7 +573,6 @@ void Game::update() {
 		level.light2->position = glm::vec4(temp + glm::vec3(0.f, 2.f, 0.f), 1.f);
 		//level.light3->position = glm::vec4(player->getPosition() + glm::vec3(0.f, 0.1f, 0.f), 1.f);
 		float angle = glm::radians(player->getRotation().y);
-		level.light->direction = { cos(angle), -0.1f, -sin(angle), 0.f };
 		//level.light3->direction = { cos(angle), 0.45f, -sin(angle), 0.f };
 
 		// bullet collision
