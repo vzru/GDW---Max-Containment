@@ -65,14 +65,12 @@ int main(int argc, char **argv) {
 	glutSpecialFunc(SpecialInputCallbackFunction);
 
 	// initialize game
-	game->init(ControllerInputCallbackFunction, ControllerSpecialCallbackFunction)
-		->load();
+	game->init(ControllerInputCallbackFunction, ControllerSpecialCallbackFunction);
 
 	// start game
 	glutMainLoop();
 
 	// end game
-	game->clear();
 	delete game;
 	system("pause");
 	return 0;

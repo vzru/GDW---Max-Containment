@@ -10,10 +10,10 @@ public:
 	~Texture();
 
 	bool load(const std::string &file);
-	Texture* unload();
+	void unload();
 
-	Texture* bind();
-	Texture* unbind();
+	void bind();
+	void unbind();
 
 	// The handle to the texture object
 	GLuint texObj = 0;

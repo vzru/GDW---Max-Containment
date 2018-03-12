@@ -10,16 +10,15 @@ Camera::Camera(glm::vec2 size) {
 }
 Camera::~Camera() {}
 
-Camera* Camera::update(glm::vec3 center) {
+void Camera::update(glm::vec3 center) {
 	//translate = glm::translate(center);
 	//auto m = glm::lookAt(position, position + forwardVector, upVector);
 	view = glm::lookAt(center + position, center, { 0, 1, 0 });
 	//glMatrixMode(GL_MODELVIEW);
 	//glLoadMatrixf(&view[0][0]);
-	return this;
 }
 
-Camera* Camera::reset(glm::vec2 size) {
+void Camera::reset(glm::vec2 size) {
 	//movementScalar = 0.5;
 	//upVector = { 0.0f, 1.0f, 0.0f };
 	//forwardVector = { 0.0f, -1.0f, -1.0f };
@@ -28,10 +27,9 @@ Camera* Camera::reset(glm::vec2 size) {
 	//rotate = glm::rotate(0.f, { 0.f, 1.f, 0.f }); //glm::rotate(0.f, { 0.f, 0.f, 0.f });
 	//transform = translate * rotate;
 	proj = glm::perspective(45.f, size.x / size.y, 0.1f, 10000.f);
-	return this;
 }
 
-Camera* Camera::processMotion(glm::vec2 change, float dt) {
+void Camera::processMotion(glm::vec2 change, float dt) {
 //	// yaw rotation
 //	forwardVector = glm::rotate(glm::normalize(forwardVector), glm::radians(0.08f * change.x), { 0.0f, 1.0f, 0.0f });
 //	// calc right vector
@@ -40,20 +38,17 @@ Camera* Camera::processMotion(glm::vec2 change, float dt) {
 //	forwardVector = glm::rotate(forwardVector, glm::radians(0.08f * change.y), rightVector);
 //	// calc up vector
 //	upVector = glm::normalize(glm::cross(rightVector, forwardVector));
-	return this;
 }
 
-Camera* Camera::pan(glm::vec3 amount) {
+void Camera::pan(glm::vec3 amount) {
 //	calcRightVector();
 //	position += rightVector * amount.x;
 //	position += glm::vec3(0.0f, 1.0f, 0.0f) * amount.y;
 //	position += forwardVector * amount.z;
-	return this;
 }
-Camera* Camera::move(glm::vec3 amount) {
+void Camera::move(glm::vec3 amount) {
 //	position += amount;
 	position += amount;
-	return this;
 }
 
 //void Camera::calcRightVector() {
@@ -61,9 +56,8 @@ Camera* Camera::move(glm::vec3 amount) {
 //	rightVector = glm::normalize(rightVector);
 //}
 
-Camera* Camera::setPosition(glm::vec3 pos) {
+void Camera::setPosition(glm::vec3 pos) {
 	position = pos;
-	return this;
 }
 
 glm::mat4& Camera::getProj() {

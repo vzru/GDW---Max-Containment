@@ -63,7 +63,7 @@ bool Shader::isLoaded() const {
 	return loaded;
 }
 
-Shader* Shader::unload() {
+void Shader::unload() {
 	if (vertexShader != 0) {
 		glDetachShader(program, vertexShader);
 		glDeleteShader(vertexShader);
@@ -80,7 +80,6 @@ Shader* Shader::unload() {
 	}
 
 	loaded = false;
-	return this;
 }
 
 bool Shader::linkProgram() {
@@ -92,19 +91,16 @@ bool Shader::linkProgram() {
 	return success == GL_TRUE;
 }
 
-Shader* Shader::bind() {
+void Shader::bind() const {
 	glUseProgram(program);
-	return this;
 }
 
-Shader* Shader::unbind() {
+void Shader::unbind() {
 	glUseProgram(GL_NONE);
-	return this;
 }
 
-Shader* Shader::addAttribute(unsigned int index, const std::string & attribName) {
+void Shader::addAttribute(unsigned int index, const std::string & attribName) {
 	glBindAttribLocation(program, index, attribName.c_str());
-	return this;
 }
 
 int Shader::getAttribLocation(const std::string & attribName) {
@@ -115,55 +111,47 @@ int Shader::getUniformLocation(const std::string & uniformName) {
 	return glGetUniformLocation(program, uniformName.c_str());
 }
 
-Shader* Shader::sendUniform(const std::string & name, int integer) {
+void Shader::sendUniform(const std::string & name, int integer) {
 	GLint location = getUniformLocation(name);
 	glUniform1i(location, integer);
-	return this;
 }
 
-Shader* Shader::sendUniform(const std::string & name, unsigned int unsignedInteger) {
+void Shader::sendUniform(const std::string & name, unsigned int unsignedInteger) {
 	GLint location = getUniformLocation(name);
 	glUniform1ui(location, unsignedInteger);
-	return this;
 }
 
-Shader* Shader::sendUniform(const std::string & name, float scalar) {
+void Shader::sendUniform(const std::string & name, float scalar) {
 	GLint location = getUniformLocation(name);
 	glUniform1f(location, scalar);
-	return this;
 }
 
-Shader* Shader::sendUniform(const std::string & name, const glm::vec2 & vector) {
+void Shader::sendUniform(const std::string & name, const glm::vec2 & vector) {
 	GLint location = getUniformLocation(name);
 	glUniform2f(location, vector.x, vector.y);
-	return this;
 }
 
-Shader* Shader::sendUniform(const std::string & name, const glm::vec3 & vector) {
+void Shader::sendUniform(const std::string & name, const glm::vec3 & vector) {
 	GLint location = getUniformLocation(name);
 	glUniform3f(location, vector.x, vector.y, vector.z);
-	return this;
 }
 
-Shader* Shader::sendUniform(const std::string & name, const glm::vec4 & vector) {
+void Shader::sendUniform(const std::string & name, const glm::vec4 & vector) {
 	GLint location = getUniformLocation(name);
 	glUniform4f(location, vector.x, vector.y, vector.z, vector.w);
-	return this;
 }
 
-Shader* Shader::sendUniformMat3(const std::string & name, float * matrix, bool transpose) {
+void Shader::sendUniformMat3(const std::string & name, float * matrix, bool transpose) {
 	GLint location = getUniformLocation(name);
 	glUniformMatrix3fv(location, 1, transpose, matrix);
-	return this;
 }
 
-Shader* Shader::sendUniformMat4(const std::string & name, float * matrix, bool transpose) {
+void Shader::sendUniformMat4(const std::string & name, float * matrix, bool transpose) {
 	GLint location = getUniformLocation(name);
 	glUniformMatrix4fv(location, 1, transpose, matrix);
-	return this;
 }
 
-std::string Shader::readFile(const std::string &fileName) const {
+std::string Shader::readFile(const std::string & fileName) const {
 	std::ifstream input(fileName);
 
 	if (!input) {
@@ -184,7 +172,7 @@ bool Shader::compileShader(GLuint shader) const {
 	return success == GL_TRUE;
 }
 
-Shader* Shader::outputShaderLog(GLuint shader) {
+void Shader::outputShaderLog(GLuint shader) const {
 	std::string infoLog;
 
 	GLint infoLen;
@@ -195,10 +183,9 @@ Shader* Shader::outputShaderLog(GLuint shader) {
 	glGetShaderInfoLog(shader, infoLen, &infoLen, &infoLog[0]);
 
 	std::cout << infoLog << std::endl;
-	return this;
 }
 
-Shader* Shader::outputProgramLog() {
+void Shader::outputProgramLog() const {
 	std::string infoLog;
 
 	GLint infoLen;
@@ -209,5 +196,4 @@ Shader* Shader::outputProgramLog() {
 	glGetProgramInfoLog(program, infoLen, &infoLen, &infoLog[0]);
 
 	std::cout << infoLog << std::endl;
-	return this;
 }

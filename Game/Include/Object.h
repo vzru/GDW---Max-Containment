@@ -34,10 +34,10 @@ public:
 	~Object();
 
 	// set transformation
-	Object* setPosition(glm::vec3 newPos);
-	Object* setRotation(glm::vec3 newAng);
-	Object* setScale(glm::vec3 newScale);
-	Object* setVelocity(glm::vec3 newVel);
+	void setPosition(glm::vec3 newPos);
+	void setRotation(glm::vec3 newAng);
+	void setScale(glm::vec3 newScale);
+	void setVelocity(glm::vec3 newVel);
 
 	// getters
 	glm::vec3 getPosition();
@@ -48,16 +48,15 @@ public:
 
 	// loading functions
 	//void loadTexture(Type::Texture type, const std::string &texFile);
-	Object* loadTexture(Type::Texture type, Texture *texPtr);
+	void loadTexture(Type::Texture type, Texture *texPtr);
 	//void loadMesh(const std::string &meshFile);
-	Object* loadMesh(Mesh *meshPtr);
+	void loadMesh(Mesh *meshPtr);
 
 	// Updating functions
-	Object* collide(float dt, Level* level, bool ai = false);
-	virtual Object* update(float dt = 0.f);
+	void collide(float dt, Level* level, bool ai = false);
+	virtual void update(float dt);
 	//virtual void physics(float dt);
-	virtual Object* draw(Shader *shader, Camera *camera, Light* lights);
-	virtual Object* draw(Shader *shader, Camera *camera, std::vector<Light*> lights);
+	virtual void draw(Shader *shader, Camera *camera, std::vector<Light*> lights, float lightCount = 0.0f);
 
 	// Physical properties
 	glm::vec4 color;
@@ -65,5 +64,5 @@ public:
 	Material* mat;
 	int ammo;
 	float life, cooldown;
-	bool collect = false;
+	bool collect;
 };

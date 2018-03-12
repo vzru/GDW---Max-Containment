@@ -16,15 +16,15 @@ public:
 	bool load(const std::string &vertFile, const std::string &fragFile);
 
 	// clears all data from OpenGL
-	Shader* unload();
+	void unload();
 
 	bool linkProgram();
 
 	// use the shader
-	Shader* bind();
+	void bind() const;
 
 	// detach the shader from use
-	Shader* unbind();
+	void unbind();
 
 	// Returns -1 if attribute does not exist
 	int getAttribLocation(const std::string &attribName);
@@ -33,17 +33,17 @@ public:
 	int getUniformLocation(const std::string &uniformName);
 
 	// Requires a re-link before OpenGL will register the change
-	Shader* addAttribute(unsigned int index, const std::string &attribName);
+	void addAttribute(unsigned int index, const std::string &attribName);
 
 	// send uniform data to the shaders
-	Shader* sendUniform(const std::string &name, int integer);
-	Shader* sendUniform(const std::string &name, unsigned int unsignedInteger);
-	Shader* sendUniform(const std::string &name, float scalar);
-	Shader* sendUniform(const std::string &name, const glm::vec2 &vector);
-	Shader* sendUniform(const std::string &name, const glm::vec3 &vector);
-	Shader* sendUniform(const std::string &name, const glm::vec4 &vector);
-	Shader* sendUniformMat3(const std::string &name, float *matrix, bool transpose);
-	Shader* sendUniformMat4(const std::string &name, float *matrix, bool transpose);
+	void sendUniform(const std::string &name, int integer);
+	void sendUniform(const std::string &name, unsigned int unsignedInteger);
+	void sendUniform(const std::string &name, float scalar);
+	void sendUniform(const std::string &name, const glm::vec2 &vector);
+	void sendUniform(const std::string &name, const glm::vec3 &vector);
+	void sendUniform(const std::string &name, const glm::vec4 &vector);
+	void sendUniformMat3(const std::string &name, float *matrix, bool transpose);
+	void sendUniformMat4(const std::string &name, float *matrix, bool transpose);
 
 	bool isLoaded() const;
 private:
@@ -57,7 +57,7 @@ private:
 
 	bool compileShader(GLuint shader) const;
 
-	Shader* outputShaderLog(GLuint shader);
+	void outputShaderLog(GLuint shader) const;
 
-	Shader* outputProgramLog();
+	void outputProgramLog() const;
 };
