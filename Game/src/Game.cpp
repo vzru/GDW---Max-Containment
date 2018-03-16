@@ -93,6 +93,9 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	screen.loading->draw(program["Phong"], screen.camera, { screen.light });
 	glutSwapBuffers();
 
+	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load in things" << std::endl;
+
+
 	Sound* sound = new Sound("assets/sounds/game soundtrack.wav", true, 2);
 	//Sound* sound = new Sound("assets/sounds/SW.mp3", true, 2);
 	soundList.push_back(sound);
@@ -160,6 +163,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	assets->loadMesh("playerFrame3", "c_kframe_4.obj");
 	assets->loadMesh("playerFrame4", "c_kframe_5.obj");
 
+	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load in things" << std::endl;
 
 
 	/*program["PhongSpot"] = new Shader();

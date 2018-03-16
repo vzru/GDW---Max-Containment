@@ -60,11 +60,11 @@ public:
 
 	// Physical properties
 	glm::vec4 color;
-	Mesh* mesh;
+	Mesh* mesh;// , currentMesh, nextMesh;
 	std::vector<Mesh*> animationList;
 	Material* mat;
 	int ammo;
-	float life, cooldown, timer;
+	float life, cooldown, timer, t;
 	bool collect;
 	int keyFrame = 0;
 };

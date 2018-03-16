@@ -152,6 +152,7 @@ void Object::update(float dt, bool p) {
 			keyFrame = 0;
 		}
 		timer += dt * glm::length(velocity);
+		t = timer / 100.0f;
 	}
 	//std::cout << keyFrame << std::endl;
 	if (animationList.size() > 0)
