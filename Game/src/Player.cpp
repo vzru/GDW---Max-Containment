@@ -24,10 +24,11 @@ void Player::update(float dt, Level* level) {
 		//velocity = glm::normalize(velocity) * 4.f;
 	collide(dt, level);
 	if (glm::length(velocity) > 0.f)
-
-	position += velocity * (dt / 200.f);
-	if (glm::length(velocity) > 0.f)
+	{
+		position += velocity * (dt / 200.f);
 		velocity = glm::normalize(velocity) * glm::length(velocity) * 0.9f;
+	}
+	//if (glm::length(velocity) > 0.f)
 
 	// gun cooldown
 	if (cooldown >= 0.f)
@@ -43,15 +44,24 @@ void Player::update(float dt, Level* level) {
 		}
 	}
 
-	if(reloadCd > 0)
-		reloadCd -= dt/1000.f;
+	if (reloadCd > 0)
+		reloadCd -= dt / 1000.f;
 
 	reloading();
 	//std::cout << "Player Position: " << acceleration.x << '/' << acceleration.y << '/' << acceleration.z << std::endl;
 	//std::cout << "Player Velocity: " << velocity.x << '/' << velocity.y << '/' << velocity.z << std::endl;
+	if (glm::length(velocity) > 0.1f)
+	{
+		play = true;
+	}
+	else
+	{
+		play = false;
+	}
+
 
 	// create transformation matrix
-	Object::update(dt);
+	Object::update(dt, play);
 }
 
 void Player::draw(Shader* shader, Camera* camera, std::vector<Light*> lights, float lightCount) {

@@ -21,6 +21,7 @@ public:
 	bool firing = false;
 	bool reloaded = false;
 	bool reload = false;
+	bool play = false;
 
 	glm::vec3 acceleration = { 0.f, 0.f, 0.f };
 	Bullet* bullet;

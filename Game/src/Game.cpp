@@ -97,7 +97,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	//Sound* sound = new Sound("assets/sounds/SW.mp3", true, 2);
 	soundList.push_back(sound);
 	soundList[0]->createChannel(2);
-	soundList[0]->setVolume(0.03f);
+	soundList[0]->setVolume(0.01f);
 
 	//Initialize Assets
 	// level
@@ -142,6 +142,24 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	assets->loadTexture("enemy0 normal", "enemy3N.png");
 	assets->loadTexture("enemy1 normal", "enemy1N.png");
 	assets->loadTexture("enemy2 normal", "enemy2N.png");
+
+	// animation
+	assets->loadMesh("dam0", "dam0.obj");
+	assets->loadMesh("dam1", "dam1.obj");
+	assets->loadMesh("dam2", "dam2.obj");
+	assets->loadMesh("dam3", "dam3.obj");
+	assets->loadMesh("dam4", "dam4.obj");
+	assets->loadMesh("dam5", "dam5.obj");
+	assets->loadMesh("dam6", "dam6.obj");
+	assets->loadMesh("dam7", "dam7.obj");
+	assets->loadMesh("dam8", "dam8.obj");
+
+	assets->loadMesh("playerFrame0", "c_kframe_1.obj");
+	assets->loadMesh("playerFrame1", "c_kframe_2.obj");
+	assets->loadMesh("playerFrame2", "c_kframe_3.obj");
+	assets->loadMesh("playerFrame3", "c_kframe_4.obj");
+	assets->loadMesh("playerFrame4", "c_kframe_5.obj");
+
 
 
 	/*program["PhongSpot"] = new Shader();
@@ -344,7 +362,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 
 	// Initialize Player
 	player = new Player({ 4.f, 0.f, 6.f });
-	player->loadMesh(assets->meshes["player"]);
+	//player->loadMesh(assets->meshes["player"]);
 	player->loadTexture(Type::Texture::DIFFUSE, assets->textures["player color"]);
 	player->loadTexture(Type::Texture::NORMAL, assets->textures["player normal"]);
 	player->loadTexture(Type::Texture::SPECULAR, assets->textures["fullSpecular"]);
@@ -354,6 +372,13 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	player->ammo = 30.0f;
 	player->ammoDepo = 90.f;
 	player->reloadCd = 0.0f;
+
+	player->loadAnimationFrame(assets->meshes["playerFrame0"]);
+	player->loadAnimationFrame(assets->meshes["playerFrame1"]);
+	player->loadAnimationFrame(assets->meshes["playerFrame2"]);
+	player->loadAnimationFrame(assets->meshes["playerFrame3"]);
+	player->loadAnimationFrame(assets->meshes["playerFrame4"]);
+
 
 	// Initialize Drops
 	dropHP = new Object();
@@ -417,6 +442,17 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	std::get<0>(enemys)->loadTexture(Type::Texture::NORMAL, assets->textures["enemy0 normal"]);
 	std::get<1>(enemys)->loadTexture(Type::Texture::NORMAL, assets->textures["enemy1 normal"]);
 	std::get<2>(enemys)->loadTexture(Type::Texture::NORMAL, assets->textures["enemy2 normal"]);
+
+	std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam0"]);
+	std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam1"]);
+	std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam2"]);
+	std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam3"]);
+	std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam4"]);
+	std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam5"]);
+	std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam6"]);
+	std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam7"]);
+	std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam8"]);
+
 	loadEnemies();
 
 	loadDrops();
@@ -619,7 +655,7 @@ void Game::update() {
 			if (enemies[i]->knockbackCD > 0)
 				enemies[i]->knockbackCD -= deltaTime / 1000;
 			// aim towards player
-			enemies[i]->setRotation({ 0.f, glm::degrees(atan2f(-diff.z, diff.x)) - 90.f, 0.f });
+			enemies[i]->setRotation({ 0.f, glm::degrees(atan2(-diff.z, diff.x)) - 90.f, 0.f });
 			// hurt player
 			if (enemies[i]->cooldown <= 0.f)
 				if (glm::length(diff) < 1.f) {
@@ -770,6 +806,7 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 			soundList[1]->playSound(2);
 			soundList[1]->setVolume(0.05f);
 			soundList[4]->playSound(2);
+			soundList[4]->setVolume(0.5f);
 			break;
 		case State::Pause:
 			state = State::Play;
@@ -1018,6 +1055,8 @@ void Game::controllerInput(unsigned short index, Input::Button button) {
 				state = State::Pause;
 			if (button == Input::Button::RB)
 				player->reload = true;
+			if (button == Input::Button::X)
+				lightOn = !lightOn;
 			break;
 		case State::Pause:
 			if (button == Input::Button::A)
@@ -1061,7 +1100,7 @@ void Game::controllerSpecial(unsigned short index, Input::Triggers triggers, Inp
 				player->acceleration = glm::normalize(player->acceleration);
 			if (glm::length(sticks.second) > 0.5f)
 				player->setRotation({ 0.0f, glm::degrees(atan2(sticks.second.y, sticks.second.x)), 0.0f });
-			if (triggers.second > 0.2)
+			if (triggers.second > 0.5)
 			{
 				if (player->reloadCd <= 0.0f) {
 					player->firing = true;
@@ -1070,11 +1109,14 @@ void Game::controllerSpecial(unsigned short index, Input::Triggers triggers, Inp
 					soundList[2]->setVolume(0.05f);
 				}
 			}
-			else
+			else if(triggers.second < 0.5)
 			{
 				player->firing = false;
 				soundList[2]->stopSound();
 			}
+			
+			//	lightOn = !lightOn;
+			
 		}
 		break;
 	default:
@@ -1143,7 +1185,7 @@ void Game::reset()
 	lightOn = false;
 	soundList[1]->stopSound();
 	soundList[0]->playSound(2);
-	soundList[0]->setVolume(0.05f);
+	soundList[0]->setVolume(0.01f);
 	soundList[4]->stopSound();
 	state = State::Menu;
 }

@@ -70,6 +70,11 @@ void Object::loadMesh(Mesh *meshPtr) {
 	mesh = meshPtr;
 }
 
+void Object::loadAnimationFrame(Mesh * m)
+{
+	animationList.push_back(m);
+}
+
 /*float lineCheck(glm::vec2 p, glm::vec2 p0, glm::vec2 p1) {
 	return (p1.y - p0.y) * p.x + (p0.x - p1.x) * p.y + (p1.x * p0.y - p0.x * p1.y);
 }*/
@@ -111,7 +116,7 @@ void Object::collide(float dt, Level* level, bool ai) {
 	//return collided;
 }
 
-void Object::update(float dt) {
+void Object::update(float dt, bool p) {
 	// Create 4x4 transformation matrix
 
 	// 1. Create the X,Y, and Z rotation matrices
@@ -133,6 +138,26 @@ void Object::update(float dt) {
 	glm::mat4 scal = glm::scale(scale);
 	// 5. Combine all above transforms into a single matrix
 	transform = tran * rotate * scal;
+
+	if (p)
+	{
+		// Animation mesh morphing
+		if (timer >= 100)
+		{
+			keyFrame++;
+			timer = 0.0f;
+		}
+		if (keyFrame >= animationList.size())
+		{
+			keyFrame = 0;
+		}
+		timer += dt * glm::length(velocity);
+	}
+	//std::cout << keyFrame << std::endl;
+	if (animationList.size() > 0)
+	{
+		mesh = animationList[keyFrame];
+	}
 }
 
 void Object::draw(Shader* shader, Camera* camera, std::vector<Light*> lights, float lightCount) {
@@ -144,16 +169,16 @@ void Object::draw(Shader* shader, Camera* camera, std::vector<Light*> lights, fl
 	shader->sendUniformMat4("uProj", glm::value_ptr(camera->getProj()), false);
 	shader->sendUniform("objectColor", color);
 	//shader->sendUniform("ammo", ammo);
-	//if (lightCount == 0.0f)
-	//{
-	//	//std::cout << lights.size() << std::endl;
-	//	shader->sendUniform("numLights", lights.size());
-	//}
-	//else
-	//{
-	//	//std::cout << lightCount << std::endl;
-	//	shader->sendUniform("numLights", lightCount);
-	//}
+	if (lightCount == 0.0f)
+	{
+		//std::cout << lights.size() << std::endl;
+		shader->sendUniform("numLights", lights.size());
+	}
+	else
+	{
+		//std::cout << lightCount << std::endl;
+		shader->sendUniform("numLights", lightCount);
+	}
 	// Material
 	shader->sendUniform("material.diffuse", 0);
 	shader->sendUniform("material.specular", 1);
@@ -163,7 +188,7 @@ void Object::draw(Shader* shader, Camera* camera, std::vector<Light*> lights, fl
 	// Lights
 	for (int i = 0; i < lights.size(); i++) {
 		std::string prefix = "lights[" + std::to_string(i) + "].";
-	
+
 		//shader->sendUniform("NUM_LIGHTS", lights.size());
 		shader->sendUniform(prefix + "type", lights[i]->type);
 		shader->sendUniform(prefix + "position", camera->getView() * lights[i]->position);

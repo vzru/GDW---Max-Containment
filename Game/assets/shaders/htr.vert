@@ -11,7 +11,7 @@ attribute vec2 Weight;
 uniform mat4 uModel;
 uniform mat4 uView;
 uniform mat4 uProj;
-uniform mat4 Bone[MAX_ARRAY]; // Array of bones that you compute (animate) on the CPU and you upload to the shader
+uniform mat4 Bone[MAX_ARRAY]; 
 // --------------------
 varying vec2 TexCoord0;
 varying vec3 EyeNormal;

@@ -51,18 +51,20 @@ public:
 	void loadTexture(Type::Texture type, Texture *texPtr);
 	//void loadMesh(const std::string &meshFile);
 	void loadMesh(Mesh *meshPtr);
-
+	void loadAnimationFrame(Mesh *m);
 	// Updating functions
 	void collide(float dt, Level* level, bool ai = false);
-	virtual void update(float dt);
+	virtual void update(float dt, bool p = false);
 	//virtual void physics(float dt);
 	virtual void draw(Shader *shader, Camera *camera, std::vector<Light*> lights, float lightCount = 0.0f);
 
 	// Physical properties
 	glm::vec4 color;
 	Mesh* mesh;
+	std::vector<Mesh*> animationList;
 	Material* mat;
 	int ammo;
-	float life, cooldown;
+	float life, cooldown, timer;
 	bool collect;
+	int keyFrame = 0;
 };
