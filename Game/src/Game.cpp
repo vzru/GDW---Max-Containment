@@ -884,10 +884,11 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 		player->timerReset -= 1.0f;
 		break;
 	case'k':
-		level.light->innerCutoff += glm::radians(0.1f);
+		//level.light->innerCutoff += glm::radians(0.1f);
+		std::cout << player->timerReset << std::endl;
 		break;
 	case 'l':
-		level.light->innerCutoff -= glm::radians(0.1f);
+		//level.light->innerCutoff -= glm::radians(0.1f);
 		break;
 	default: break;
 	}
