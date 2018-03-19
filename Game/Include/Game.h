@@ -137,7 +137,7 @@ private:
 	std::tuple<Enemy*, Enemy*, Enemy*> enemys;
 	Object *dropHP, *dropAmmo;
 	std::vector<Object*> dropItems;
-	bool lightOn = false;
+	bool lightOn = true;
 	void loadDrops();
 	void loadEnemies(), clearEnemies();
 	void clearDrops();

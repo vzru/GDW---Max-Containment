@@ -84,6 +84,9 @@
     <ClInclude Include="Include\SoundE.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\AnimationMesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Object Include="assets\models\player.obj">
@@ -172,6 +175,9 @@
     <ClCompile Include="src\SoundE.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\AnimationMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\passThrough.frag">
@@ -211,6 +217,9 @@
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="assets\shaders\NoFlashNoNorm.frag">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="assets\shaders\animation.vert">
       <Filter>Resource Files\shaders</Filter>
     </None>
   </ItemGroup>

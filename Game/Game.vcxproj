@@ -123,6 +123,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\AnimationMesh.h" />
     <ClInclude Include="Include\Bullet.h" />
     <ClInclude Include="Include\Camera.h" />
     <ClInclude Include="include\Assets.h" />
@@ -183,6 +184,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\AnimationMesh.cpp" />
     <ClCompile Include="src\Bullet.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Assets.cpp" />
@@ -203,6 +205,7 @@
     <ClCompile Include="src\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="assets\shaders\animation.vert" />
     <None Include="assets\shaders\DropItems.frag" />
     <None Include="assets\shaders\NoFlash.frag" />
     <None Include="assets\shaders\NoFlashNoNorm.frag" />

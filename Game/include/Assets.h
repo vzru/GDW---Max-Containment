@@ -10,6 +10,7 @@
 class Mesh;		class Material;
 class Shader;	class Texture;
 class ShaderProgram;
+class AnimationMesh;
 
 class Assets {
 	Assets() {}
@@ -20,9 +21,11 @@ public:
 
 	// loaders
 	Mesh *loadMesh(const std::string &name, const std::string &file);
+	AnimationMesh *loadAnimationMesh(const std::string &name, const std::string &file1, const std::string &file2);
 	Texture *loadTexture(const std::string &name, const std::string &file);
 
 	// assets
 	std::unordered_map<std::string, Mesh*> meshes;
+	std::unordered_map<std::string, AnimationMesh*> aMeshes;
 	std::unordered_map<std::string, Texture*> textures;
 };

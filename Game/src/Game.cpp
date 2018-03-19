@@ -10,6 +10,7 @@
 
 #include "Assets.h"
 #include "Level.h"
+#include "AnimationMesh.h"
 #include "Mesh.h"
 #include "Game.h"
 #include "Shader.h"
@@ -42,7 +43,7 @@ Game::Game(int& argc, char** argv)
 	glutCreateWindow("Max Containment");
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glutFullScreen();
+	//glutFullScreen();
 
 	glewExperimental = true;
 	if (glewInit() != GLEW_OK) {
@@ -147,21 +148,28 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	assets->loadTexture("enemy2 normal", "enemy2N.png");
 
 	// animation
-	assets->loadMesh("dam0", "dam0.obj");
-	assets->loadMesh("dam1", "dam1.obj");
-	assets->loadMesh("dam2", "dam2.obj");
-	assets->loadMesh("dam3", "dam3.obj");
-	assets->loadMesh("dam4", "dam4.obj");
-	assets->loadMesh("dam5", "dam5.obj");
-	assets->loadMesh("dam6", "dam6.obj");
-	assets->loadMesh("dam7", "dam7.obj");
-	assets->loadMesh("dam8", "dam8.obj");
+	//assets->loadMesh("dam0", "dam0.obj");
+	//assets->loadMesh("dam1", "dam1.obj");
+	//assets->loadMesh("dam2", "dam2.obj");
+	//assets->loadMesh("dam3", "dam3.obj");
+	//assets->loadMesh("dam4", "dam4.obj");
+	//assets->loadMesh("dam5", "dam5.obj");
+	//assets->loadMesh("dam6", "dam6.obj");
+	//assets->loadMesh("dam7", "dam7.obj");
+	//assets->loadMesh("dam8", "dam8.obj");
 
-	assets->loadMesh("playerFrame0", "c_kframe_1.obj");
-	assets->loadMesh("playerFrame1", "c_kframe_2.obj");
-	assets->loadMesh("playerFrame2", "c_kframe_3.obj");
-	assets->loadMesh("playerFrame3", "c_kframe_4.obj");
-	assets->loadMesh("playerFrame4", "c_kframe_5.obj");
+	//assets->loadMesh("playerFrame0", "c_kframe_1.obj");
+	//assets->loadMesh("playerFrame1", "c_kframe_2.obj");
+	//assets->loadMesh("playerFrame2", "c_kframe_3.obj");
+	//assets->loadMesh("playerFrame3", "c_kframe_4.obj");
+	//assets->loadMesh("playerFrame4", "c_kframe_5.obj");
+
+	assets->loadAnimationMesh("playerFrame0", "c_kframe_1.obj", "c_kframe_2.obj");
+	assets->loadAnimationMesh("playerFrame1", "c_kframe_2.obj", "c_kframe_3.obj");
+	assets->loadAnimationMesh("playerFrame2", "c_kframe_3.obj", "c_kframe_4.obj");
+	assets->loadAnimationMesh("playerFrame3", "c_kframe_4.obj", "c_kframe_5.obj");
+	assets->loadAnimationMesh("playerFrame4", "c_kframe_5.obj", "c_kframe_1.obj");
+	
 
 	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load in things" << std::endl;
 
@@ -343,6 +351,12 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 		system("pause");
 		exit(0);
 	}
+	program["MeshMorph"] = new Shader();
+	if (!program["MeshMorph"]->load("assets/shaders/animation.vert", "assets/shaders/phongSpot.frag")) {
+		std::cout << "Phong Shaders failed to initialize." << std::endl;
+		system("pause");
+		exit(0);
+	}
 
 	// Initialize Sounds
 	//Sound* sound = new Sound("assets/sounds/game soundtrack.wav", true, 2);
@@ -377,11 +391,11 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	player->ammoDepo = 90.f;
 	player->reloadCd = 0.0f;
 
-	player->loadAnimationFrame(assets->meshes["playerFrame0"]);
-	player->loadAnimationFrame(assets->meshes["playerFrame1"]);
-	player->loadAnimationFrame(assets->meshes["playerFrame2"]);
-	player->loadAnimationFrame(assets->meshes["playerFrame3"]);
-	player->loadAnimationFrame(assets->meshes["playerFrame4"]);
+	player->loadAnimationFrame(assets->aMeshes["playerFrame0"]);
+	player->loadAnimationFrame(assets->aMeshes["playerFrame1"]);
+	player->loadAnimationFrame(assets->aMeshes["playerFrame2"]);
+	player->loadAnimationFrame(assets->aMeshes["playerFrame3"]);
+	player->loadAnimationFrame(assets->aMeshes["playerFrame4"]);
 
 
 	// Initialize Drops
@@ -447,15 +461,15 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	std::get<1>(enemys)->loadTexture(Type::Texture::NORMAL, assets->textures["enemy1 normal"]);
 	std::get<2>(enemys)->loadTexture(Type::Texture::NORMAL, assets->textures["enemy2 normal"]);
 
-	std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam0"]);
-	std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam1"]);
-	std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam2"]);
-	std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam3"]);
-	std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam4"]);
-	std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam5"]);
-	std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam6"]);
-	std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam7"]);
-	std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam8"]);
+	//std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam0"]);
+	//std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam1"]);
+	//std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam2"]);
+	//std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam3"]);
+	//std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam4"]);
+	//std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam5"]);
+	//std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam6"]);
+	//std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam7"]);
+	//std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam8"]);
 
 	loadEnemies();
 
@@ -604,6 +618,9 @@ void Game::update() {
 		glm::vec3 temp = player->getPosition();
 		//std::cout << temp.x << '/' << temp.y << '/' << temp.z << std::endl;
 		//std::cout << rand() % 100 << std::endl
+		
+		if(deltaTime >= 25.0f)
+		std::cout << deltaTime << std::endl;
 
 		// stuff based on player
 		hud.display->setPosition(player->getPosition() + glm::vec3(0.004f, 10.6f, 1.967f));
@@ -732,7 +749,7 @@ void Game::draw() {
 	case State::Play:
 		if (lightOn)
 		{
-			player->draw(program["PhongSpot"], level.camera, level.lightPointers); // @@@@@ FOR SEAN @@@@@ Extra argument to take in how many lights are in the array
+			player->aDraw(program["MeshMorph"], level.camera, level.lightPointers); // @@@@@ FOR SEAN @@@@@ Extra argument to take in how many lights are in the array
 			for (auto& enemy : enemies)
 				enemy->draw(program["DropItems"], level.camera, level.lightPointers);
 			level.map->draw(program["PhongSpot"], level.camera, level.lightPointers);
@@ -753,7 +770,7 @@ void Game::draw() {
 		//level.hitboxes->draw(program["PhongColorSides"], level.camera, { *level.light });
 		hud.healthBar->draw(program["PhongNoTexture"], level.camera, { hud.light });
 		hud.display->draw(program["Phong"], level.camera, { hud.light });
-		drawAmmo();
+		//drawAmmo();
 
 		break;
 	case State::Menu:

@@ -50,14 +50,14 @@ void Player::update(float dt, Level* level) {
 	reloading();
 	//std::cout << "Player Position: " << acceleration.x << '/' << acceleration.y << '/' << acceleration.z << std::endl;
 	//std::cout << "Player Velocity: " << velocity.x << '/' << velocity.y << '/' << velocity.z << std::endl;
-	if (glm::length(velocity) > 0.1f)
-	{
+	//if (glm::length(velocity) > 0.1f)
+	//{
 		play = true;
-	}
-	else
-	{
-		play = false;
-	}
+	//}
+	//else
+	//{
+	//	play = false;
+	//}
 
 
 	// create transformation matrix

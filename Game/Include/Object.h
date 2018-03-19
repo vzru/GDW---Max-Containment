@@ -14,6 +14,7 @@
 class Mesh;		class Shader;
 class Camera;	class Material;
 class Level;	class Texture;
+class AnimationMesh;
 
 class Object {
 protected:
@@ -51,20 +52,23 @@ public:
 	void loadTexture(Type::Texture type, Texture *texPtr);
 	//void loadMesh(const std::string &meshFile);
 	void loadMesh(Mesh *meshPtr);
-	void loadAnimationFrame(Mesh *m);
+	void loadAnimationFrame(AnimationMesh *m);
 	// Updating functions
 	void collide(float dt, Level* level, bool ai = false);
 	virtual void update(float dt, bool p = false);
 	//virtual void physics(float dt);
 	virtual void draw(Shader *shader, Camera *camera, std::vector<Light*> lights, float lightCount = 0.0f);
+	virtual void aDraw(Shader *shader, Camera *camera, std::vector<Light*> lights, float lightCount = 0.0f);
+
 
 	// Physical properties
 	glm::vec4 color;
 	Mesh* mesh;// , currentMesh, nextMesh;
-	std::vector<Mesh*> animationList;
+	AnimationMesh* aMesh;
+	std::vector<AnimationMesh*> animationList;
 	Material* mat;
 	int ammo;
-	float life, cooldown, timer, t;
+	float life, cooldown, timer, t, timerReset = 100.0f;
 	bool collect;
 	int keyFrame = 0;
 };

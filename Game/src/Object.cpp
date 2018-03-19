@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "Mesh.h"
+#include "AnimationMesh.h"
 #include "Shader.h"
 #include "Object.h"
 #include "Camera.h"
@@ -14,6 +15,7 @@
 Object::Object(glm::vec3 pos)
 	: scale(1.0f), position(pos) {
 	mesh = new Mesh();
+	aMesh = new AnimationMesh();
 	mat = new Material();
 	update(0.f);
 }
@@ -70,7 +72,7 @@ void Object::loadMesh(Mesh *meshPtr) {
 	mesh = meshPtr;
 }
 
-void Object::loadAnimationFrame(Mesh * m)
+void Object::loadAnimationFrame(AnimationMesh * m)
 {
 	animationList.push_back(m);
 }
@@ -139,26 +141,28 @@ void Object::update(float dt, bool p) {
 	// 5. Combine all above transforms into a single matrix
 	transform = tran * rotate * scal;
 
-	if (p)
-	{
+	//if (p)
+	//{
 		// Animation mesh morphing
-		if (timer >= 100)
-		{
-			keyFrame++;
-			timer = 0.0f;
-		}
-		if (keyFrame >= animationList.size())
-		{
-			keyFrame = 0;
-		}
-		timer += dt * glm::length(velocity);
-		t = timer / 100.0f;
+	if (timer >= timerReset)
+	{
+		keyFrame++;
+		timer = 1.0f;
 	}
+	if (keyFrame >= animationList.size())
+	{
+		keyFrame = 0;
+	}
+	timer += dt/2 * glm::length(velocity);
+	t = timer / timerReset;
+	//}
 	//std::cout << keyFrame << std::endl;
 	if (animationList.size() > 0)
 	{
-		mesh = animationList[keyFrame];
+		aMesh = animationList[keyFrame];
 	}
+	//if(keyFrame)
+	//std::cout << keyFrame << std::endl;
 }
 
 void Object::draw(Shader* shader, Camera* camera, std::vector<Light*> lights, float lightCount) {
@@ -215,6 +219,74 @@ void Object::draw(Shader* shader, Camera* camera, std::vector<Light*> lights, fl
 	// Mesh
 	glBindVertexArray(mesh->vao);
 	glDrawArrays(GL_TRIANGLES, 0, mesh->getNumVertices());
+	glBindVertexArray(GL_NONE);
+	// Textures
+	mat->normal->unbind();
+	glActiveTexture(GL_TEXTURE1);
+	mat->specular->unbind();
+	glActiveTexture(GL_TEXTURE0);
+	mat->diffuse->unbind();
+	// End
+	shader->unbind();
+}
+
+void Object::aDraw(Shader * shader, Camera * camera, std::vector<Light*> lights, float lightCount)
+{
+	// Start
+	shader->bind();
+	// Basic
+	shader->sendUniformMat4("uModel", glm::value_ptr(transform), false);
+	shader->sendUniformMat4("uView", glm::value_ptr(camera->getView()), false);
+	shader->sendUniformMat4("uProj", glm::value_ptr(camera->getProj()), false);
+	shader->sendUniform("objectColor", color);
+	shader->sendUniform("t", t);
+	//shader->sendUniform("timerReset", t);
+	//shader->sendUniform("ammo", ammo);
+	if (lightCount == 0.0f)
+	{
+		//std::cout << lights.size() << std::endl;
+		shader->sendUniform("numLights", lights.size());
+	}
+	else
+	{
+		//std::cout << lightCount << std::endl;
+		shader->sendUniform("numLights", lightCount);
+	}
+	// Material
+	shader->sendUniform("material.diffuse", 0);
+	shader->sendUniform("material.specular", 1);
+	shader->sendUniform("material.normal", 2);
+	shader->sendUniform("material.hue", mat->hue);
+	shader->sendUniform("material.specExponent", mat->specExponent);
+	// Lights
+	for (int i = 0; i < lights.size(); i++) {
+		std::string prefix = "lights[" + std::to_string(i) + "].";
+
+		//shader->sendUniform("NUM_LIGHTS", lights.size());
+		shader->sendUniform(prefix + "type", lights[i]->type);
+		shader->sendUniform(prefix + "position", camera->getView() * lights[i]->position);
+		shader->sendUniform(prefix + "direction", camera->getView() * lights[i]->direction);
+		shader->sendUniform(prefix + "original", camera->getView() * lights[i]->original);
+		shader->sendUniform(prefix + "ambient", lights[i]->ambient);
+		shader->sendUniform(prefix + "diffuse", lights[i]->diffuse);
+		shader->sendUniform(prefix + "specular", lights[i]->specular);
+		shader->sendUniform(prefix + "specExponent", lights[i]->specExponent);
+		shader->sendUniform(prefix + "spotExponent", lights[i]->spotExponent);
+		shader->sendUniform(prefix + "cutoff", lights[i]->cutoff);
+		shader->sendUniform(prefix + "innerCutoff", lights[i]->innerCutoff);
+		shader->sendUniform(prefix + "partial", lights[i]->partial);
+		shader->sendUniform(prefix + "attenuation", lights[i]->attenuation);
+	}
+	// Textures
+	glActiveTexture(GL_TEXTURE0);
+	mat->diffuse->bind();
+	glActiveTexture(GL_TEXTURE1);
+	mat->specular->bind();
+	glActiveTexture(GL_TEXTURE2);
+	mat->normal->bind();
+	// Mesh
+	glBindVertexArray(aMesh->vao);
+	glDrawArrays(GL_TRIANGLES, 0, aMesh->getNumVertices());
 	glBindVertexArray(GL_NONE);
 	// Textures
 	mat->normal->unbind();
