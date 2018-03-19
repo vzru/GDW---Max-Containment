@@ -43,7 +43,7 @@ Game::Game(int& argc, char** argv)
 	glutCreateWindow("Max Containment");
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//glutFullScreen();
+	glutFullScreen();
 
 	glewExperimental = true;
 	if (glewInit() != GLEW_OK) {
@@ -86,12 +86,12 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	screen.loading->loadMesh(assets->loadMesh("screen", "screen.obj"));
 	screen.loading->loadTexture(Type::DIFFUSE, assets->loadTexture("loading", "loading.png"));
 	program["Phong"] = new Shader();
-	if (!program["Phong"]->load("assets/shaders/Phong.vert", "assets/shaders/Phong.frag")) {
+	if (!program["Phong"]->load("assets/shaders/animation.vert", "assets/shaders/Phong.frag")) {
 		std::cout << "Phong Shaders failed to initialize." << std::endl;
 		system("pause");
 		exit(0);
 	}
-	screen.loading->draw(program["Phong"], screen.camera, { screen.light });
+	screen.loading->draw(program["Phong"], screen.camera, { screen.light }, 0);
 	glutSwapBuffers();
 
 	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load in things" << std::endl;
@@ -309,7 +309,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 
 	// Initialize shaders
 	program["PhongSpot"] = new Shader();
-	if (!program["PhongSpot"]->load("assets/shaders/Phong.vert", "assets/shaders/phongSpot.frag")) {
+	if (!program["PhongSpot"]->load("assets/shaders/animation.vert", "assets/shaders/phongSpot.frag")) {
 		std::cout << "PhongSpot Shaders failed to initialize." << std::endl;
 		system("pause");	exit(0);
 	}
@@ -334,19 +334,19 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 		system("pause");	exit(0);
 	}
 	program["DropItems"] = new Shader();
-	if (!program["DropItems"]->load("assets/shaders/Phong.vert", "assets/shaders/DropItems.frag")) {
+	if (!program["DropItems"]->load("assets/shaders/animation.vert", "assets/shaders/DropItems.frag")) {
 		std::cout << "Phong Shaders failed to initialize." << std::endl;
 		system("pause");
 		exit(0);
 	}
 	program["NoFlash"] = new Shader();
-	if (!program["NoFlash"]->load("assets/shaders/Phong.vert", "assets/shaders/NoFlash.frag")) {
+	if (!program["NoFlash"]->load("assets/shaders/animation.vert", "assets/shaders/NoFlash.frag")) {
 		std::cout << "Phong Shaders failed to initialize." << std::endl;
 		system("pause");
 		exit(0);
 	}
 	program["NoFlashNoNorm"] = new Shader();
-	if (!program["NoFlashNoNorm"]->load("assets/shaders/Phong.vert", "assets/shaders/NoFlashNoNorm.frag")) {
+	if (!program["NoFlashNoNorm"]->load("assets/shaders/animation.vert", "assets/shaders/NoFlashNoNorm.frag")) {
 		std::cout << "Phong Shaders failed to initialize." << std::endl;
 		system("pause");
 		exit(0);
@@ -619,8 +619,8 @@ void Game::update() {
 		//std::cout << temp.x << '/' << temp.y << '/' << temp.z << std::endl;
 		//std::cout << rand() % 100 << std::endl
 		
-		if(deltaTime >= 25.0f)
-		std::cout << deltaTime << std::endl;
+		//if(deltaTime >= 25.0f)
+		//std::cout << deltaTime << std::endl;
 
 		// stuff based on player
 		hud.display->setPosition(player->getPosition() + glm::vec3(0.004f, 10.6f, 1.967f));
@@ -744,48 +744,48 @@ void Game::draw() {
 	switch (state) {
 	case State::Pause:
 		//screen.pause->draw(program["Phong"], level.camera, { *hud.light });
-		screen.pause->draw(program["Phong"], screen.camera, { screen.light });
+		screen.pause->draw(program["Phong"], screen.camera, { screen.light }, 0);
 		break;
 	case State::Play:
 		if (lightOn)
 		{
-			player->aDraw(program["MeshMorph"], level.camera, level.lightPointers); // @@@@@ FOR SEAN @@@@@ Extra argument to take in how many lights are in the array
+			player->draw(program["MeshMorph"], level.camera, level.lightPointers, 1); // @@@@@ FOR SEAN @@@@@ Extra argument to take in how many lights are in the array
 			for (auto& enemy : enemies)
-				enemy->draw(program["DropItems"], level.camera, level.lightPointers);
-			level.map->draw(program["PhongSpot"], level.camera, level.lightPointers);
+				enemy->draw(program["DropItems"], level.camera, level.lightPointers, 0);
+			level.map->draw(program["PhongSpot"], level.camera, level.lightPointers, 0);
 			for (int i = 0; i < dropItems.size(); i++)
 				if (!dropItems[i]->collect)
-					dropItems[i]->draw(program["DropItems"], level.camera, level.lightPointers);
+					dropItems[i]->draw(program["DropItems"], level.camera, level.lightPointers, 0);
 		}
 		else
 		{
-			player->draw(program["NoFlash"], level.camera, level.lightPointers); // @@@@@ FOR SEAN @@@@@ Extra argument to take in how many lights are in the array
+			player->draw(program["NoFlash"], level.camera, level.lightPointers, 1); // @@@@@ FOR SEAN @@@@@ Extra argument to take in how many lights are in the array
 			for (auto& enemy : enemies)
-				enemy->draw(program["NoFlashNoNorm"], level.camera, level.lightPointers);
-			level.map->draw(program["NoFlash"], level.camera, level.lightPointers);
+				enemy->draw(program["NoFlashNoNorm"], level.camera, level.lightPointers, 0);
+			level.map->draw(program["NoFlash"], level.camera, level.lightPointers, 0);
 			for (int i = 0; i < dropItems.size(); i++)
 				if (!dropItems[i]->collect)
-					dropItems[i]->draw(program["NoFlashNoNorm"], level.camera, level.lightPointers);
+					dropItems[i]->draw(program["NoFlashNoNorm"], level.camera, level.lightPointers, 0);
 		}
 		//level.hitboxes->draw(program["PhongColorSides"], level.camera, { *level.light });
-		hud.healthBar->draw(program["PhongNoTexture"], level.camera, { hud.light });
-		hud.display->draw(program["Phong"], level.camera, { hud.light });
+		hud.healthBar->draw(program["PhongNoTexture"], level.camera, { hud.light }, 0);
+		hud.display->draw(program["Phong"], level.camera, { hud.light }, 0);
 		//drawAmmo();
 
 		break;
 	case State::Menu:
-		screen.menu->draw(program["Phong"], screen.camera, { screen.light });
-		screen.play.obj->draw(program["PhongNoTexture"], screen.camera, { screen.light });
-		screen.quit.obj->draw(program["PhongNoTexture"], screen.camera, { screen.light });
+		screen.menu->draw(program["Phong"], screen.camera, { screen.light }, 0);
+		screen.play.obj->draw(program["PhongNoTexture"], screen.camera, { screen.light }, 0);
+		screen.quit.obj->draw(program["PhongNoTexture"], screen.camera, { screen.light }, 0);
 		break;
 	case State::Win:
-		screen.win->draw(program["Phong"], screen.camera, { screen.light });
+		screen.win->draw(program["Phong"], screen.camera, { screen.light }, 0);
 		break;
 	case State::Lose:
-		screen.lose->draw(program["Phong"], screen.camera, { screen.light });
+		screen.lose->draw(program["Phong"], screen.camera, { screen.light }, 0);
 		break;
 	case State::Control:
-		screen.controls->draw(program["Phong"], screen.camera, { screen.light });
+		screen.controls->draw(program["Phong"], screen.camera, { screen.light }, 0);
 		break;
 	default:
 		break;
@@ -874,12 +874,14 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 	case ' ':			input.keys |= Input::Keys::Space; break;
 	case 26:			input.keys |= Input::Keys::Esc; break;
 	case 'o':
-		level.light->cutoff += glm::radians(0.1f);
-		level.light3->cutoff += glm::radians(0.1f);
+		//level.light->cutoff += glm::radians(0.1f);
+		//level.light3->cutoff += glm::radians(0.1f);
+		player->timerReset += 1.0f;
 		break;
 	case 'p':
-		level.light->cutoff -= glm::radians(0.1f);
-		level.light3->cutoff -= glm::radians(0.1f);
+		//level.light->cutoff -= glm::radians(0.1f);
+		//level.light3->cutoff -= glm::radians(0.1f);
+		player->timerReset -= 1.0f;
 		break;
 	case'k':
 		level.light->innerCutoff += glm::radians(0.1f);
@@ -1174,26 +1176,26 @@ void Game::createDropItem(glm::vec3 pos, int type) {
 	//	drop->hp = 0.0f;
 	//}
 }
-
-void Game::drawAmmo() {
-	if (hud.ammo.number) {
-		hud.ammo.number->ammo = player->ammo / 10;
-		hud.ammo.number->setPosition(hud.ammo.positions[0]);
-		hud.ammo.number->draw(program["numbers"], level.camera, { hud.light });
-		hud.ammo.number->ammo = player->ammo;
-		hud.ammo.number->setPosition(hud.ammo.positions[1]);
-		hud.ammo.number->draw(program["numbers"], level.camera, { hud.light });
-		hud.ammo.number->ammo = player->ammoDepo / 100;
-		hud.ammo.number->setPosition(hud.ammo.positions[2]);
-		hud.ammo.number->draw(program["numbers"], level.camera, { hud.light });
-		hud.ammo.number->ammo = player->ammoDepo / 10;
-		hud.ammo.number->setPosition(hud.ammo.positions[3]);
-		hud.ammo.number->draw(program["numbers"], level.camera, { hud.light });
-		hud.ammo.number->ammo = player->ammoDepo;
-		hud.ammo.number->setPosition(hud.ammo.positions[4]);
-		hud.ammo.number->draw(program["numbers"], level.camera, { hud.light });
-	}
-}
+//
+//void Game::drawAmmo() {
+//	if (hud.ammo.number) {
+//		hud.ammo.number->ammo = player->ammo / 10;
+//		hud.ammo.number->setPosition(hud.ammo.positions[0]);
+//		hud.ammo.number->draw(program["numbers"], level.camera, { hud.light });
+//		hud.ammo.number->ammo = player->ammo;
+//		hud.ammo.number->setPosition(hud.ammo.positions[1]);
+//		hud.ammo.number->draw(program["numbers"], level.camera, { hud.light });
+//		hud.ammo.number->ammo = player->ammoDepo / 100;
+//		hud.ammo.number->setPosition(hud.ammo.positions[2]);
+//		hud.ammo.number->draw(program["numbers"], level.camera, { hud.light });
+//		hud.ammo.number->ammo = player->ammoDepo / 10;
+//		hud.ammo.number->setPosition(hud.ammo.positions[3]);
+//		hud.ammo.number->draw(program["numbers"], level.camera, { hud.light });
+//		hud.ammo.number->ammo = player->ammoDepo;
+//		hud.ammo.number->setPosition(hud.ammo.positions[4]);
+//		hud.ammo.number->draw(program["numbers"], level.camera, { hud.light });
+//	}
+//}
 
 // Resets the level
 void Game::reset()

@@ -64,12 +64,12 @@ void Player::update(float dt, Level* level) {
 	Object::update(dt, play);
 }
 
-void Player::draw(Shader* shader, Camera* camera, std::vector<Light*> lights, float lightCount) {
+void Player::draw(Shader* shader, Camera* camera, std::vector<Light*> lights, int a, float lightCount) {
 	for (auto bullet : bullets) {
-		bullet->draw(shader, camera, lights, lightCount);
+		bullet->draw(shader, camera, lights, 0, lightCount);
 	}
 
-	Object::draw(shader, camera, lights, lightCount);
+	Object::aDraw(shader, camera, lights, a, lightCount);
 }
 
 void Player::reset(glm::vec3 pos) {

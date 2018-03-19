@@ -12,7 +12,7 @@ public:
 	~Player();
 
 	virtual void update(float dt, Level* level);
-	virtual void draw(Shader* shader, Camera* camera, std::vector<Light*> light, float lightcount = 0.0f);
+	virtual void draw(Shader* shader, Camera* camera, std::vector<Light*> light, int a, float lightcount = 0.0f);
 	void reset(glm::vec3 pos);
 	bool fire();
 	void reloading();

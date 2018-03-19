@@ -153,7 +153,7 @@ void Object::update(float dt, bool p) {
 	{
 		keyFrame = 0;
 	}
-	timer += dt/2 * glm::length(velocity);
+	timer += dt * glm::length(velocity);
 	t = timer / timerReset;
 	//}
 	//std::cout << keyFrame << std::endl;
@@ -165,7 +165,7 @@ void Object::update(float dt, bool p) {
 	//std::cout << keyFrame << std::endl;
 }
 
-void Object::draw(Shader* shader, Camera* camera, std::vector<Light*> lights, float lightCount) {
+void Object::draw(Shader* shader, Camera* camera, std::vector<Light*> lights, int a, float lightCount) {
 	// Start
 	shader->bind();
 	// Basic
@@ -173,6 +173,7 @@ void Object::draw(Shader* shader, Camera* camera, std::vector<Light*> lights, fl
 	shader->sendUniformMat4("uView", glm::value_ptr(camera->getView()), false);
 	shader->sendUniformMat4("uProj", glm::value_ptr(camera->getProj()), false);
 	shader->sendUniform("objectColor", color);
+	shader->sendUniform("animate", a);
 	//shader->sendUniform("ammo", ammo);
 	if (lightCount == 0.0f)
 	{
@@ -230,7 +231,7 @@ void Object::draw(Shader* shader, Camera* camera, std::vector<Light*> lights, fl
 	shader->unbind();
 }
 
-void Object::aDraw(Shader * shader, Camera * camera, std::vector<Light*> lights, float lightCount)
+void Object::aDraw(Shader * shader, Camera * camera, std::vector<Light*> lights, int a, float lightCount)
 {
 	// Start
 	shader->bind();
@@ -239,6 +240,7 @@ void Object::aDraw(Shader * shader, Camera * camera, std::vector<Light*> lights,
 	shader->sendUniformMat4("uView", glm::value_ptr(camera->getView()), false);
 	shader->sendUniformMat4("uProj", glm::value_ptr(camera->getProj()), false);
 	shader->sendUniform("objectColor", color);
+	shader->sendUniform("animate", a);
 	shader->sendUniform("t", t);
 	//shader->sendUniform("timerReset", t);
 	//shader->sendUniform("ammo", ammo);
