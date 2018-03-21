@@ -118,7 +118,7 @@ void Object::collide(float dt, Level* level, bool ai) {
 	//return collided;
 }
 
-void Object::update(float dt, bool p) {
+void Object::update(float dt) {
 	// Create 4x4 transformation matrix
 
 	// 1. Create the X,Y, and Z rotation matrices

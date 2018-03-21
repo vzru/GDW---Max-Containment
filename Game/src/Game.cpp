@@ -105,9 +105,13 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 
 	//Initialize Assets
 	// level
-	assets->loadMesh("level", "Laboratory Level Triangulated.obj");
-	assets->loadMesh("hitboxes", "Laboratory Level Hitboxes Triangulated.obj");
-	assets->loadTexture("level color", "Lab_textures.png");
+	//assets->loadMesh("level", "Laboratory Level Triangulated.obj");
+	assets->loadMesh("level", "new level.obj");
+
+	//assets->loadMesh("hitboxes", "Laboratory Level Hitboxes Triangulated.obj");
+	//assets->loadTexture("level color", "Lab_textures.png");
+	assets->loadTexture("level color", "new level texture.png");
+
 	assets->loadTexture("level normal", "Lab_normals.png");
 	// screens
 	assets->loadMesh("screen", "screen.obj");
@@ -164,13 +168,46 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	//assets->loadMesh("playerFrame3", "c_kframe_4.obj");
 	//assets->loadMesh("playerFrame4", "c_kframe_5.obj");
 
-	assets->loadAnimationMesh("playerFrame0", "c_kframe_1.obj", "c_kframe_2.obj");
-	assets->loadAnimationMesh("playerFrame1", "c_kframe_2.obj", "c_kframe_3.obj");
-	assets->loadAnimationMesh("playerFrame2", "c_kframe_3.obj", "c_kframe_4.obj");
-	assets->loadAnimationMesh("playerFrame3", "c_kframe_4.obj", "c_kframe_5.obj");
-	assets->loadAnimationMesh("playerFrame4", "c_kframe_5.obj", "c_kframe_1.obj");
-	
+	assets->loadAnimationMesh("playerFrame0", "player00.obj", "player01.obj");
+	assets->loadAnimationMesh("playerFrame1", "player01.obj", "player02.obj");
+	assets->loadAnimationMesh("playerFrame2", "player02.obj", "player03.obj");
+	assets->loadAnimationMesh("playerFrame3", "player03.obj", "player04.obj");
+	assets->loadAnimationMesh("playerFrame4", "player04.obj", "player05.obj");
+	assets->loadAnimationMesh("playerFrame5", "player05.obj", "player06.obj");
+	assets->loadAnimationMesh("playerFrame6", "player06.obj", "player07.obj");
+	assets->loadAnimationMesh("playerFrame7", "player07.obj", "player08.obj");
+	assets->loadAnimationMesh("playerFrame8", "player08.obj", "player00.obj");
 
+	assets->loadAnimationMesh("dam0", "dam00.obj", "dam01.obj");
+	assets->loadAnimationMesh("dam1", "dam01.obj", "dam02.obj");
+	assets->loadAnimationMesh("dam2", "dam02.obj", "dam03.obj");
+	assets->loadAnimationMesh("dam3", "dam03.obj", "dam04.obj");
+	assets->loadAnimationMesh("dam4", "dam04.obj", "dam05.obj");
+	assets->loadAnimationMesh("dam5", "dam05.obj", "dam06.obj");
+	assets->loadAnimationMesh("dam6", "dam06.obj", "dam07.obj");
+	assets->loadAnimationMesh("dam7", "dam07.obj", "dam08.obj");
+	assets->loadAnimationMesh("dam8", "dam08.obj", "dam00.obj");
+
+	assets->loadAnimationMesh("def0", "def00.obj", "def01.obj");
+	assets->loadAnimationMesh("def1", "def01.obj", "def02.obj");
+	assets->loadAnimationMesh("def2", "def02.obj", "def03.obj");
+	assets->loadAnimationMesh("def3", "def03.obj", "def04.obj");
+	assets->loadAnimationMesh("def4", "def04.obj", "def05.obj");
+	assets->loadAnimationMesh("def5", "def05.obj", "def06.obj");
+	assets->loadAnimationMesh("def6", "def06.obj", "def07.obj");
+	assets->loadAnimationMesh("def7", "def07.obj", "def08.obj");
+	assets->loadAnimationMesh("def8", "def08.obj", "def09.obj");
+	assets->loadAnimationMesh("def9", "def09.obj", "def10.obj");
+	assets->loadAnimationMesh("def10", "def10.obj", "def11.obj");
+	assets->loadAnimationMesh("def11", "def11.obj", "def12.obj");
+	assets->loadAnimationMesh("def12", "def12.obj", "def00.obj");
+
+	assets->loadAnimationMesh("dem0", "dem00.obj", "dem01.obj");
+	assets->loadAnimationMesh("dem1", "dem01.obj", "dem02.obj");
+	assets->loadAnimationMesh("dem2", "dem02.obj", "dem03.obj");
+	assets->loadAnimationMesh("dem3", "dem03.obj", "dem04.obj");
+	assets->loadAnimationMesh("dem4", "dem04.obj", "dem00.obj");
+	
 	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load in things" << std::endl;
 
 
@@ -186,7 +223,8 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	level.collision = new Level(0.5f);
 	level.hitboxes = new Object({ 0.f, -8.f, 0.f });
 	level.map->loadMesh(assets->meshes["level"]);
-	level.collision->load("assets/meshes/Laboratory Level Hitboxes.obj");
+	//level.collision->load("assets/meshes/Laboratory Level Hitboxes.obj");
+	level.collision->load("assets/meshes/new level hitboxes.obj");
 	level.hitboxes->loadMesh(assets->meshes["hitboxes"]);
 	level.map->loadTexture(Type::Texture::DIFFUSE, assets->textures["level color"]);
 	level.map->loadTexture(Type::Texture::NORMAL, assets->textures["level normal"]);
@@ -396,7 +434,10 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	player->loadAnimationFrame(assets->aMeshes["playerFrame2"]);
 	player->loadAnimationFrame(assets->aMeshes["playerFrame3"]);
 	player->loadAnimationFrame(assets->aMeshes["playerFrame4"]);
-
+	player->loadAnimationFrame(assets->aMeshes["playerFrame5"]);
+	player->loadAnimationFrame(assets->aMeshes["playerFrame6"]);
+	player->loadAnimationFrame(assets->aMeshes["playerFrame7"]);
+	player->loadAnimationFrame(assets->aMeshes["playerFrame8"]);
 
 	// Initialize Drops
 	dropHP = new Object();
@@ -461,15 +502,35 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	std::get<1>(enemys)->loadTexture(Type::Texture::NORMAL, assets->textures["enemy1 normal"]);
 	std::get<2>(enemys)->loadTexture(Type::Texture::NORMAL, assets->textures["enemy2 normal"]);
 
-	//std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam0"]);
-	//std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam1"]);
-	//std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam2"]);
-	//std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam3"]);
-	//std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam4"]);
-	//std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam5"]);
-	//std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam6"]);
-	//std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam7"]);
-	//std::get<0>(enemys)->loadAnimationFrame(assets->meshes["dam8"]);
+	std::get<0>(enemys)->loadAnimationFrame(assets->aMeshes["dam0"]);
+	std::get<0>(enemys)->loadAnimationFrame(assets->aMeshes["dam1"]);
+	std::get<0>(enemys)->loadAnimationFrame(assets->aMeshes["dam2"]);
+	std::get<0>(enemys)->loadAnimationFrame(assets->aMeshes["dam3"]);
+	std::get<0>(enemys)->loadAnimationFrame(assets->aMeshes["dam4"]);
+	std::get<0>(enemys)->loadAnimationFrame(assets->aMeshes["dam5"]);
+	std::get<0>(enemys)->loadAnimationFrame(assets->aMeshes["dam6"]);
+	std::get<0>(enemys)->loadAnimationFrame(assets->aMeshes["dam7"]);
+	std::get<0>(enemys)->loadAnimationFrame(assets->aMeshes["dam8"]);
+
+	std::get<1>(enemys)->loadAnimationFrame(assets->aMeshes["def0"]);
+	std::get<1>(enemys)->loadAnimationFrame(assets->aMeshes["def1"]);
+	std::get<1>(enemys)->loadAnimationFrame(assets->aMeshes["def2"]);
+	std::get<1>(enemys)->loadAnimationFrame(assets->aMeshes["def3"]);
+	std::get<1>(enemys)->loadAnimationFrame(assets->aMeshes["def4"]);
+	std::get<1>(enemys)->loadAnimationFrame(assets->aMeshes["def5"]);
+	std::get<1>(enemys)->loadAnimationFrame(assets->aMeshes["def6"]);
+	std::get<1>(enemys)->loadAnimationFrame(assets->aMeshes["def7"]);
+	std::get<1>(enemys)->loadAnimationFrame(assets->aMeshes["def8"]);
+	std::get<1>(enemys)->loadAnimationFrame(assets->aMeshes["def9"]);
+	std::get<1>(enemys)->loadAnimationFrame(assets->aMeshes["def10"]);
+	std::get<1>(enemys)->loadAnimationFrame(assets->aMeshes["def11"]);
+	std::get<1>(enemys)->loadAnimationFrame(assets->aMeshes["def12"]);
+
+	std::get<2>(enemys)->loadAnimationFrame(assets->aMeshes["dem0"]);
+	std::get<2>(enemys)->loadAnimationFrame(assets->aMeshes["dem1"]);
+	std::get<2>(enemys)->loadAnimationFrame(assets->aMeshes["dem2"]);
+	std::get<2>(enemys)->loadAnimationFrame(assets->aMeshes["dem3"]);
+	std::get<2>(enemys)->loadAnimationFrame(assets->aMeshes["dem4"]);
 
 	loadEnemies();
 
@@ -619,8 +680,8 @@ void Game::update() {
 		//std::cout << temp.x << '/' << temp.y << '/' << temp.z << std::endl;
 		//std::cout << rand() % 100 << std::endl
 		
-		//if(deltaTime >= 25.0f)
-		//std::cout << deltaTime << std::endl;
+		if(deltaTime >= 25.0f)
+		std::cout << deltaTime << std::endl;
 
 		// stuff based on player
 		hud.display->setPosition(player->getPosition() + glm::vec3(0.004f, 10.6f, 1.967f));
@@ -648,15 +709,18 @@ void Game::update() {
 				float distFromPlayer = 20.f;
 				Enemy* target = nullptr;
 				for (auto enemy : enemies) {
-					glm::vec3 diff = enemy->getPosition() - bullet->getPosition();
-					float dang = atan2(-diff.z, diff.x);
-					float dist = abs(sin(bang - dang) * glm::length(diff));
-					float distToEnemy = cos(bang - dang) * glm::length(diff);
-					//std::cout << glm::degrees(bang) << '\t' << glm::degrees(dang) << '\t' << dist << '\t' << distFromPlayer << "vs" << distToEnemy << '\t' << enemies[j]->life << std::endl;
-					// check if enemy is along the bullet path && not too far away
-					if (dist < 1.f && distFromPlayer > distToEnemy && distToEnemy > 0) {
-						target = enemy;
-						distFromPlayer = distToEnemy;
+					if (enemy->range)
+					{
+						glm::vec3 diff = enemy->getPosition() - bullet->getPosition();
+						float dang = atan2(-diff.z, diff.x);
+						float dist = abs(sin(bang - dang) * glm::length(diff));
+						float distToEnemy = cos(bang - dang) * glm::length(diff);
+						//std::cout << glm::degrees(bang) << '\t' << glm::degrees(dang) << '\t' << dist << '\t' << distFromPlayer << "vs" << distToEnemy << '\t' << enemies[j]->life << std::endl;
+						// check if enemy is along the bullet path && not too far away
+						if (dist < 1.f && distFromPlayer > distToEnemy && distToEnemy > 0) {
+							target = enemy;
+							distFromPlayer = distToEnemy;
+						}
 					}
 				}
 				// enemy hit
@@ -673,33 +737,45 @@ void Game::update() {
 		// enemy update
 		for (int i = 0; i < enemies.size(); i++) {
 			glm::vec3 diff = enemies[i]->getPosition() - player->getPosition();
-			if (enemies[i]->knockbackCD > 0)
-				enemies[i]->knockbackCD -= deltaTime / 1000;
-			// aim towards player
-			enemies[i]->setRotation({ 0.f, glm::degrees(atan2(-diff.z, diff.x)) - 90.f, 0.f });
-			// hurt player
-			if (enemies[i]->cooldown <= 0.f)
-				if (glm::length(diff) < 1.f) {
-					player->life -= enemies[i]->damage;
-					enemies[i]->cooldown = enemies[i]->attackSpeed;
-				}
-			float bang = glm::radians(player->getRotation().y);
-			float dang = atan2(-diff.z, diff.x);
-			float dist = abs(sin(bang - dang) * glm::length(diff));
-			//std::cout << bang << '/' << dang << '/' << dist << std::endl;
-			// seek towards player
-			if (((glm::length(diff) < 5.0f) || enemies[i]->triggered || glm::length(diff) < 10.0f && dist < 2.f && lightOn) && glm::length(diff) > 1.0f && enemies[i]->knockbackCD <= 0)
-				enemies[i]->setVelocity(-glm::normalize(diff));
+			if (glm::length(diff) < 20.0f)
+			{
+				enemies[i]->range = true;
+			}
 			else
-				enemies[i]->setVelocity({ 0.0f, 0.0f, 0.0f });
-			// update enemy
-			enemies[i]->update(deltaTime, level.collision);
-			// kill enemy
-			if (enemies[i]->life <= 0.f) {
-				createDropItem(enemies[i]->getPosition());
-				delete enemies[i];
-				enemies.erase(i + enemies.begin());
-				i--;
+			{
+				enemies[i]->range = false;
+			}
+
+			if (enemies[i]->range)
+			{
+				if (enemies[i]->knockbackCD > 0)
+					enemies[i]->knockbackCD -= deltaTime / 1000;
+				// aim towards player
+				enemies[i]->setRotation({ 0.f, glm::degrees(atan2(-diff.z, diff.x)) - 90.f, 0.f });
+				// hurt player
+				if (enemies[i]->cooldown <= 0.f)
+					if (glm::length(diff) < 1.f) {
+						player->life -= enemies[i]->damage;
+						enemies[i]->cooldown = enemies[i]->attackSpeed;
+					}
+				float bang = glm::radians(player->getRotation().y);
+				float dang = atan2(-diff.z, diff.x);
+				float dist = abs(sin(bang - dang) * glm::length(diff));
+				//std::cout << bang << '/' << dang << '/' << dist << std::endl;
+				// seek towards player
+				if (((glm::length(diff) < 5.0f) || enemies[i]->triggered || glm::length(diff) < 10.0f && dist < 2.f && lightOn) && glm::length(diff) > 1.0f && enemies[i]->knockbackCD <= 0)
+					enemies[i]->setVelocity(-glm::normalize(diff));
+				else
+					enemies[i]->setVelocity({ 0.0f, 0.0f, 0.0f });
+				// update enemy
+				enemies[i]->update(deltaTime, level.collision);
+				// kill enemy
+				if (enemies[i]->life <= 0.f) {
+					createDropItem(enemies[i]->getPosition());
+					delete enemies[i];
+					enemies.erase(i + enemies.begin());
+					i--;
+				}
 			}
 		}
 		// player loses
@@ -751,7 +827,12 @@ void Game::draw() {
 		{
 			player->draw(program["MeshMorph"], level.camera, level.lightPointers, 1); // @@@@@ FOR SEAN @@@@@ Extra argument to take in how many lights are in the array
 			for (auto& enemy : enemies)
-				enemy->draw(program["DropItems"], level.camera, level.lightPointers, 0);
+			{
+				if (enemy->range)
+				{
+					enemy->aDraw(program["DropItems"], level.camera, level.lightPointers, 1);
+				}
+			}
 			level.map->draw(program["PhongSpot"], level.camera, level.lightPointers, 0);
 			for (int i = 0; i < dropItems.size(); i++)
 				if (!dropItems[i]->collect)
@@ -761,7 +842,10 @@ void Game::draw() {
 		{
 			player->draw(program["NoFlash"], level.camera, level.lightPointers, 1); // @@@@@ FOR SEAN @@@@@ Extra argument to take in how many lights are in the array
 			for (auto& enemy : enemies)
-				enemy->draw(program["NoFlashNoNorm"], level.camera, level.lightPointers, 0);
+				if (enemy->range)
+				{
+					enemy->aDraw(program["NoFlashNoNorm"], level.camera, level.lightPointers, 1);
+				}
 			level.map->draw(program["NoFlash"], level.camera, level.lightPointers, 0);
 			for (int i = 0; i < dropItems.size(); i++)
 				if (!dropItems[i]->collect)

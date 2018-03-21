@@ -10,10 +10,12 @@ public:
 	virtual void update(float dt, Level* level);
 
 	bool triggered = false;
+	bool range = false;
 	float attackSpeed = 0.5f; // time between attacks (in seconds)
 	float movementSpeed; // amount to divide dt by
 	float damage; // damage dealt to the player per attack
 	float knockbackCD = 0.0f;
+
 
 private:
 	//void addMorphTarget(std::string filePath);

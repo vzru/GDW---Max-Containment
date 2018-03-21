@@ -61,7 +61,7 @@ void Player::update(float dt, Level* level) {
 
 
 	// create transformation matrix
-	Object::update(dt, play);
+	Object::update(dt);
 }
 
 void Player::draw(Shader* shader, Camera* camera, std::vector<Light*> lights, int a, float lightCount) {

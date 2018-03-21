@@ -55,7 +55,7 @@ public:
 	void loadAnimationFrame(AnimationMesh *m);
 	// Updating functions
 	void collide(float dt, Level* level, bool ai = false);
-	virtual void update(float dt, bool p = false);
+	virtual void update(float dt);
 	//virtual void physics(float dt);
 	virtual void draw(Shader *shader, Camera *camera, std::vector<Light*> lights, int a, float lightCount = 0.0f);
 	virtual void aDraw(Shader *shader, Camera *camera, std::vector<Light*> lights, int a, float lightCount = 0.0f);
