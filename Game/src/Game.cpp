@@ -21,6 +21,7 @@
 #include "Camera.h"
 #include "Controller.h"
 #include "Light.h"
+#include "ParticleEmitterSoA.h"
 
 Game::Game(int& argc, char** argv)
 	: windowSize(WINDOW_WIDTH, WINDOW_HEIGHT) {
@@ -112,7 +113,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	//assets->loadTexture("level color", "Lab_textures.png");
 	assets->loadTexture("level color", "new level texture.png");
 
-	assets->loadTexture("level normal", "Lab_normals.png");
+	assets->loadTexture("level normal", "new level texture normals.png");
 	// screens
 	assets->loadMesh("screen", "screen.obj");
 	assets->loadTexture("pause", "pause.png");
@@ -395,6 +396,12 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 		system("pause");
 		exit(0);
 	}
+	program["particles"] = new Shader();
+	if (!program["particles"]->load("assets/shaders/passThru.glsl", "assets/shaders/particles_g.glsl", "assets/shaders/unlitTexture_f.glsl")) {
+		std::cout << "Phong Shaders failed to initialize." << std::endl;
+		system("pause");
+		exit(0);
+	}
 
 	// Initialize Sounds
 	//Sound* sound = new Sound("assets/sounds/game soundtrack.wav", true, 2);
@@ -535,9 +542,29 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	loadEnemies();
 
 	loadDrops();
+	
+	// Init particle emitter
+	// Set the emitter properties
+	
+	initializeParticles();
 
 	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load in things" << std::endl;
 	//soundList[1]->createChannel();
+}
+
+void Game::initializeParticles()
+{
+	ParticleEmitterSoA *part = new ParticleEmitterSoA();
+	part->lifeR = glm::vec3(5.0f, 100.0f, 0.0f);
+	part->initForceMin = glm::vec3(-0.01f, -0.01f, -0.01f);
+	part->initForceMax = glm::vec3(0.01f, 0.01f, 0.01f);
+	//part->material = materials["particles"];
+	//part[index].texture = textures["smoke"];
+	part->init(1000);
+	part->play();
+	part->initPos = player->getPosition() + glm::vec3(0.0f, 5.0f, 0.0f);
+	partEList.push_back(part);
+	
 }
 
 
@@ -638,6 +665,7 @@ void Game::clearDrops() {
 void Game::update() {
 	deltaTime = timer->update();
 	//std::cout << "Keys: " << keys << std::endl;
+	partEList[0]->update(deltaTime);
 
 	input.xBox->update();
 	for (int i = 0; i < soundList.size(); i++)
@@ -680,8 +708,8 @@ void Game::update() {
 		//std::cout << temp.x << '/' << temp.y << '/' << temp.z << std::endl;
 		//std::cout << rand() % 100 << std::endl
 		
-		if(deltaTime >= 25.0f)
-		std::cout << deltaTime << std::endl;
+		//if(deltaTime >= 25.0f)
+		//std::cout << deltaTime << std::endl;
 
 		// stuff based on player
 		hud.display->setPosition(player->getPosition() + glm::vec3(0.004f, 10.6f, 1.967f));
@@ -823,6 +851,7 @@ void Game::draw() {
 		screen.pause->draw(program["Phong"], screen.camera, { screen.light }, 0);
 		break;
 	case State::Play:
+		partEList[0]->draw(program["particles"], level.camera);
 		if (lightOn)
 		{
 			player->draw(program["MeshMorph"], level.camera, level.lightPointers, 1); // @@@@@ FOR SEAN @@@@@ Extra argument to take in how many lights are in the array

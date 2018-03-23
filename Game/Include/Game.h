@@ -23,6 +23,7 @@ class Timer;	class Camera;
 class Enemy;	class Player;
 class Shader;	class Light;
 class Level;	class Object;
+class ParticleEmitterSoA;
 namespace Input {
 	using Triggers = std::pair<float, float>;
 	using Sticks = std::pair<glm::vec2, glm::vec2>;
@@ -49,6 +50,8 @@ public:
 	~Game();
 	void init(void(*_controllerInput)(unsigned short index, Input::Button button), void(*_controllerSpecial)(unsigned short index, Input::Triggers triggers, Input::Sticks sticks));
 
+	void initializeParticles();
+
 	// updates
 	void update();
 	void draw();
@@ -73,6 +76,8 @@ public:
 	void createDropItem(glm::vec3 pos, int type = 0);
 private:
 	std::vector<Sound*> soundList;
+	std::vector<ParticleEmitterSoA*> partEList;
+	ParticleEmitterSoA* partE;
 	// helpers
 	Timer* timer = nullptr;
 	float deltaTime = 0.f;

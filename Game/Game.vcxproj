@@ -136,6 +136,7 @@
     <ClInclude Include="include\Material.h" />
     <ClInclude Include="Include\Mesh.h" />
     <ClInclude Include="Include\Object.h" />
+    <ClInclude Include="Include\ParticleEmitterSoA.h" />
     <ClInclude Include="Include\Player.h" />
     <ClInclude Include="Include\Shader.h" />
     <ClInclude Include="Include\Sound.h" />
@@ -143,6 +144,7 @@
     <ClInclude Include="include\Texture.h" />
     <ClInclude Include="Include\Timer.h" />
     <ClInclude Include="include\Type.h" />
+    <ClInclude Include="Include\VertexBufferObject.h" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="assets\meshes\character_model.obj">
@@ -197,12 +199,14 @@
     <ClCompile Include="src\Material.cpp" />
     <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\Object.cpp" />
+    <ClCompile Include="src\ParticleEmitterSoA.cpp" />
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Sound.cpp" />
     <ClCompile Include="src\SoundE.cpp" />
     <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\Timer.cpp" />
+    <ClCompile Include="src\VertexBufferObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\animation.vert" />
@@ -210,14 +214,17 @@
     <None Include="assets\shaders\NoFlash.frag" />
     <None Include="assets\shaders\NoFlashNoNorm.frag" />
     <None Include="assets\shaders\numbers.frag" />
+    <None Include="assets\shaders\particles_g.glsl" />
     <None Include="assets\shaders\passThrough.frag" />
     <None Include="assets\shaders\passThrough.vert" />
+    <None Include="assets\shaders\passThru.glsl" />
     <None Include="assets\shaders\Phong.frag" />
     <None Include="assets\shaders\Phong.vert" />
     <None Include="assets\shaders\PhongColorSides.frag" />
     <None Include="assets\shaders\PhongColorSIdes.vert" />
     <None Include="assets\shaders\PhongNoTexture.frag" />
     <None Include="assets\shaders\phongSpot.frag" />
+    <None Include="assets\shaders\unlitTexture_f.glsl" />
     <None Include="assets\sounds\Slap.ogg" />
   </ItemGroup>
   <ItemGroup>

@@ -59,6 +59,70 @@ bool Shader::load(const std::string &vertFile, const std::string &fragFile) {
 	return true;
 }
 
+bool Shader::load(const std::string & vertFile, const std::string & geoFile, const std::string & fragFile)
+{
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	geoShader = glCreateShader(GL_GEOMETRY_SHADER);
+	fragShader = glCreateShader(GL_FRAGMENT_SHADER);
+	program = glCreateProgram();
+
+	// load our source code
+	std::string source = readFile(vertFile);
+	const GLchar *temp = static_cast<const GLchar*>(source.c_str());
+	glShaderSource(vertexShader, 1, &temp, NULL);
+
+	source = readFile(geoFile);
+	temp = static_cast<const GLchar*>(source.c_str());
+	glShaderSource(geoShader, 1, &temp, NULL);
+
+	source = readFile(fragFile);
+	temp = static_cast<const GLchar*>(source.c_str());
+	glShaderSource(fragShader, 1, &temp, NULL);
+
+	// Compile Code
+	std::cout << "Loading shader: " << vertFile << std::endl;
+	if (!compileShader(vertexShader)) {
+		std::cout << "Vertex shader failed to compile." << std::endl;
+		outputShaderLog(vertexShader);
+		unload();
+		system("pause");
+		return false;
+	}
+
+	std::cout << "Loading shader: " << geoFile << std::endl;
+	if (!compileShader(geoShader)) {
+		std::cout << "Geometry shader failed to compile." << std::endl;
+		outputShaderLog(geoShader);
+		unload();
+		system("pause");
+		return false;
+	}
+
+	std::cout << "Loading shader: " << fragFile << std::endl;
+	if (!compileShader(fragShader)) {
+		std::cout << "Fragment shader failed to compile." << std::endl;
+		outputShaderLog(fragShader);
+		unload();
+		system("pause");
+		return false;
+	}
+
+	// Setup program object
+	glAttachShader(program, vertexShader);
+	glAttachShader(program, geoShader);
+	glAttachShader(program, fragShader);
+
+	if (!linkProgram()) {
+		std::cout << "Shader program failed to link." << std::endl;
+		outputProgramLog();
+		unload();
+		return false;
+	}
+
+	loaded = true;
+	return true;
+}
+
 bool Shader::isLoaded() const {
 	return loaded;
 }
@@ -68,6 +132,11 @@ void Shader::unload() {
 		glDetachShader(program, vertexShader);
 		glDeleteShader(vertexShader);
 		vertexShader = 0;
+	}
+	if (geoShader != 0) {
+		glDetachShader(program, geoShader);
+		glDeleteShader(geoShader);
+		geoShader = 0;
 	}
 	if (fragShader != 0) {
 		glDetachShader(program, fragShader);
