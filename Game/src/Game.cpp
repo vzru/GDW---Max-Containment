@@ -820,6 +820,7 @@ void Game::update() {
 				// seek towards player
 				if (((glm::length(diff) < 5.0f) || enemies[i]->triggered || glm::length(diff) < 10.0f && dist < 2.f && lightOn) && glm::length(diff) > 1.0f && enemies[i]->knockbackCD <= 0)
 					enemies[i]->setVelocity(-glm::normalize(diff));
+					//enemies[i]->setVelocity({ 0.0f, 0.0f, 0.0f });
 				else
 					enemies[i]->setVelocity({ 0.0f, 0.0f, 0.0f });
 				// update enemy
@@ -1029,6 +1030,7 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 		break;
 	case 'l':
 		//level.light->innerCutoff -= glm::radians(0.1f);
+		std::cout << player->getPosition().x << " " << player->getPosition().z << std::endl;
 		break;
 	default: break;
 	}
