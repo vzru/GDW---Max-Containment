@@ -55,12 +55,8 @@ vec3 calculateLight(Light light, vec3 norm, vec4 diff, vec4 spec) {
 	switch(light.type) {
 	case SPOT:
 		float spotDot = dot(normalize(light.direction.xyz), -lightDir);
-		if (spotDot < light.cutoff)
-			attenuation = light.partial;
-		else {
-			float spotValue = smoothstep(light.innerCutoff, light.cutoff, spotDot);
-			attenuation = pow(spotValue, light.spotExponent);
-		}
+		float spotValue = smoothstep(light.innerCutoff, light.cutoff, spotDot);
+		attenuation = (spotDot < light.cutoff) ? light.partial : attenuation = pow(spotValue, light.spotExponent);
 	case POINT:
 		attenuation /= (light.attenuation[0] + light.attenuation[1] * lightLen + light.attenuation[2] * lightLen * lightLen);
 		break;
@@ -76,9 +72,11 @@ vec3 calculateLight(Light light, vec3 norm, vec4 diff, vec4 spec) {
 	// Diffuse
 	float NdotL = max(dot(norm, lightDir), 0.0);
 	vec3 diffuse = light.diffuse * NdotL * attenuation * diff.rgb;
-	// Reflection
-	vec3 reflectDir = reflect(-lightDir, norm);
-	float VdotR = max(dot(normalize(-position), -reflectDir), 0.0);
+	// Reflection (Phong)
+	//vec3 reflectDir = reflect(-lightDir, norm);
+	//float VdotR = max(dot(normalize(-position), -reflectDir), 0.0);
+	//vec3 specular = light.specular * pow(VdotR, material.specExponent) * attenuation * spec.rgb;
+	// Half-vector (Blinn-Phong)
 	float NdotHV = max(dot(norm, normalize(lightDir + normalize(-position))), 0.0);
 	vec3 specular = light.specular * pow(NdotHV, material.specExponent) * attenuation * spec.rgb;
 

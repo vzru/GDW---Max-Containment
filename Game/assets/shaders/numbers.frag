@@ -1,7 +1,5 @@
 #version 420
 
-#define NUM_LIGHTS 1
-
 #define POINT 0
 #define DIRECT 1
 #define SPOT 2
@@ -35,7 +33,7 @@ struct Material {
 	float specExponent;
 };
 
-uniform Light lights[NUM_LIGHTS];
+uniform Light light;
 
 uniform Material material;
 uniform int ammo;
@@ -54,12 +52,8 @@ vec3 calculateLight(Light light, vec3 norm, vec4 diff, vec4 spec) {
 	switch(light.type) {
 	case SPOT:
 		float spotDot = dot(normalize(light.direction.xyz), -lightDir);
-		if (spotDot < light.cutoff)
-			attenuation = light.partial;
-		else {
-			float spotValue = smoothstep(light.innerCutoff, light.cutoff, spotDot);
-			attenuation = pow(spotValue, light.spotExponent);
-		}
+		float spotValue = smoothstep(light.innerCutoff, light.cutoff, spotDot);
+		attenuation = spotDot < light.cutoff ? light.partial : attenuation = pow(spotValue, light.spotExponent);
 	case POINT:
 		attenuation /= (light.attenuation[0] + light.attenuation[1] * lightLen + light.attenuation[2] * lightLen * lightLen);
 		break;
@@ -85,16 +79,17 @@ vec3 calculateLight(Light light, vec3 norm, vec4 diff, vec4 spec) {
 
 void main() {
 	vec2 newCoord = { (texCoord.x + ammo % 10) / 10.0, texCoord.y };
+	//vec2 newCoord = { texCoord.x, texCoord.y };
 
 	// account for rasterizer interpolating
-	vec3 norm = normalize(normal);//normalize(texture(material.normal, newCoord).rgb);
+	vec3 norm = normalize(normal);	//normalize(texture(material.normal, newCoord).rgb);
 	vec4 diff = texture(material.diffuse, newCoord);
 	vec4 spec = texture(material.specular, newCoord);
 
-	for(int i = 0; i < NUM_LIGHTS; i++) {
-		outColor.rgb += calculateLight(lights[i], norm, diff, spec);
-	}
+	if (length(diff) >= 1.5)
+		discard;
 
+	outColor.rgb += calculateLight(light, norm, diff, spec);
 	outColor.rgb *= material.hue;
 	outColor.a = diff.a;
 }

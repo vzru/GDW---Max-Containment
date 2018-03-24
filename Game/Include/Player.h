@@ -24,7 +24,6 @@ public:
 
 	glm::vec3 acceleration = { 0.f, 0.f, 0.f };
 	Bullet* bullet;
-	std::vector<Bullet*> bullets;
 	
 	const float MaxLife = 20.f;
 private:

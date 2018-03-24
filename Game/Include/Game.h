@@ -80,6 +80,7 @@ private:
 	float deltaTime = 0.f;
 	State state = State::Menu;
 	glm::vec2 windowSize;
+	bool lightOn = false;
 	// objects
 	std::unordered_map<std::string, Sound*> sounds;
 	std::unordered_map<std::string, Shader*> program;
@@ -101,6 +102,9 @@ private:
 	void clearShaders(), clearSounds();
 	void clearEnemies(), clearDrops();
 	void createDropItem(glm::vec3 pos, int type = 0);
+	// state change
+	void start(), reset();
+	// draw
 	void drawAmmo();
 	// input
 	struct InputData {
@@ -120,15 +124,21 @@ private:
 		std::vector<glm::vec3> lightsPos =
 		{
 			// Examples for formatting
-			{ 16.0f, 10.0f, 10.0f },		
-			{ 33.0f, 15.0f, 49.0f },
-			{ 151.0f, 10.0f, 11.0f },
-			{ 2.0f, 10.0f, 25.0f },
-			{ 86.0f, 10.0f, 65.0f },
+			//{ 16.0f, 10.0f, 10.0f },		
+			//{ 33.0f, 15.0f, 49.0f },
+			//{ 151.0f, 10.0f, 11.0f },
+			//{ 2.0f, 10.0f, 25.0f },
+			//{ 86.0f, 10.0f, 65.0f },
+
+			{ 4.25f, 10.0f, 29.5f },
+			{ 32.75f, 10.0f, 48.0f },
+			//{ 151.0f, 10.0f, 11.0f },
+			//{ 2.0f, 10.0f, 25.0f },
+			{ 79.5f, 10.0f, 68.0f }
 		};
 
 		std::vector<Light*> lights;
-		Light *light, *light2, *light3;
+		Light *light, *flashLight;
 		glm::vec3 start = { 4.f, 0.f, 6.f };
 		glm::vec4 exit = { 77.f, 81.f, 67.f, 70.f };
 		std::pair<std::vector<glm::vec2>, std::vector<glm::vec2>> drops = {
@@ -144,7 +154,7 @@ private:
 			} stats;
 			std::tuple<std::vector<glm::vec2>, std::vector<glm::vec2>, std::vector<glm::vec2>> positions = {
 				{
-					{ 2.86804f,	0.8909f },		{ 32.4772f, 47.1091f },		{ 63.368f,  29.1091f },		{ 27.5863f, 3.10911f },
+					{ 2.86804f,	30.8909f },		{ 32.4772f, 47.1091f },		{ 63.368f,  29.1091f },		{ 27.5863f, 3.10911f },
 					{ 33.5863f, 3.10911f },		{ 35.368f,  9.10911f },		{ 29.5863f, 8.89089f },		{ 57.368f,  3.10911f },
 					{ 33.5863f, 8.89089f },		{ 151.368f, 20.8909f },		{ 127.368f, 4.89089f },		{ 133.368f, 4.89089f },
 					{ 113.368f, 4.89089f },		{ 105.368f, 4.89089f },		{ 87.5863f, 2.89089f },		{ 135.368f, 11.1091f },
@@ -170,8 +180,12 @@ private:
 		Object *healthBar;
 		struct Ammo {
 			Object *number;
-			glm::vec3 positions[5] = {
-				{0,10,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}
+			std::vector<glm::vec3> positions = {
+				{ 3.4f, 7.f, 3.8f },
+				{ 3.65f, 7.f, 3.8f },
+				{ 3.5f, 7.f, 3.4f },
+				{ 3.75f, 7.f, 3.4f },
+				{ 4.f, 7.f, 3.4f }
 			};
 			//Object *digit0, *digit1, *digit2, *digit3, *digit4, *digit5, *digit6, *digit7, *digit8, *digit9;
 			//glm::vec3 pos1, pos2, pos3, pos4, pos5;
@@ -183,10 +197,20 @@ private:
 	// screens
 	struct Screen {
 		Object *loading, *menu, *controls, *pause, *win, *lose;
-		struct Button {
+		std::tuple<float, glm::vec3, glm::vec4> buttons[2] = {
+			{ 1.7f, { 0.f, 0.2f, 0.3f }, { 0.30677083f, 0.73802083f, 0.44351851f, 0.6648f } },
+			{ 1.5f, { 0.f, 0.2f, 1.75f }, { 0.36822917f, 0.64583333f, 0.72962963f, 0.99722223f } }
+		};
+		struct ButtonData {
+			ButtonData(unsigned int i, Screen *screen)
+				: scale(std::get<0>(screen->buttons[i]))
+				, center(std::get<1>(screen->buttons[i]))
+				, pos(std::get<2>(screen->buttons[i])) {}
 			Object *obj;
+			float scale;
+			glm::vec3 center;
 			glm::vec4 pos;
-		} play, quit;
+		} play = { 0, this }, quit = { 1, this };
 		Camera *camera;
 		Light *light;
 	} screen;

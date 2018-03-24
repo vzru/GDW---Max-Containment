@@ -54,7 +54,7 @@ public:
 
 	// Updating functions
 	Object* collide(float dt, Level* level, bool ai = false);
-	virtual Object* update(float dt = 0.f);
+	virtual Object* update(float dt = 0.f, glm::vec3 offset = glm::vec3(0.f));
 	//virtual void physics(float dt);
 	virtual Object* draw(Shader *shader, Camera *camera, Light* lights);
 	virtual Object* draw(Shader *shader, Camera *camera, std::vector<Light*> lights);

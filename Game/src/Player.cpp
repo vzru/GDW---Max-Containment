@@ -6,15 +6,11 @@
 #include "Material.h"
 #include "Level.h"
 
-Player::Player(glm::vec3 pos) : Object(pos), bullet(new Bullet(this)) {
-	life = 20.f;
+Player::Player(glm::vec3 pos) : Object(pos) {
+	reset(pos);
 }
 Player::~Player() {
 	delete bullet;
-	while (bullets.size() > 0) {
-		delete bullets[0];
-		bullets.erase(bullets.begin());
-	}
 }
 
 Player* Player::update(float dt, Level* level) {
@@ -24,9 +20,10 @@ Player* Player::update(float dt, Level* level) {
 		//velocity = glm::normalize(velocity) * 4.f;
 	collide(dt, level);
 	if (glm::length(velocity) > 0.f)
-
 		position += velocity * (dt / 200.f);
+
 	if (glm::length(velocity) > 0.f)
+		//velocity = velocity - glm::normalize(velocity) / 1.f;
 		velocity = glm::normalize(velocity) * glm::length(velocity) * 0.9f;
 
 	// gun cooldown
@@ -34,13 +31,8 @@ Player* Player::update(float dt, Level* level) {
 		cooldown -= dt / 100.f;
 	// shooting
 	if (firing) fire();
-	for (int i = 0; i < bullets.size(); i++) {
-		bullets[i]->update(dt / 1000.f);
-		if (bullets[i]->life <= 0.f) {
-			delete bullets[i];
-			bullets.erase(bullets.begin() + i);
-			i--;
-		}
+	if (bullet != nullptr && bullet->life > 0.f) {
+		bullet->update(dt / 1000.f);
 	}
 
 	if (reloadCd > 0)
@@ -56,9 +48,8 @@ Player* Player::update(float dt, Level* level) {
 }
 
 Player* Player::draw(Shader* shader, Camera* camera, std::vector<Light*> lights) {
-	for (auto bullet : bullets) {
+	if (bullet != nullptr && bullet->life > 0.f)
 		bullet->draw(shader, camera, lights);
-	}
 
 	Object::draw(shader, camera, lights);
 	return this;
@@ -69,7 +60,7 @@ Player* Player::reset(glm::vec3 pos) {
 	velocity = { 0.f, 0.f, 0.f };
 	acceleration = { 0.f, 0.f, 0.f };
 	cooldown = 0.f;
-	life = 20.f;
+	life = MaxLife;
 	ammo = 30.0f;
 	ammoDepo = 90.0f;
 	reloadCd = 0.0f;
@@ -82,21 +73,11 @@ bool Player::fire() {
 		ammo--;
 		reloaded = false;
 		//std::cout << ammo << std::endl;
-		bullet->setPosition(position);
-		bullet->setRotation(rotation);
-		bullets.push_back(new Bullet(*bullet));
+		bullet->reset()
+			->setPosition(position)
+			->setRotation(rotation);
 		cooldown = RateOfFire;
-		//std::cout << ammo << '/' << ammoDepo << std::endl;
-		if (ammo <= 0 && ammoDepo > 0.0f) {
-			if (ammoDepo > 30.0f) {
-				ammo = 30.0f;
-				ammoDepo -= 30.0f;
-			} else if (ammoDepo > 0.0f) {
-				ammo = ammoDepo;
-				ammoDepo = 0.0f;
-			} reloadCd = 3.0f;
-			std::cout << "Reload!" << std::endl;
-		} return true;
+		return true;
 	} return false;
 }
 
@@ -111,7 +92,7 @@ Player* Player::reloading() {
 			ammo = ammoDepo;
 			ammoDepo = 0.0f;
 		}
-		reloadCd = 2.5f;
+		reloadCd = 2.0f;
 		reload = false;
 		std::cout << "Reload!" << std::endl;
 	}

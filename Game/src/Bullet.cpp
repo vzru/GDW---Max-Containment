@@ -1,26 +1,26 @@
 #include "Bullet.h"
 
-/*
-Bullet::Bullet(glm::vec2 _start, float a)
-	: start(_start), length({ cos(a), sin(a) }) {
-	length *= 20;
+Bullet::Bullet() {
+	reset();
 }
-Bullet::Bullet(glm::vec2 _start, glm::vec2 end)
-	: start(_start), length(end) {
-}*/
-
 Bullet::Bullet(Object* origin) :
 	Object(origin->getPosition())
-{
-	cooldown = 0.f;
-	life = 0.05f;
+{	
 	rotation.y = origin->getRotation().y;
+	reset();
 }
 Bullet::~Bullet() {}
 
-Bullet* Bullet::update(float dt) {
+Bullet* Bullet::reset() {
+	cooldown = 0.f;
+	life = MaxLife;
+	color = { 1.0f, 1.0f, 1.0f, 0.3f };
+	return this;
+}
+
+Bullet* Bullet::update(float dt, glm::vec3 offset) {
 	life -= dt;
 
-	Object::update(dt);
+	Object::update(dt, offset);
 	return this;
 }

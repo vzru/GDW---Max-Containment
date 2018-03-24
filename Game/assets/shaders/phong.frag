@@ -2,6 +2,7 @@
 
 #define NUM_LIGHTS 1
 #define MAX_NUM_LIGHTS 128
+
 #define POINT 0
 #define DIRECT 1
 #define SPOT 2
@@ -53,12 +54,8 @@ vec3 calculateLight(Light light, vec3 norm, vec4 diff, vec4 spec) {
 	switch(light.type) {
 	case SPOT:
 		float spotDot = dot(normalize(light.direction.xyz), -lightDir);
-		if (spotDot < light.cutoff)
-			attenuation = light.partial;
-		else {
-			float spotValue = smoothstep(light.innerCutoff, light.cutoff, spotDot);
-			attenuation = pow(spotValue, light.spotExponent);
-		}
+		float spotValue = smoothstep(light.innerCutoff, light.cutoff, spotDot);
+		attenuation = spotDot < light.cutoff ? light.partial : pow(spotValue, light.spotExponent);
 	case POINT:
 		attenuation /= (light.attenuation[0] + light.attenuation[1] * lightLen + light.attenuation[2] * lightLen * lightLen);
 		break;
@@ -87,6 +84,11 @@ void main() {
 	vec3 norm = normalize(normal);//normalize(texture(material.normal, texCoord).rgb);
 	vec4 diff = texture(material.diffuse, texCoord);
 	vec4 spec = texture(material.specular, texCoord);
+
+	//diff.rgb = diff.aaa;
+	if (diff.a < 0.55)
+		discard;
+
 
 	outColor.rgb += calculateLight(light, norm, diff, spec);
 	outColor.rgb *= material.hue;

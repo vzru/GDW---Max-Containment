@@ -76,49 +76,25 @@ Object* Object::loadMesh(Mesh *meshPtr) {
 	return this;
 }
 
-/*float lineCheck(glm::vec2 p, glm::vec2 p0, glm::vec2 p1) {
-	return (p1.y - p0.y) * p.x + (p0.x - p1.x) * p.y + (p1.x * p0.y - p0.x * p1.y);
-}*/
-
 Object* Object::collide(float dt, Level* level, bool ai) {
 	glm::vec3 vOrig = velocity;
 	glm::vec2 pX = { position.x + velocity.x * dt / 200.f, position.z };
 	glm::vec2 pY = { position.x, position.z + velocity.z * dt / 200.f };
 	for (auto box : level->hitBoxes) {
-		if (pX.x > box.min.x && pX.x < box.max.x && pX.y > box.min.y && pX.y < box.max.y) {
-			//std::cout << "CollideX" << std::endl;
+		if (pX.x > box.min.x && pX.x < box.max.x && pX.y > box.min.y && pX.y < box.max.y)
 			velocity.x = 0.f;
-		}
-		if (pY.x > box.min.x && pY.x < box.max.x && pY.y > box.min.y && pY.y < box.max.y) {
-			//std::cout << "CollideY" << std::endl;
+		if (pY.x > box.min.x && pY.x < box.max.x && pY.y > box.min.y && pY.y < box.max.y)
 			velocity.z = 0.f;
-		}
 	}
 	if (ai && ((velocity.x == 0.f && velocity.z != 0.f) || (velocity.x != 0.f && velocity.z == 0.f)))
 		velocity = glm::normalize(velocity) * glm::length(vOrig);
-	//bool collided = false;
-	//glm::vec2 p0 = { position.x, position.z };
-	//glm::vec2 p1 = { position.x + velocity.x * dt / 200.f, position.z + velocity.z * dt / 200.f };
-	//for (auto box : level->hitBoxes) {
-	//	glm::vec2 mix = { box.min.x, box.max.y };
-	//	glm::vec2 man = { box.max.x, box.min.y };
-	//	float v0 = lineCheck(box.min, p0, p1);
-	//	float v1 = lineCheck(mix, p0, p1);
-	//	float v2 = lineCheck(box.max, p0, p1);
-	//	float v3 = lineCheck(man, p0, p1);
-	//	if ((v0 > 0.f && v1 > 0.f && v2 > 0.f && v3 > 0.f) || (v0 < 0.f && v1 < 0.f && v2 < 0.f && v3 < 0.f))
-	//		continue;
-	//	if ((p0.x < box.min.x && p1.x < box.min.x) || (p0.x > box.max.x && p1.x < box.max.x)
-	//		|| (p0.y < box.min.y && p1.y < box.min.y) || (p0.y > box.max.y && p1.y < box.max.y))
-	//		continue;
-	//	std::cout << p0.x << ":" << p0.y << ";" << p1.x << ":" << p1.y << "," << v0 << ":" << v1 << ":" << v2 << ":" << v3 << "," << box.min.x << ":" << box.min.y << ";" << box.max.x << ":" << box.max.y << std::endl;
-	//	collided = true;
-	//}
-	//return collided;
 	return this;
 }
 
-Object* Object::update(float dt) {
+Object* Object::update(float dt, glm::vec3 offset) {
+	// Offset it (mostly off of the player)
+	position += offset;
+
 	// Create 4x4 transformation matrix
 
 	// 1. Create the X,Y, and Z rotation matrices
@@ -141,6 +117,8 @@ Object* Object::update(float dt) {
 	// 5. Combine all above transforms into a single matrix
 	transform = tran * rotate * scal;
 
+	// move it back to it's own position
+	position -= offset;
 	return this;
 }
 
@@ -153,15 +131,6 @@ Object* Object::draw(Shader* shader, Camera* camera, Light *light) {
 		->sendUniformMat4("uProj", glm::value_ptr(camera->getProj()), false)
 		->sendUniform("objectColor", color)
 		->sendUniform("ammo", ammo)
-	//if (lightCount == 0.0f)
-	//{
-	//	std::cout << lights.size() << std::endl;
-	//	shader->sendUniform("numLights", lights.size());
-	//}
-	//else
-	//{
-	//	shader->sendUniform("numLights", lightCount);
-	//}
 	// Material
 		->sendUniform("material.diffuse", 0)
 		->sendUniform("material.specular", 1)
