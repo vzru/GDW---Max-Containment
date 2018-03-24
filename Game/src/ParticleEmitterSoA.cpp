@@ -60,7 +60,7 @@ void ParticleEmitterSoA::init(int numP)
 	}
 }
 
-void ParticleEmitterSoA::update(float dt)
+void ParticleEmitterSoA::update(float dTime)
 {
 	if (allocated && playing)
 	{
@@ -91,9 +91,10 @@ void ParticleEmitterSoA::update(float dt)
 				*accel = *vel / *mass;
 			}
 
+			float dt = dTime / 1000;
 			// Update position and velocity
-			*pos += *vel * dt + *accel * 0.5f * (dt*dt);
-			*vel += dt;
+			*pos += *vel * dt + *accel * 0.5f * (dt * dt);
+			*vel += dt * *vel;
 			*life -= dt;
 		}
 	}

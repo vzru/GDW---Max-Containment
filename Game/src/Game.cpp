@@ -22,6 +22,7 @@
 #include "Controller.h"
 #include "Light.h"
 #include "ParticleEmitterSoA.h"
+#include "FrameBufferObject.h"
 
 Game::Game(int& argc, char** argv)
 	: windowSize(WINDOW_WIDTH, WINDOW_HEIGHT) {
@@ -69,6 +70,10 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	input.xBox->callback = _controllerInput;
 	input.xBox->special = _controllerSpecial;
 
+	fboD.createFrameBuffer(WINDOW_WIDTH, WINDOW_HEIGHT, 1, true);
+
+	fboD.bindFrameBufferForDrawing();
+
 	// Initialize loading screen
 	glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -92,8 +97,11 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 		system("pause");
 		exit(0);
 	}
+	fboD.clearFrameBuffer(glm::vec4(0.0f));
 	screen.loading->draw(program["Phong"], screen.camera, { screen.light }, 0);
 	glutSwapBuffers();
+
+	fboD.unbindFrameBuffer(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load in things" << std::endl;
 
@@ -101,8 +109,8 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	Sound* sound = new Sound("assets/sounds/game soundtrack.wav", true, 2);
 	//Sound* sound = new Sound("assets/sounds/SW.mp3", true, 2);
 	soundList.push_back(sound);
-	soundList[0]->createChannel(2);
-	soundList[0]->setVolume(0.01f);
+	soundList[0]->createChannel(0, 2);
+	soundList[0]->setVolume(0, 0.01f);
 
 	//Initialize Assets
 	// level
@@ -421,6 +429,18 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	soundList.push_back(sound3);
 	Sound* sound4 = new Sound("assets/sounds/Dialogue Placeholder.wav", false, 2);
 	soundList.push_back(sound4);
+	Sound* sound5 = new Sound("assets/sounds/Damaged.wav", true, 3);
+	sound5->set3DDist(0.5f, 30.f);
+	sound5->setMode(FMOD_3D_INVERSEROLLOFF);
+	soundList.push_back(sound5);
+	Sound* sound6 = new Sound("assets/sounds/Deformed.wav", true, 3);
+	sound5->set3DDist(0.5f, 30.f);
+	sound5->setMode(FMOD_3D_INVERSEROLLOFF);
+	soundList.push_back(sound6);
+	Sound* sound7 = new Sound("assets/sounds/Demented.wav", true, 3);
+	sound5->set3DDist(0.5f, 30.f);
+	sound5->setMode(FMOD_3D_INVERSEROLLOFF);
+	soundList.push_back(sound7);
 
 
 	// Initialize Player
@@ -555,14 +575,14 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 void Game::initializeParticles()
 {
 	ParticleEmitterSoA *part = new ParticleEmitterSoA();
-	part->lifeR = glm::vec3(5.0f, 100.0f, 0.0f);
-	part->initForceMin = glm::vec3(-0.01f, -0.01f, -0.01f);
-	part->initForceMax = glm::vec3(0.01f, 0.01f, 0.01f);
+	part->lifeR = glm::vec3(1.0f, 5.0f, 0.0f);
+	part->initForceMin = glm::vec3(-0.1f, 0.0f, -0.1f);
+	part->initForceMax = glm::vec3(0.1f, 0.1f, 0.1f);
 	//part->material = materials["particles"];
 	//part[index].texture = textures["smoke"];
-	part->init(1000);
+	part->init(100);
 	part->play();
-	part->initPos = player->getPosition() + glm::vec3(0.0f, 5.0f, 0.0f);
+	part->initPos = player->getPosition() + glm::vec3(0.0f, 1.0f, 0.0f);
 	partEList.push_back(part);
 	
 }
@@ -589,14 +609,20 @@ void Game::loadDrops()
 void Game::loadEnemies() {
 	for (auto position : std::get<0>(level.enemies)) {
 		std::get<0>(enemys)->setPosition({ position.x, 0.f, position.y });
+		FMOD_VECTOR temp = { position.x, 0.0f, position.y };
+		//soundList[4]->createChannel(3, false, temp);
 		enemies.push_back(new Enemy(*std::get<0>(enemys)));
 	}
 	for (auto position : std::get<1>(level.enemies)) {
 		std::get<1>(enemys)->setPosition({ position.x, 0.f, position.y });
+		FMOD_VECTOR temp = { position.x, 0.0f, position.y };
+		//soundList[5]->createChannel(3, false, temp);
 		enemies.push_back(new Enemy(*std::get<1>(enemys)));
 	}
 	for (auto position : std::get<2>(level.enemies)) {
 		std::get<2>(enemys)->setPosition({ position.x, 0.f, position.y });
+		FMOD_VECTOR temp = { position.x, 0.0f, position.y };
+		//soundList[6]->createChannel(3, false, temp);
 		enemies.push_back(new Enemy(*std::get<2>(enemys)));
 	}
 }
@@ -679,24 +705,24 @@ void Game::update() {
 		//soundList[0]->stopSound();
 		//soundList[1]->playSound();
 		if (player->reloadCd > 0.0f && !player->reloaded) {
-			soundList[2]->stopSound();
+			soundList[2]->stopSound(0);
 			player->reloaded = true;
 			soundList[3]->playSound(3);
-			soundList[3]->setVolume(0.5f);
+			soundList[3]->setVolume(0, 0.5f);
 		}
 
 		//soundList[1]->createChannel();
 		// player movement
 		if (input.keys & Input::Keys::KeyW && ~(input.keys & Input::Keys::KeyS))
-			player->acceleration.z = -1.f;
+			player->acceleration.z = -0.6f;
 		else if (input.keys & Input::Keys::KeyS && ~(input.keys & Input::Keys::KeyW))
-			player->acceleration.z = 1.f;
+			player->acceleration.z = 0.6f;
 		else if (!input.xBox->getConnected(0))
 			player->acceleration.z = 0.f;
 		if (input.keys & Input::Keys::KeyA && ~(input.keys & Input::Keys::KeyD))
-			player->acceleration.x = -1.f;
+			player->acceleration.x = -0.6f;
 		else if (input.keys & Input::Keys::KeyD && ~(input.keys & Input::Keys::KeyA))
-			player->acceleration.x = 1.f;
+			player->acceleration.x = 0.6f;
 		else if (!input.xBox->getConnected(0))
 			player->acceleration.x = 0.f;
 		if (glm::length(player->acceleration) > 0.f)
@@ -707,7 +733,8 @@ void Game::update() {
 		glm::vec3 temp = player->getPosition();
 		//std::cout << temp.x << '/' << temp.y << '/' << temp.z << std::endl;
 		//std::cout << rand() % 100 << std::endl
-		
+		partEList[0]->initPos = player->getPosition() + glm::vec3(0.0f, 1.0f, 0.0f);
+
 		//if(deltaTime >= 25.0f)
 		//std::cout << deltaTime << std::endl;
 
@@ -851,7 +878,6 @@ void Game::draw() {
 		screen.pause->draw(program["Phong"], screen.camera, { screen.light }, 0);
 		break;
 	case State::Play:
-		partEList[0]->draw(program["particles"], level.camera);
 		if (lightOn)
 		{
 			player->draw(program["MeshMorph"], level.camera, level.lightPointers, 1); // @@@@@ FOR SEAN @@@@@ Extra argument to take in how many lights are in the array
@@ -884,6 +910,7 @@ void Game::draw() {
 		hud.healthBar->draw(program["PhongNoTexture"], level.camera, { hud.light }, 0);
 		hud.display->draw(program["Phong"], level.camera, { hud.light }, 0);
 		//drawAmmo();
+		partEList[0]->draw(program["particles"], level.camera);
 
 		break;
 	case State::Menu:
@@ -936,11 +963,11 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 			break;
 		case State::Control:
 			state = State::Play;
-			soundList[0]->stopSound();
+			soundList[0]->stopSound(0);
 			soundList[1]->playSound(2);
-			soundList[1]->setVolume(0.05f);
+			soundList[1]->setVolume(0, 0.05f);
 			soundList[4]->playSound(2);
-			soundList[4]->setVolume(0.5f);
+			soundList[4]->setVolume(0, 0.5f);
 			break;
 		case State::Pause:
 			state = State::Play;
@@ -1074,9 +1101,9 @@ void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 			case GLUT_DOWN:
 				if (player->reloadCd <= 0.0f) {
 					player->firing = true;
-					soundList[3]->stopSound();
+					//soundList[3]->stopSound(0);
 					soundList[2]->playSound(3);
-					soundList[2]->setVolume(0.05f);
+					soundList[2]->setVolume(0, 0.05f);
 				}
 				break;
 			case GLUT_UP:
@@ -1216,9 +1243,9 @@ void Game::controllerInput(unsigned short index, Input::Button button) {
 		case State::Control:
 			if (button == Input::Button::B)
 			{
-				soundList[0]->stopSound();
+				soundList[0]->stopSound(0);
 				soundList[1]->playSound(2);
-				soundList[1]->setVolume(0.05f);
+				soundList[1]->setVolume(0, 0.05f);
 				soundList[4]->playSound(2);
 				state = State::Play;
 			}
@@ -1241,15 +1268,15 @@ void Game::controllerSpecial(unsigned short index, Input::Triggers triggers, Inp
 			{
 				if (player->reloadCd <= 0.0f) {
 					player->firing = true;
-					soundList[3]->stopSound();
+					soundList[3]->stopSound(0);
 					soundList[2]->playSound(3);
-					soundList[2]->setVolume(0.05f);
+					soundList[2]->setVolume(0, 0.05f);
 				}
 			}
 			else if(triggers.second < 0.5)
 			{
 				player->firing = false;
-				soundList[2]->stopSound();
+				soundList[2]->stopSound(0);
 			}
 			
 			//	lightOn = !lightOn;
@@ -1320,9 +1347,9 @@ void Game::reset()
 	loadEnemies();
 	loadDrops();
 	lightOn = false;
-	soundList[1]->stopSound();
+	soundList[1]->stopSound(0);
 	soundList[0]->playSound(2);
-	soundList[0]->setVolume(0.01f);
-	soundList[4]->stopSound();
+	soundList[0]->setVolume(0, 0.01f);
+	soundList[4]->stopSound(0);
 	state = State::Menu;
 }

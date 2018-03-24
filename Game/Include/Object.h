@@ -68,7 +68,7 @@ public:
 	std::vector<AnimationMesh*> animationList;
 	Material* mat;
 	int ammo;
-	float life, cooldown, timer, t, timerReset = 100.0f;
+	float life, cooldown, timer, t, timerReset = 35.0f;
 	bool collect;
 	int keyFrame = 0;
 };

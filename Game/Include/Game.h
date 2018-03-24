@@ -18,6 +18,7 @@
 #include <glm\vec2.hpp>
 #include <glm\vec3.hpp>
 #include <glm\vec4.hpp>
+#include "FrameBufferObject.h"
 //helpers
 class Timer;	class Camera;
 class Enemy;	class Player;
@@ -78,6 +79,8 @@ private:
 	std::vector<Sound*> soundList;
 	std::vector<ParticleEmitterSoA*> partEList;
 	ParticleEmitterSoA* partE;
+	FrameBufferObject fboD;
+	
 	// helpers
 	Timer* timer = nullptr;
 	float deltaTime = 0.f;
