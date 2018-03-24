@@ -30,13 +30,16 @@ public:
 	void stopSound(int index);
 	void pauseSound(int index);
 	void setPause(int index, bool p);
+	void setVolume(float l);
 	void setVolume(int index, float l);
 	
 	// Attribute Changes
 	void changeSoundLoc(int index, FMOD_VECTOR pos);
 	void changeSoundVelo(int index, FMOD_VECTOR pos);
 	void changeListenerLoc(FMOD_VECTOR p);
+	void changeRolloffMode(bool l);
 	void changeRolloffMode(int index, bool l);
+	void changeMinMaxDist(float min, float max);
 	void changeMinMaxDist(int index, float min, float max);
 	void set3DDist(float min, float max);
 	void setMode(FMOD_MODE mode);

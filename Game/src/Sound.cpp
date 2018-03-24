@@ -90,9 +90,11 @@ void Sound::createChannel(int mode, bool pause, FMOD_VECTOR p, FMOD_VECTOR v)
 	Channel* ch = new Channel;
 
 	// Create the sound channel
-	result = sSys.getSystem()->playSound(sound, 0, true, &ch->channel);
+	result = sSys.getSystem()->playSound(sound, 0, pause, &ch->channel);
 	sSys.fmodErrorCK(result);
 	
+	std::cout << p.x << '/' << p.z << std::endl;
+
 	// Setting new attributes
 	ch->pos = p;
 	ch->vel = v;
@@ -134,6 +136,7 @@ void Sound::stopSound(int index)
 {
 	// Delete the channel and sound
 	chList[index]->channel->stop();
+	chList.pop_back();
 }
 
 void Sound::playSound(int mode)
@@ -150,6 +153,15 @@ void Sound::playSound(int mode)
 	result = ch->channel->setPaused(false);
 	sSys.fmodErrorCK(result);
 	chList.push_back(ch);
+}
+
+void Sound::setVolume(float l)
+{
+	// Change volume levels
+	for (int i = 0; i < chList.size(); i++)
+	{
+		chList[i]->channel->setVolume(l);
+	}
 }
 
 void Sound::setVolume(int index, float l)
@@ -178,6 +190,21 @@ void Sound::changeListenerLoc(FMOD_VECTOR p)
 	sSys.changeListenerLoc(p);
 }
 
+void Sound::changeRolloffMode(bool l)
+{
+	for (int i = 0; i < chList.size(); i++)
+	{
+		if (l)
+		{
+			chList[i]->channel->setMode(FMOD_3D_INVERSEROLLOFF);
+		}
+		else
+		{
+			chList[i]->channel->setMode(FMOD_3D_LINEARROLLOFF);
+		}
+	}
+}
+
 void Sound::changeRolloffMode(int index, bool l)
 {
 	// Change roll off mode 
@@ -188,6 +215,15 @@ void Sound::changeRolloffMode(int index, bool l)
 	else
 	{
 		chList[index]->channel->setMode(FMOD_3D_LINEARROLLOFF);
+	}
+}
+
+void Sound::changeMinMaxDist(float min, float max)
+{
+	for (int i = 0; i < chList.size(); i++)
+	{
+		result = chList[i]->channel->set3DMinMaxDistance(min, max);
+		sSys.fmodErrorCK(result);
 	}
 }
 

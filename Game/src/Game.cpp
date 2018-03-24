@@ -109,8 +109,8 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	Sound* sound = new Sound("assets/sounds/game soundtrack.wav", true, 2);
 	//Sound* sound = new Sound("assets/sounds/SW.mp3", true, 2);
 	soundList.push_back(sound);
-	soundList[0]->createChannel(0, 2);
-	soundList[0]->setVolume(0, 0.01f);
+	soundList[0]->createChannel(0, false);
+	soundList[0]->setVolume(0, 0.1f);
 
 	//Initialize Assets
 	// level
@@ -430,16 +430,16 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	Sound* sound4 = new Sound("assets/sounds/Dialogue Placeholder.wav", false, 2);
 	soundList.push_back(sound4);
 	Sound* sound5 = new Sound("assets/sounds/Damaged.wav", true, 3);
-	sound5->set3DDist(0.5f, 30.f);
-	sound5->setMode(FMOD_3D_INVERSEROLLOFF);
+	//sound5->set3DDist(0.5f, 5.f);
+	//sound5->setMode(FMOD_3D_INVERSEROLLOFF);
 	soundList.push_back(sound5);
 	Sound* sound6 = new Sound("assets/sounds/Deformed.wav", true, 3);
-	sound5->set3DDist(0.5f, 30.f);
-	sound5->setMode(FMOD_3D_INVERSEROLLOFF);
+	//sound6->set3DDist(0.5f, 5.f);
+	//sound6->setMode(FMOD_3D_INVERSEROLLOFF);
 	soundList.push_back(sound6);
 	Sound* sound7 = new Sound("assets/sounds/Demented.wav", true, 3);
-	sound5->set3DDist(0.5f, 30.f);
-	sound5->setMode(FMOD_3D_INVERSEROLLOFF);
+	//sound7->set3DDist(0.5f, 5.f);
+	//sound7->setMode(FMOD_3D_INVERSEROLLOFF);
 	soundList.push_back(sound7);
 
 
@@ -561,6 +561,8 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 
 	loadEnemies();
 
+	
+
 	loadDrops();
 	
 	// Init particle emitter
@@ -587,8 +589,6 @@ void Game::initializeParticles()
 	
 }
 
-
-
 void Game::loadDrops()
 {
 	//health
@@ -610,21 +610,28 @@ void Game::loadEnemies() {
 	for (auto position : std::get<0>(level.enemies)) {
 		std::get<0>(enemys)->setPosition({ position.x, 0.f, position.y });
 		FMOD_VECTOR temp = { position.x, 0.0f, position.y };
-		//soundList[4]->createChannel(3, false, temp);
+		soundList[5]->createChannel(3, false, temp);
 		enemies.push_back(new Enemy(*std::get<0>(enemys)));
 	}
 	for (auto position : std::get<1>(level.enemies)) {
 		std::get<1>(enemys)->setPosition({ position.x, 0.f, position.y });
 		FMOD_VECTOR temp = { position.x, 0.0f, position.y };
-		//soundList[5]->createChannel(3, false, temp);
+		soundList[6]->createChannel(3, false, temp);
 		enemies.push_back(new Enemy(*std::get<1>(enemys)));
 	}
 	for (auto position : std::get<2>(level.enemies)) {
 		std::get<2>(enemys)->setPosition({ position.x, 0.f, position.y });
 		FMOD_VECTOR temp = { position.x, 0.0f, position.y };
-		//soundList[6]->createChannel(3, false, temp);
+		soundList[7]->createChannel(3, false, temp);
 		enemies.push_back(new Enemy(*std::get<2>(enemys)));
 	}
+	soundList[5]->setVolume(0.5f);
+	soundList[5]->changeRolloffMode(false);
+	soundList[5]->changeMinMaxDist(0.f, 7.0f);
+	soundList[6]->changeRolloffMode(false);
+	soundList[6]->changeMinMaxDist(0.f, 7.0f);
+	soundList[7]->changeRolloffMode(false);
+	soundList[7]->changeMinMaxDist(0.f, 7.0f);
 }
 
 Game::~Game() {
@@ -705,7 +712,7 @@ void Game::update() {
 		//soundList[0]->stopSound();
 		//soundList[1]->playSound();
 		if (player->reloadCd > 0.0f && !player->reloaded) {
-			soundList[2]->stopSound(0);
+			soundList[2]->stopSound();
 			player->reloaded = true;
 			soundList[3]->playSound(3);
 			soundList[3]->setVolume(0, 0.5f);
@@ -731,6 +738,8 @@ void Game::update() {
 			player->reload = true;
 		player->update(deltaTime, level.collision);
 		glm::vec3 temp = player->getPosition();
+		FMOD_VECTOR listener= { player->getPosition().x, player->getPosition().y, player->getPosition().z };
+		soundList[0]->changeListenerLoc(listener);
 		//std::cout << temp.x << '/' << temp.y << '/' << temp.z << std::endl;
 		//std::cout << rand() % 100 << std::endl
 		partEList[0]->initPos = player->getPosition() + glm::vec3(0.0f, 1.0f, 0.0f);
@@ -803,6 +812,19 @@ void Game::update() {
 
 			if (enemies[i]->range)
 			{
+				FMOD_VECTOR loc = { enemies[i]->getPosition().x, enemies[i]->getPosition().y, enemies[i]->getPosition().z };
+				if (i < std::get<0>(level.enemies).size())
+				{
+					soundList[5]->changeSoundLoc(i, loc);
+				}
+				else if (i < (std::get<0>(level.enemies).size() + std::get<1>(level.enemies).size()))
+				{
+					soundList[6]->changeSoundLoc(i - std::get<0>(level.enemies).size(), loc);
+				}
+				else if (i < (std::get<0>(level.enemies).size() + std::get<1>(level.enemies).size() + std::get<2>(level.enemies).size()))
+				{
+					soundList[7]->changeSoundLoc(i - (std::get<0>(level.enemies).size() + std::get<1>(level.enemies).size()), loc);
+				}
 				if (enemies[i]->knockbackCD > 0)
 					enemies[i]->knockbackCD -= deltaTime / 1000;
 				// aim towards player
@@ -966,9 +988,9 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 			state = State::Play;
 			soundList[0]->stopSound(0);
 			soundList[1]->playSound(2);
-			soundList[1]->setVolume(0, 0.05f);
+			soundList[1]->setVolume(0.05f);
 			soundList[4]->playSound(2);
-			soundList[4]->setVolume(0, 0.5f);
+			soundList[4]->setVolume(0.5f);
 			break;
 		case State::Pause:
 			state = State::Play;
@@ -1105,7 +1127,7 @@ void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 					player->firing = true;
 					//soundList[3]->stopSound(0);
 					soundList[2]->playSound(3);
-					soundList[2]->setVolume(0, 0.05f);
+					soundList[2]->setVolume(0.05f);
 				}
 				break;
 			case GLUT_UP:
@@ -1245,9 +1267,9 @@ void Game::controllerInput(unsigned short index, Input::Button button) {
 		case State::Control:
 			if (button == Input::Button::B)
 			{
-				soundList[0]->stopSound(0);
+				soundList[0]->stopSound();
 				soundList[1]->playSound(2);
-				soundList[1]->setVolume(0, 0.05f);
+				soundList[1]->setVolume(0.05f);
 				soundList[4]->playSound(2);
 				state = State::Play;
 			}
@@ -1270,9 +1292,9 @@ void Game::controllerSpecial(unsigned short index, Input::Triggers triggers, Inp
 			{
 				if (player->reloadCd <= 0.0f) {
 					player->firing = true;
-					soundList[3]->stopSound(0);
-					soundList[2]->playSound(3);
-					soundList[2]->setVolume(0, 0.05f);
+					soundList[3]->stopSound();
+					soundList[2]->playSound(2);
+					soundList[2]->setVolume(0.05f);
 				}
 			}
 			else if(triggers.second < 0.5)
@@ -1349,9 +1371,12 @@ void Game::reset()
 	loadEnemies();
 	loadDrops();
 	lightOn = false;
-	soundList[1]->stopSound(0);
+	soundList[1]->stopSound();
 	soundList[0]->playSound(2);
-	soundList[0]->setVolume(0, 0.01f);
-	soundList[4]->stopSound(0);
+	soundList[0]->setVolume(0.1f);
+	soundList[4]->stopSound();
+	soundList[5]->stopSound();
+	soundList[6]->stopSound();
+	soundList[7]->stopSound();
 	state = State::Menu;
 }
