@@ -36,6 +36,8 @@ public:
 	glm::vec3 initForceMin;
 	glm::vec3 initForceMax;
 
+	//glm::vec4 direction;
+
 	VertexBufferObject vbo;
 
 	bool playing;

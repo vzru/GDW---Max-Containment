@@ -62,7 +62,7 @@ void ParticleEmitterSoA::init(int numP)
 
 void ParticleEmitterSoA::update(float dTime)
 {
-	if (allocated && playing)
+	if (allocated /*&& playing*/)
 	{
 		// loop through each particle
 		for (int i = 0; i < numParticles; i++)
@@ -80,20 +80,24 @@ void ParticleEmitterSoA::update(float dTime)
 			{
 				// if dead respawn
 				// could put additional logic here...
-				*pos = initPos;
+				if (playing == true)
+				{
+					*pos = initPos;
 
-				(*vel).x = glm::mix(initForceMin.x, initForceMax.x, glm::linearRand(0.0f, 1.0f));
-				(*vel).y = glm::mix(initForceMin.y, initForceMax.y, glm::linearRand(0.0f, 1.0f));
-				(*vel).z = glm::mix(initForceMin.z, initForceMax.z, glm::linearRand(0.0f, 1.0f));
+					(*vel).x = glm::mix(initForceMin.x, initForceMax.x, glm::linearRand(0.0f, 1.0f));
+					(*vel).y = glm::mix(initForceMin.y, initForceMax.y, glm::linearRand(0.0f, 1.0f));
+					(*vel).z = glm::mix(initForceMin.z, initForceMax.z, glm::linearRand(0.0f, 1.0f));
 
-				*life = glm::linearRand(lifeR.x, lifeR.y);
-				*mass = glm::linearRand(0.5f, 1.0f);
-				*accel = *vel / *mass;
+					*life = glm::linearRand(lifeR.x, lifeR.y);
+					*mass = glm::linearRand(0.5f, 1.0f);
+					*accel = *vel / *mass;
+				}
+				
 			}
 
-			float dt = dTime / 1000;
+			float dt = dTime / 2000;
 			// Update position and velocity
-			*pos += *vel * dt + *accel * 0.5f * (dt * dt);
+			*pos += *vel * dt + *accel * 2.0f * (dt * dt);
 			*vel += dt * *vel;
 			*life -= dt;
 		}

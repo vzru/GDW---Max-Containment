@@ -576,16 +576,16 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 void Game::initializeParticles()
 {
 	ParticleEmitterSoA *part = new ParticleEmitterSoA();
-	part->lifeR = glm::vec3(1.0f, 5.0f, 0.0f);
-	part->initForceMin = glm::vec3(-0.1f, 0.0f, -0.1f);
-	part->initForceMax = glm::vec3(0.1f, 0.1f, 0.1f);
+	part->lifeR = glm::vec3(0.1f, 0.2f, 0.0f);
+	part->initForceMin = glm::vec3(-1.2f, -0.1f, -1.2f);
+	part->initForceMax = glm::vec3(1.2f, 0.0f, 1.2f);
 	//part->material = materials["particles"];
 	//part[index].texture = textures["smoke"];
-	part->init(100);
+	part->init(10);
 	part->play();
-	part->initPos = player->getPosition() + glm::vec3(0.0f, 1.0f, 0.0f);
+	part->initPos = player->getPosition() + glm::vec3(1.0f, 1.0f, 0.0f);
 	partEList.push_back(part);
-	
+	partEList[0]->pause();
 }
 
 void Game::loadDrops()
@@ -597,12 +597,21 @@ void Game::loadDrops()
 	createDropItem(glm::vec3(123.6, 0, 64.2), 1);
 	createDropItem(glm::vec3(102.8, 0, 38.8), 1);
 
+	//Ammo
 	createDropItem(glm::vec3(16.7, 0, 10.4), 2);
 	createDropItem(glm::vec3(30.7, 0, 48), 2);
 	createDropItem(glm::vec3(67.3, 0, 3.4), 2);
 	createDropItem(glm::vec3(114.4, 0, 12.3), 2);
 	createDropItem(glm::vec3(139.7, 0, 58), 2);
 	createDropItem(glm::vec3(85.7, 0, 65), 2);
+
+	createDropItem(glm::vec3(41.2, 0, 42.5), 2);
+	createDropItem(glm::vec3(21.3, 0, 12.2), 2);
+	createDropItem(glm::vec3(43.3, 0, 22.8), 2);
+	createDropItem(glm::vec3(56.8, 0, 2.8), 2);
+	createDropItem(glm::vec3(82.2, 0, 2.1), 2);
+	createDropItem(glm::vec3(149.9, 0, 22.2), 2);
+	createDropItem(glm::vec3(152, 0, 36.5), 2);
 }
 
 void Game::loadEnemies() {
@@ -743,7 +752,9 @@ void Game::update() {
 		soundList[0]->changeListenerLoc(listener);
 		//std::cout << temp.x << '/' << temp.y << '/' << temp.z << std::endl;
 		//std::cout << rand() % 100 << std::endl
-		partEList[0]->initPos = player->getPosition() + glm::vec3(0.0f, 1.0f, 0.0f);
+		float partAngle = glm::radians(player->getRotation().y);
+		//partEList[0]->direction = { cos(partAngle), 0, -sin(partAngle), 0.f };
+		partEList[0]->initPos = player->getPosition() + glm::vec3(cos(partAngle) * 0.7f, 1.0f, -sin(partAngle)* 0.7f);
 
 		//if(deltaTime >= 25.0f)
 		//std::cout << deltaTime << std::endl;
@@ -854,8 +865,8 @@ void Game::update() {
 				//std::cout << bang << '/' << dang << '/' << dist << std::endl;
 				// seek towards player
 				if (((glm::length(diff) < 5.0f) || enemies[i]->triggered || glm::length(diff) < 10.0f && dist < 2.f && lightOn) && glm::length(diff) > 1.0f && enemies[i]->knockbackCD <= 0)
-					enemies[i]->setVelocity(-glm::normalize(diff));
-					//enemies[i]->setVelocity({ 0.0f, 0.0f, 0.0f });
+					//enemies[i]->setVelocity(-glm::normalize(diff));
+					enemies[i]->setVelocity({ 0.0f, 0.0f, 0.0f });
 				else
 					enemies[i]->setVelocity({ 0.0f, 0.0f, 0.0f });
 				// update enemy
@@ -1141,13 +1152,19 @@ void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 			case GLUT_DOWN:
 				if (player->reloadCd <= 0.0f) {
 					player->firing = true;
+					partEList[0]->play();
 					//soundList[3]->stopSound(0);
 					soundList[2]->playSound(3);
 					soundList[2]->setVolume(0.05f);
 				}
+				else
+				{
+					partEList[0]->pause();
+				}
 				break;
 			case GLUT_UP:
 				player->firing = false;
+				partEList[0]->pause();
 				soundList[2]->stopSound();
 				break;
 			default:
