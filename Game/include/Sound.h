@@ -29,6 +29,7 @@ public:
 	void stopSound();
 	void stopSound(int index);
 	void pauseSound(int index);
+	void setPause(bool p);
 	void setPause(int index, bool p);
 	void setVolume(float l);
 	void setVolume(int index, float l);

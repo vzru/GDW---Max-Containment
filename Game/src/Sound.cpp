@@ -117,6 +117,14 @@ void Sound::pauseSound(int index)
 	chList[index]->pause = !chList[index]->pause;
 }
 
+void Sound::setPause(bool p)
+{
+	for (int i = 0; i < chList.size(); i++)
+	{
+		chList[i]->channel->setPaused(p);
+	}
+}
+
 void Sound::setPause(int index, bool p)
 {
 	// Set paused or unpaused

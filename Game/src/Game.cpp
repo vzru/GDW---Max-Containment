@@ -561,7 +561,6 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 
 	loadEnemies();
 
-	
 
 	loadDrops();
 	
@@ -610,28 +609,28 @@ void Game::loadEnemies() {
 	for (auto position : std::get<0>(level.enemies)) {
 		std::get<0>(enemys)->setPosition({ position.x, 0.f, position.y });
 		FMOD_VECTOR temp = { position.x, 0.0f, position.y };
-		soundList[5]->createChannel(3, false, temp);
+		soundList[5]->createChannel(3, true, temp);
 		enemies.push_back(new Enemy(*std::get<0>(enemys)));
 	}
 	for (auto position : std::get<1>(level.enemies)) {
 		std::get<1>(enemys)->setPosition({ position.x, 0.f, position.y });
 		FMOD_VECTOR temp = { position.x, 0.0f, position.y };
-		soundList[6]->createChannel(3, false, temp);
+		soundList[6]->createChannel(3, true, temp);
 		enemies.push_back(new Enemy(*std::get<1>(enemys)));
 	}
 	for (auto position : std::get<2>(level.enemies)) {
 		std::get<2>(enemys)->setPosition({ position.x, 0.f, position.y });
 		FMOD_VECTOR temp = { position.x, 0.0f, position.y };
-		soundList[7]->createChannel(3, false, temp);
+		soundList[7]->createChannel(3, true, temp);
 		enemies.push_back(new Enemy(*std::get<2>(enemys)));
 	}
 	soundList[5]->setVolume(0.5f);
 	soundList[5]->changeRolloffMode(false);
-	soundList[5]->changeMinMaxDist(0.f, 7.0f);
+	soundList[5]->changeMinMaxDist(0.f, 11.0f);
 	soundList[6]->changeRolloffMode(false);
-	soundList[6]->changeMinMaxDist(0.f, 7.0f);
+	soundList[6]->changeMinMaxDist(0.f, 11.0f);
 	soundList[7]->changeRolloffMode(false);
-	soundList[7]->changeMinMaxDist(0.f, 7.0f);
+	soundList[7]->changeMinMaxDist(0.f, 11.0f);
 }
 
 Game::~Game() {
@@ -711,6 +710,8 @@ void Game::update() {
 	else if (state == State::Play) {
 		//soundList[0]->stopSound();
 		//soundList[1]->playSound();
+		
+
 		if (player->reloadCd > 0.0f && !player->reloaded) {
 			soundList[2]->stopSound();
 			player->reloaded = true;
@@ -816,14 +817,26 @@ void Game::update() {
 				if (i < std::get<0>(level.enemies).size())
 				{
 					soundList[5]->changeSoundLoc(i, loc);
+					if (enemies[i]->life <= 0.0f)
+					{
+						soundList[5]->setPause(i, true);
+					}
 				}
 				else if (i < (std::get<0>(level.enemies).size() + std::get<1>(level.enemies).size()))
 				{
 					soundList[6]->changeSoundLoc(i - std::get<0>(level.enemies).size(), loc);
+					if (enemies[i]->life <= 0.0f)
+					{
+						soundList[6]->setPause(i, true);
+					}
 				}
 				else if (i < (std::get<0>(level.enemies).size() + std::get<1>(level.enemies).size() + std::get<2>(level.enemies).size()))
 				{
 					soundList[7]->changeSoundLoc(i - (std::get<0>(level.enemies).size() + std::get<1>(level.enemies).size()), loc);
+					if (enemies[i]->life <= 0.0f)
+					{
+						soundList[7]->setPause(i, true);
+					}
 				}
 				if (enemies[i]->knockbackCD > 0)
 					enemies[i]->knockbackCD -= deltaTime / 1000;
@@ -991,6 +1004,9 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 			soundList[1]->setVolume(0.05f);
 			soundList[4]->playSound(2);
 			soundList[4]->setVolume(0.5f);
+			soundList[5]->setPause(false);
+			soundList[6]->setPause(false);
+			soundList[7]->setPause(false);
 			break;
 		case State::Pause:
 			state = State::Play;
@@ -1271,6 +1287,9 @@ void Game::controllerInput(unsigned short index, Input::Button button) {
 				soundList[1]->playSound(2);
 				soundList[1]->setVolume(0.05f);
 				soundList[4]->playSound(2);
+				soundList[5]->setPause(false);
+				soundList[6]->setPause(false);
+				soundList[7]->setPause(false);
 				state = State::Play;
 			}
 			break;
@@ -1372,11 +1391,11 @@ void Game::reset()
 	loadDrops();
 	lightOn = false;
 	soundList[1]->stopSound();
-	soundList[0]->playSound(2);
-	soundList[0]->setVolume(0.1f);
 	soundList[4]->stopSound();
 	soundList[5]->stopSound();
 	soundList[6]->stopSound();
 	soundList[7]->stopSound();
+	soundList[0]->playSound(2);
+	soundList[0]->setVolume(0.1f);
 	state = State::Menu;
 }
