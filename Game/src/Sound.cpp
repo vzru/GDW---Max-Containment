@@ -55,7 +55,7 @@ void Sound::loadSound(char * filename, bool loop, int dimension)
 	}
 	else
 	{
-		result = sound->setMode(FMOD_DEFAULT);
+		result = sound->setMode(FMOD_LOOP_OFF);
 	}
 	sSys.fmodErrorCK(result);
 }

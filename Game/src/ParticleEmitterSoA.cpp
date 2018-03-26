@@ -119,6 +119,9 @@ void ParticleEmitterSoA::draw(Shader *shader, Camera *cam)
 	shader->sendUniformMat4("u_mvp", glm::value_ptr(transform), false);
 	shader->sendUniformMat4("u_mv", glm::value_ptr(cam->getView()), false);
 	shader->sendUniformMat4("u_proj", glm::value_ptr(cam->getProj()), false);
+	//color = glm::vec3(1, 0, 0);
+	shader->sendUniform("color", color);
+	shader->sendUniform("size", size);
 	//shader->sendUniformMat4["u_mvp"] = cam->viewProjMatrix;
 	//shader->sendUniformMat4["u_mv"] = cam->viewMatrix;
 	//shader->sendUniformMat4["u_proj"] = cam->projMatrix;

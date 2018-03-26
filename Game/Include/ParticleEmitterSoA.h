@@ -32,10 +32,11 @@ public:
 	void freeMemory();
 
 	glm::vec3 initPos;
+	glm::vec3 color;
 	glm::vec3 lifeR;
 	glm::vec3 initForceMin;
 	glm::vec3 initForceMax;
-
+	float size;
 	//glm::vec4 direction;
 
 	VertexBufferObject vbo;

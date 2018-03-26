@@ -49,18 +49,33 @@ out vec4 outColor;
 
 vec3 calculateLight(Light light, vec3 norm, vec4 diff, vec4 spec) {
 	float attenuation = 1.0;
+	float intensity = 0.0;
 	vec3 lightVec = light.position.xyz - position;
 	float lightLen = length(lightVec);
 	vec3 lightDir = normalize(lightVec);
+	float NdotL = max(dot(norm, lightDir), 0.0);
+	float NdotHV = max(dot(norm, normalize(lightDir + normalize(-position))), 0.0);
+	
+	// Ambient
+	vec3 ambient = light.ambient * diff.rgb;
+	// Diffuse
+	vec3 diffuse = light.diffuse * NdotL * diff.rgb;
+	// Specular
+	vec3 specular = light.specular * pow(NdotHV, material.specExponent) * spec.rgb;
 	switch(light.type) {
 	case SPOT:
-		float spotDot = dot(normalize(light.direction.xyz), -lightDir);
-		if (spotDot < light.cutoff)
-			attenuation = light.partial;
-		else {
-			float spotValue = smoothstep(light.outerCutoff, light.cutoff, spotDot);
-			attenuation = pow(spotValue, light.spotExponent);
-		}
+		float thetra = dot(lightDir, normalize(-light.direction.xyz));
+		thetra = clamp(thetra, 0.0, 1.0);
+		thetra = thetra * 1.01;
+		thetra = pow(thetra, 10.0);
+		intensity = thetra;//clamp(thetra, 0.0, 1.0);
+		diffuse *= intensity;
+		specular *= intensity;
+		attenuation = intensity;
+		attenuation /= (	light.attenuation[0] + 
+							light.attenuation[1] * lightLen + 
+							light.attenuation[2] * lightLen * lightLen );
+		break;
 	case POINT:
 		attenuation /= (light.attenuation[0] + light.attenuation[1] * lightLen + light.attenuation[2] * lightLen * lightLen);
 		break;
@@ -70,17 +85,11 @@ vec3 calculateLight(Light light, vec3 norm, vec4 diff, vec4 spec) {
 	default:
 		break;
 	}
+	
+	ambient *= attenuation;
+	diffuse *= attenuation;
+	specular *= attenuation;
 
-	// Ambient
-	vec3 ambient = attenuation * light.ambient;
-	// Diffuse
-	float NdotL = max(dot(norm, lightDir), 0.0);
-	vec3 diffuse = light.diffuse * NdotL * attenuation * diff.rgb;
-	// Reflection
-	vec3 reflectDir = reflect(-lightDir, norm);
-	float VdotR = max(dot(normalize(-position), -reflectDir), 0.0);
-	float NdotHV = max(dot(norm, normalize(lightDir + normalize(-position))), 0.0);
-	vec3 specular = light.specular * pow(NdotHV, material.specExponent) * attenuation * spec.rgb;
 
 	return ambient + diffuse + specular;
 }
