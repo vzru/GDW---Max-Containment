@@ -206,7 +206,7 @@ void Object::draw(Shader* shader, Camera* camera, std::vector<Light*> lights, in
 		shader->sendUniform(prefix + "specExponent", lights[i]->specExponent);
 		shader->sendUniform(prefix + "spotExponent", lights[i]->spotExponent);
 		shader->sendUniform(prefix + "cutoff", lights[i]->cutoff);
-		shader->sendUniform(prefix + "innerCutoff", lights[i]->innerCutoff);
+		shader->sendUniform(prefix + "outerCutoff", lights[i]->outerCutoff);
 		shader->sendUniform(prefix + "partial", lights[i]->partial);
 		shader->sendUniform(prefix + "attenuation", lights[i]->attenuation);
 	}
@@ -275,7 +275,7 @@ void Object::aDraw(Shader * shader, Camera * camera, std::vector<Light*> lights,
 		shader->sendUniform(prefix + "specExponent", lights[i]->specExponent);
 		shader->sendUniform(prefix + "spotExponent", lights[i]->spotExponent);
 		shader->sendUniform(prefix + "cutoff", lights[i]->cutoff);
-		shader->sendUniform(prefix + "innerCutoff", lights[i]->innerCutoff);
+		shader->sendUniform(prefix + "outerCutoff", lights[i]->outerCutoff);
 		shader->sendUniform(prefix + "partial", lights[i]->partial);
 		shader->sendUniform(prefix + "attenuation", lights[i]->attenuation);
 	}

@@ -48,6 +48,7 @@ class Game {
 public:
 	// construct & destruct
 	Game(int& argc, char **argv);
+	void reloadEnemies();
 	~Game();
 	void init(void(*_controllerInput)(unsigned short index, Input::Button button), void(*_controllerSpecial)(unsigned short index, Input::Triggers triggers, Input::Sticks sticks));
 

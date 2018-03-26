@@ -21,7 +21,7 @@ public:
 	float specExponent;
 	float spotExponent;
 	float cutoff; // angle
-	float innerCutoff; // inner angle
+	float outerCutoff; // inner angle
 	float partial; // percentage of point light
 
 	glm::vec3 attenuation; // constant, linear, quadratic
