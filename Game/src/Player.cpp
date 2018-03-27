@@ -30,6 +30,7 @@ void Player::update(float dt, Level* level) {
 	}
 	//if (glm::length(velocity) > 0.f)
 
+	newShot = false;
 	// gun cooldown
 	if (cooldown >= 0.f)
 		cooldown -= dt / 100.f;
@@ -92,6 +93,7 @@ bool Player::fire() {
 		bullet->setPosition(position);
 		bullet->setRotation(rotation);
 		bullets.push_back(new Bullet(*bullet));
+		newShot = true;
 		cooldown = RateOfFire;
 		//std::cout << ammo << '/' << ammoDepo << std::endl;
 		//if (ammo <= 0 && ammoDepo > 0.0f)

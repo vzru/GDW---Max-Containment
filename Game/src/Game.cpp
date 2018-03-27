@@ -424,7 +424,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 
 	Sound* sound1 = new Sound("assets/sounds/ambient machine noise.wav", true, 2);
 	soundList.push_back(sound1);
-	Sound* sound2 = new Sound("assets/sounds/Gunshot_sound.wav", true, 3);
+	Sound* sound2 = new Sound("assets/sounds/Gunshot_sound2.wav", false, 3);
 	soundList.push_back(sound2);
 	Sound* sound3 = new Sound("assets/sounds/Reload_sound.wav", false, 3);
 	soundList.push_back(sound3);
@@ -912,6 +912,12 @@ void Game::update() {
 				}
 			}
 		}
+		if (player->newShot == true)
+		{
+			soundList[2]->stopSound();
+			soundList[2]->playSound(3);
+			soundList[2]->setVolume(0.05f);
+		}
 		// player loses
 		if (player->life <= 0.f)
 			state = State::Lose;
@@ -1210,7 +1216,7 @@ void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 			case GLUT_UP:
 				player->firing = false;
 				partEList[0]->pause();
-				soundList[2]->stopSound();
+				//soundList[2]->stopSound();
 				break;
 			default:
 				break;

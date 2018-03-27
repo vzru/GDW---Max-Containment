@@ -23,6 +23,8 @@ public:
 	bool reload = false;
 	bool play = false;
 
+	bool newShot = false;
+
 	glm::vec3 acceleration = { 0.f, 0.f, 0.f };
 	Bullet* bullet;
 	std::vector<Bullet*> bullets;
