@@ -1624,6 +1624,7 @@ void Game::reset()
 	soundList[7]->setPause(true);
 	soundList[0]->playSound(2);
 	soundList[0]->setVolume(0.1f);
+	initializeParticles();
 	reloadEnemies();
 	loadDrops();
 	loadSignR();
