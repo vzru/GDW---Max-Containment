@@ -781,6 +781,7 @@ Game::~Game() {
 	clearEnemies();
 	clearDrops();
 	clearItems();
+	clearPartEmitter();
 	enemies.clear();
 	std::get<0>(level.enemies).clear();
 	std::get<1>(level.enemies).clear();
@@ -1614,6 +1615,7 @@ void Game::reset()
 	clearEnemies();
 	clearDrops();
 	clearItems();
+	clearPartEmitter();
 	lightOn = false;
 	soundList[1]->stopSound();
 	soundList[4]->stopSound();
