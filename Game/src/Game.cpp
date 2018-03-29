@@ -561,9 +561,10 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 
 	// Initialize Enemies
 	std::get<0>(enemys) = new Enemy();			std::get<1>(enemys) = new Enemy();			std::get<2>(enemys) = new Enemy();
-	std::get<0>(enemys)->life = 15.f;			std::get<1>(enemys)->life = 20.f;			std::get<2>(enemys)->life = 10.f;
+	std::get<0>(enemys)->life = 15.f;			std::get<1>(enemys)->life = 25.f;			std::get<2>(enemys)->life = 10.f;
 	std::get<0>(enemys)->movementSpeed = 250.f;	std::get<1>(enemys)->movementSpeed = 350.f;	std::get<2>(enemys)->movementSpeed = 150.f;
-	std::get<0>(enemys)->damage = 1.f;			std::get<1>(enemys)->damage = 3.f;			std::get<2>(enemys)->damage = 5.f;
+	std::get<0>(enemys)->damage = 1.f;			std::get<1>(enemys)->damage = 4.f;			std::get<2>(enemys)->damage = 5.f;
+	std::get<0>(enemys)->KB = true;				std::get<1>(enemys)->KB = false;			std::get<2>(enemys)->KB = true;
 	std::get<0>(enemys)->loadMesh(assets->meshes["enemy0"]);
 	std::get<1>(enemys)->loadMesh(assets->meshes["enemy1"]);
 	std::get<2>(enemys)->loadMesh(assets->meshes["enemy2"]);
@@ -628,13 +629,13 @@ void Game::initializeParticles()
 {
 	ParticleEmitterSoA *part = new ParticleEmitterSoA();
 	part->lifeR = glm::vec3(0.001f, 0.01f, 0.0f);
-	part->initForceMin = glm::vec3(-1.2f, -0.1f, -1.2f);
-	part->initForceMax = glm::vec3(1.2f, 0.0f, 1.2f);
+	part->initForceMin = glm::vec3(-0.3f, -0.5f, -0.3f);
+	part->initForceMax = glm::vec3(0.3f, 0.0f, 0.3f);
 	part->size = 0.02f;
 	part->color = glm::vec3(0.70f, 0.70f, 0.7f);
 	//part->material = materials["particles"];
 	//part[index].texture = textures["smoke"];
-	part->dtFactor = 10.f;
+	part->dtFactor = 50.f;
 	part->init(10);
 	part->play();
 	part->initPos = player->getPosition() + glm::vec3(1.0f, 1.0f, 0.0f);
@@ -684,7 +685,7 @@ void Game::loadSignL()
 	for (int i = 0; i < level.exitPosL.size(); i++)
 	{
 		exitL->setPosition(glm::vec3(level.exitPosL[i]));
-		exitL->setRotation(glm::vec3(0.0f, 90.f * level.exitPosL[i].w, 0.f));
+		exitL->setRotation(glm::vec3(0.0f, -90.f * level.exitPosL[i].w, 0.f));
 		exitL->update(deltaTime);
 		permItems.push_back(new Object(*exitL));
 	}
@@ -779,6 +780,7 @@ Game::~Game() {
 	program.clear();
 	clearEnemies();
 	clearDrops();
+	clearItems();
 	enemies.clear();
 	std::get<0>(level.enemies).clear();
 	std::get<1>(level.enemies).clear();
@@ -917,9 +919,11 @@ void Game::update() {
 				if (target != nullptr) {
 					target->life -= 2.5;
 					target->triggered = true;
-					target->knockbackCD = 0.2f;
-					glm::vec3 dif = target->getPosition() - player->getPosition();
-					target->setPosition(target->getPosition() + glm::normalize(dif) * 0.1f);
+					if (target->KB) {
+						target->knockbackCD = 0.2f;
+						glm::vec3 dif = target->getPosition() - player->getPosition();
+						target->setPosition(target->getPosition() + glm::normalize(dif) * 0.1f);
+					}
 					bullet->cooldown = 1.f;
 				}
 			}
@@ -1600,6 +1604,7 @@ void Game::reset()
 	player->reset(level.start);
 	clearEnemies();
 	clearDrops();
+	clearItems();
 	lightOn = false;
 	soundList[1]->stopSound();
 	soundList[4]->stopSound();
@@ -1610,5 +1615,7 @@ void Game::reset()
 	soundList[0]->setVolume(0.1f);
 	reloadEnemies();
 	loadDrops();
+	loadSignR();
+	loadSignL();
 	state = State::Menu;
 }
