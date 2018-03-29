@@ -562,7 +562,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	// Initialize Enemies
 	std::get<0>(enemys) = new Enemy();			std::get<1>(enemys) = new Enemy();			std::get<2>(enemys) = new Enemy();
 	std::get<0>(enemys)->life = 15.f;			std::get<1>(enemys)->life = 25.f;			std::get<2>(enemys)->life = 10.f;
-	std::get<0>(enemys)->movementSpeed = 250.f;	std::get<1>(enemys)->movementSpeed = 350.f;	std::get<2>(enemys)->movementSpeed = 150.f;
+	std::get<0>(enemys)->movementSpeed = 250.f;	std::get<1>(enemys)->movementSpeed = 300.f;	std::get<2>(enemys)->movementSpeed = 150.f;
 	std::get<0>(enemys)->damage = 1.f;			std::get<1>(enemys)->damage = 4.f;			std::get<2>(enemys)->damage = 5.f;
 	std::get<0>(enemys)->KB = true;				std::get<1>(enemys)->KB = false;			std::get<2>(enemys)->KB = true;
 	std::get<0>(enemys)->loadMesh(assets->meshes["enemy0"]);
@@ -837,7 +837,6 @@ void Game::update() {
 		//soundList[0]->stopSound();
 		//soundList[1]->playSound();
 
-
 		if (player->reloadCd > 0.0f && !player->reloaded) {
 			soundList[2]->stopSound();
 			player->reloaded = true;
@@ -873,6 +872,15 @@ void Game::update() {
 		//partEList[0]->direction = { cos(partAngle), 0, -sin(partAngle), 0.f };
 		partEList[0]->initPos = player->getPosition() + glm::vec3(cos(partAngle) * 0.7f, 1.0f, -sin(partAngle)* 0.7f);
 
+		FMOD_VECTOR tempS = { player->getPosition().x, 0.0f, player->getPosition().z };
+		if (soundList[2]->chList.size())
+		{
+			soundList[2]->changeSoundLoc(0, tempS);
+		}
+		if (soundList[3]->chList.size())
+		{
+			soundList[3]->changeSoundLoc(0, tempS);
+		}
 		//if(deltaTime >= 25.0f)
 		//std::cout << deltaTime << std::endl;
 
@@ -907,7 +915,7 @@ void Game::update() {
 						float dang = atan2(-diff.z, diff.x);
 						float dist = abs(sin(bang - dang) * glm::length(diff));
 						float distToEnemy = cos(bang - dang) * glm::length(diff);
-						//std::cout << glm::degrees(bang) << '\t' << glm::degrees(dang) << '\t' << dist << '\t' << distFromPlayer << "vs" << distToEnemy << '\t' << enemies[j]->life << std::endl;
+						//std::cout << glm::degrees(bang) << '\t' << glm::degrees(dang) << '\t' << dist << '\t' << distFromPlayer << "vs" << distToEnemy << std::endl;
 						// check if enemy is along the bullet path && not too far away
 						if (dist < 1.f && distFromPlayer > distToEnemy && distToEnemy > 0) {
 							target = enemy;
@@ -980,9 +988,10 @@ void Game::update() {
 					float bang = glm::radians(player->getRotation().y);
 					float dang = atan2(-diff.z, diff.x);
 					float dist = abs(sin(bang - dang) * glm::length(diff));
-					//std::cout << bang << '/' << dang << '/' << dist << std::endl;
+					float distToEnemy = cos(bang - dang) * glm::length(diff);
+					//std::cout << glm::degrees(bang) << '/' << glm::degrees(dang) << '/' << dist << std::endl;
 					// seek towards player
-					if (((glm::length(diff) < 5.0f) || enemies[i]->triggered || glm::length(diff) < 15.0f && dist < 2.f && lightOn) && glm::length(diff) > 1.0f && enemies[i]->knockbackCD <= 0)
+					if (((glm::length(diff) < 5.0f) || enemies[i]->triggered || glm::length(diff) < 15.0f && dist < 2.f && lightOn) && glm::length(diff) > 1.0f && enemies[i]->knockbackCD <= 0 && distToEnemy > 0.0f)
 					{
 						enemies[i]->setRotation({ 0.f, glm::degrees(atan2(-diff.z, diff.x)) - 90.f, 0.f });
 						enemies[i]->setVelocity(-glm::normalize(diff));

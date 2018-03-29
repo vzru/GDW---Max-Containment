@@ -7,7 +7,7 @@
 #include "Level.h"
 
 Player::Player(glm::vec3 pos) : Object(pos), bullet(new Bullet(this)) {
-	life = 15.f;
+	life = 16.f;
 }
 Player::~Player() {
 	delete bullet;
