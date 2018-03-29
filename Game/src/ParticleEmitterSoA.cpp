@@ -95,7 +95,7 @@ void ParticleEmitterSoA::update(float dTime)
 				
 			}
 
-			float dt = dTime / 2000;
+			float dt = dTime / dtFactor;
 			// Update position and velocity
 			*pos += *vel * dt + *accel * 2.0f * (dt * dt);
 			*vel += dt * *vel;

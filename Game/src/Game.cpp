@@ -132,6 +132,8 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	// buttons
 	assets->loadMesh("play", "Play Button.obj");
 	assets->loadMesh("quit", "Quit Button.obj");
+	assets->loadMesh("resume", "resume.obj");
+	assets->loadMesh("credits", "credits.obj");
 	// player
 	assets->loadMesh("player", "character_model.obj");
 	assets->loadTexture("player color", "character texture.png");
@@ -150,6 +152,12 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	assets->loadMesh("ammo", "ammo.obj");
 	assets->loadMesh("night_v", "night_v.obj");
 	assets->loadTexture("item", "drops.png");
+	assets->loadMesh("splatter", "splatter.obj");
+	assets->loadTexture("corpse", "splatter.png");
+	assets->loadMesh("exitR", "exit.obj");
+	assets->loadMesh("exitL", "exit left.obj");
+	assets->loadTexture("exitR", "exit1.png");
+	assets->loadTexture("exitL", "exit1.png");
 	// enemy
 	assets->loadMesh("enemy0", "enemy3_model.obj");
 	assets->loadMesh("enemy1", "enemy_model.obj");
@@ -268,8 +276,8 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 		light->specular = { 1.f, 1.f, 1.f };
 		light->specExponent = 50.f;
 		light->spotExponent = 1.f;
-		light->cutoff = glm::radians(15.5f);
-		light->outerCutoff = glm::radians(20.5f);
+		light->cutoff = glm::cos(glm::radians(15.5f));
+		light->outerCutoff = glm::cos(glm::radians(20.5f));
 		light->partial = 0.1;
 		light->attenuation = { 0.5f, 0.1f, 0.01f };
 		level.lightPointers.push_back(light);
@@ -354,6 +362,23 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	screen.quit.obj->loadMesh(assets->meshes["quit"]);
 	screen.quit.obj->setScale(glm::vec3(1.5f));
 	screen.quit.obj->update(0.f);
+
+	screen.credits.obj = new Object({ 0.f, 0.2f, 1.75f });
+	screen.credits.pos = { 0.36822917f, 0.64583333f, 0.92962963f, 0.99722223f };
+	screen.credits.scale = 1.f;
+	screen.credits.obj->color = glm::vec4(1.f);
+	screen.credits.obj->loadMesh(assets->meshes["credits"]);
+	screen.credits.obj->setScale(glm::vec3(1.f));
+	screen.credits.obj->update(0.f);
+
+	screen.resume.obj = new Object({ 0.f, 0.2f, 1.75f });
+	screen.resume.pos = { 0.36822917f, 0.64583333f, 1.72962963f, 0.99722223f };
+	screen.resume.scale = 1.f;
+	screen.resume.obj->color = glm::vec4(1.f);
+	screen.resume.obj->loadMesh(assets->meshes["resume"]);
+	screen.resume.obj->setScale(glm::vec3(1.f));
+	screen.resume.obj->update(0.f);
+
 
 	// Initialize shaders
 	program["PhongSpot"] = new Shader();
@@ -488,6 +513,28 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	//dropAmmo->hp = 5.0f;
 	dropAmmo->collect = false;
 
+	//dropAmmo->loadTexture(Type::Texture::NORMAL, assets->textures["item"]);
+	corpse = new Object();
+	corpse->loadMesh(assets->meshes["splatter"]);
+	corpse->loadTexture(Type::Texture::DIFFUSE, assets->textures["corpse"]);
+	corpse->loadTexture(Type::Texture::SPECULAR, assets->textures["fullSpecular"]);
+	corpse->collect = false;
+	corpse->update(0.f);
+
+	exitR = new Object();
+	exitR->loadMesh(assets->meshes["exitR"]);
+	exitR->loadTexture(Type::Texture::DIFFUSE, assets->textures["exitR"]);
+	exitR->loadTexture(Type::Texture::SPECULAR, assets->textures["fullSpecular"]);
+	exitR->collect = false;
+	exitR->update(0.f);
+
+	exitL = new Object();
+	exitL->loadMesh(assets->meshes["exitL"]);
+	exitL->loadTexture(Type::Texture::DIFFUSE, assets->textures["exitL"]);
+	exitL->loadTexture(Type::Texture::SPECULAR, assets->textures["fullSpecular"]);
+	exitL->collect = false;
+	exitL->update(0.f);
+
 	// Initialize HUD
 	hud.display = new Object();
 	hud.healthBar = new Object();
@@ -566,6 +613,9 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 
 	loadDrops();
 
+	loadSignR();
+	loadSignL();
+
 	// Init particle emitter
 	// Set the emitter properties
 
@@ -584,6 +634,7 @@ void Game::initializeParticles()
 	part->color = glm::vec3(0.70f, 0.70f, 0.7f);
 	//part->material = materials["particles"];
 	//part[index].texture = textures["smoke"];
+	part->dtFactor = 10.f;
 	part->init(10);
 	part->play();
 	part->initPos = player->getPosition() + glm::vec3(1.0f, 1.0f, 0.0f);
@@ -615,6 +666,28 @@ void Game::loadDrops()
 	createDropItem(glm::vec3(82.2, 0, 2.1), 2);
 	createDropItem(glm::vec3(149.9, 0, 22.2), 2);
 	createDropItem(glm::vec3(152, 0, 36.5), 2);
+}
+
+void Game::loadSignR()
+{
+	for (int i = 0; i < level.exitPosR.size(); i++)
+	{
+		exitR->setPosition(glm::vec3(level.exitPosR[i]));
+		exitR->setRotation(glm::vec3(0.0f, -90.f * level.exitPosR[i].w, 0.f));
+		exitR->update(deltaTime);
+		permItems.push_back(new Object(*exitR));
+	}
+}
+
+void Game::loadSignL()
+{
+	for (int i = 0; i < level.exitPosL.size(); i++)
+	{
+		exitL->setPosition(glm::vec3(level.exitPosL[i]));
+		exitL->setRotation(glm::vec3(0.0f, 90.f * level.exitPosL[i].w, 0.f));
+		exitL->update(deltaTime);
+		permItems.push_back(new Object(*exitL));
+	}
 }
 
 void Game::loadEnemies() {
@@ -682,6 +755,8 @@ Game::~Game() {
 	delete screen.light;
 	delete screen.play.obj;
 	delete screen.quit.obj;
+	delete screen.credits.obj;
+	delete screen.resume.obj;
 	delete screen.loading;
 	delete hud.display;
 	delete hud.healthBar;
@@ -723,6 +798,18 @@ void Game::clearDrops() {
 	for (int i = 0; i < dropItems.size(); i++)
 		delete dropItems[i];
 	dropItems.clear();
+}
+
+void Game::clearItems() {
+	for (int i = 0; i < permItems.size(); i++)
+		delete permItems[i];
+	permItems.clear();
+}
+
+void Game::clearPartEmitter() {
+	for (int i = 0; i < partEList.size(); i++)
+		delete partEList[i];
+	partEList.clear();
 }
 
 void Game::update() {
@@ -891,7 +978,7 @@ void Game::update() {
 					float dist = abs(sin(bang - dang) * glm::length(diff));
 					//std::cout << bang << '/' << dang << '/' << dist << std::endl;
 					// seek towards player
-					if (((glm::length(diff) < 5.0f) || enemies[i]->triggered || glm::length(diff) < 10.0f && dist < 2.f && lightOn) && glm::length(diff) > 1.0f && enemies[i]->knockbackCD <= 0)
+					if (((glm::length(diff) < 5.0f) || enemies[i]->triggered || glm::length(diff) < 15.0f && dist < 2.f && lightOn) && glm::length(diff) > 1.0f && enemies[i]->knockbackCD <= 0)
 					{
 						enemies[i]->setRotation({ 0.f, glm::degrees(atan2(-diff.z, diff.x)) - 90.f, 0.f });
 						enemies[i]->setVelocity(-glm::normalize(diff));
@@ -904,6 +991,7 @@ void Game::update() {
 					// kill enemy
 					if (enemies[i]->life <= 0.f) {
 						createDropItem(enemies[i]->getPosition());
+						createCorpse(enemies[i]->getPosition());
 						enemies[i]->collect = true;
 						//delete enemies[i];
 						//enemies.erase(i + enemies.begin());
@@ -917,6 +1005,7 @@ void Game::update() {
 			soundList[2]->stopSound();
 			soundList[2]->playSound(3);
 			soundList[2]->setVolume(0.05f);
+			player->newShot = false;
 		}
 		// player loses
 		if (player->life <= 0.f)
@@ -929,7 +1018,7 @@ void Game::update() {
 		for (int i = 0; i < dropItems.size(); i++)
 			if (!dropItems[i]->collect) {
 				float dist = glm::length(pPos - dropItems[i]->getPosition());
-				if (dist < 0.3) {
+				if (dist < 0.5) {
 					//std::cout << dropItems[i]->ammo << '/' << dropItems[i]->hp << std::endl;
 					dropItems[i]->collect = true;
 					player->ammoDepo += dropItems[i]->ammo;
@@ -961,6 +1050,8 @@ void Game::draw() {
 	case State::Pause:
 		//screen.pause->draw(program["Phong"], level.camera, { *hud.light });
 		screen.pause->draw(program["Phong"], screen.camera, { screen.light }, 0);
+		screen.resume.obj->draw(program["PhongNoTexture"], screen.camera, { screen.light }, 0);
+		screen.quit.obj->draw(program["PhongNoTexture"], screen.camera, { screen.light }, 0);
 		break;
 	case State::Play:
 		if (lightOn)
@@ -979,6 +1070,11 @@ void Game::draw() {
 					dropItems[i]->draw(program["DropItems"], level.camera, level.lightPointers, 0);
 					//partEList[i + 1]->draw(program["particles"], level.camera);
 				}
+			for (int i = 0; i < permItems.size(); i++)
+				if (!permItems[i]->collect) {
+					permItems[i]->draw(program["DropItems"], level.camera, level.lightPointers, 0);
+					//partEList[i + 1]->draw(program["particles"], level.camera);
+				}
 		}
 		else
 		{
@@ -992,6 +1088,11 @@ void Game::draw() {
 			for (int i = 0; i < dropItems.size(); i++)
 				if (!dropItems[i]->collect) {
 					dropItems[i]->draw(program["NoFlashNoNorm"], level.camera, level.lightPointers, 0);
+					//partEList[i + 1]->draw(program["particles"], level.camera);
+				}
+			for (int i = 0; i < permItems.size(); i++)
+				if (!permItems[i]->collect) {
+					permItems[i]->draw(program["NoFlashNoNorm"], level.camera, level.lightPointers, 0);
 					//partEList[i + 1]->draw(program["particles"], level.camera);
 				}
 		}
@@ -1011,6 +1112,8 @@ void Game::draw() {
 		screen.menu->draw(program["Phong"], screen.camera, { screen.light }, 0);
 		screen.play.obj->draw(program["PhongNoTexture"], screen.camera, { screen.light }, 0);
 		screen.quit.obj->draw(program["PhongNoTexture"], screen.camera, { screen.light }, 0);
+		screen.credits.obj->draw(program["PhongNoTexture"], screen.camera, { screen.light }, 0);
+
 		break;
 	case State::Win:
 		screen.win->draw(program["Phong"], screen.camera, { screen.light }, 0);
@@ -1129,8 +1232,8 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 		//std::cout << player->getPosition().x << " " << player->getPosition().z << std::endl;
 		break;
 	case 'j':
-		std::cout << level.light2->cutoff << '/' << level.light2->outerCutoff << std::endl;
-		//std::cout << player->getPosition().x << " " << player->getPosition().z << std::endl;
+		//std::cout << level.light2->cutoff << '/' << level.light2->outerCutoff << std::endl;
+		std::cout << player->getPosition().x << " " << player->getPosition().z << std::endl;
 		break;
 	default: break;
 	}
@@ -1216,7 +1319,7 @@ void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 			case GLUT_UP:
 				player->firing = false;
 				partEList[0]->pause();
-				//soundList[2]->stopSound();
+				soundList[2]->stopSound();
 				break;
 			default:
 				break;
@@ -1247,6 +1350,27 @@ void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 				//soundList[1]->playSound();
 				if (mouse.x > screen.quit.pos.x * windowSize.x && mouse.x < screen.quit.pos.y * windowSize.x && mouse.y > screen.quit.pos.z * windowSize.y && mouse.y < screen.quit.pos.w * windowSize.y)
 					glutExit();
+				break;
+			case GLUT_UP:
+				break;
+			default:
+				break;
+			}
+			break;
+		default:
+			break;
+		}
+		break;
+	case State::Pause:
+		switch (button) {
+		case GLUT_LEFT_BUTTON:
+			switch (state) {
+			case GLUT_DOWN:
+				if (mouse.x > screen.resume.pos.x * windowSize.x && mouse.x < screen.resume.pos.y * windowSize.x && mouse.y > screen.resume.pos.z * windowSize.y && mouse.y < screen.resume.pos.w * windowSize.y)
+					this->state = State::Play;
+				//soundList[1]->playSound();
+				if (mouse.x > screen.quit.pos.x * windowSize.x && mouse.x < screen.quit.pos.y * windowSize.x && mouse.y > screen.quit.pos.z * windowSize.y && mouse.y < screen.quit.pos.w * windowSize.y)
+					this->state = State::Menu;
 				break;
 			case GLUT_UP:
 				break;
@@ -1435,11 +1559,19 @@ void Game::createDropItem(glm::vec3 pos, int type) {
 		partD->initForceMax = glm::vec3(0.5f, 1.0f, 0.5f);
 		partD->size = 0.01f;
 		partD->init(50);
+		partD->dtFactor = 2000.f;
 		partD->play();
 		partD->initPos = pos + glm::vec3(0.0f, 0.3f, 0.0f);
 		partD->playing = true;
 		partEList.push_back(partD);
 	}
+}
+
+void Game::createCorpse(glm::vec3 pos)
+{
+	corpse->setPosition(pos);
+	corpse->update(deltaTime);
+	permItems.push_back(new Object(*corpse));
 }
 //
 //void Game::drawAmmo() {

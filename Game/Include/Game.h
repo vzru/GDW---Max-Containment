@@ -76,12 +76,13 @@ public:
 	void drawAmmo();
 	void reset();
 	void createDropItem(glm::vec3 pos, int type = 0);
+	void createCorpse(glm::vec3 pos);
 private:
 	std::vector<Sound*> soundList;
 	std::vector<ParticleEmitterSoA*> partEList;
 	ParticleEmitterSoA* partE;
 	FrameBufferObject fboD;
-	
+
 	// helpers
 	Timer* timer = nullptr;
 	float deltaTime = 0.f;
@@ -100,16 +101,35 @@ private:
 		Level* collision;
 		Object *map, *hitboxes;
 		Camera *camera;
-		
+
 		// @@@@@ FOR SEAN @@@@@ Light positions, have to move them up from floor position
 		std::vector<glm::vec3> lightsPos =
 		{
 			// Examples for formatting
-			{ 4.25f, 10.0f, 29.5f },		
+			{ 4.25f, 10.0f, 29.5f },
 			{ 32.75f, 10.0f, 48.0f },
 			//{ 151.0f, 10.0f, 11.0f },
 			//{ 2.0f, 10.0f, 25.0f },
 			{ 79.5f, 10.0f, 68.0f }
+		};
+
+		std::vector<glm::vec4> exitPosR =
+		{
+			{36.5f, 1.0f, 60.5f,	0.f	},	// Right
+			{122.2f, 1.0f, 31.7f,	0.f	},	// Right
+			{55.4f, 1.0f, 13.f,		1.f	},	// rotate to point south Right 
+			{130.f, 1.0f, 12.2f,	1.f	},	// rotate to point south Right
+			{84.1f, 1.0f, 41.f,		1.f	}	// rotate to point south Right
+			//{45.f, 1.0f ,27.2f	, },	// Left
+			//{141.5f, 1.0f ,59.8f, },		// Left
+			//{95.7f, 1.0f ,47.4f	, },	// rotate to point north Left
+		};
+
+		std::vector<glm::vec4> exitPosL =
+		{
+			{ 45.f, 1.0f, 27.2f,	0.f},	// Left
+			{ 141.5f, 1.0f, 59.8f,	0.f},	// Left
+			{ 95.7f, 1.0f, 47.1f,	1.f}	// rotate to point north Left
 		};
 
 		std::vector<Light*> lightPointers;
@@ -157,10 +177,16 @@ private:
 	std::tuple<Enemy*, Enemy*, Enemy*> enemys;
 	Object *dropHP, *dropAmmo;
 	std::vector<Object*> dropItems;
+	Object *corpse, *exitR, *exitL;
+	std::vector<Object*> permItems;
 	bool lightOn = true;
 	void loadDrops();
+	void loadSignR();
+	void loadSignL();
 	void loadEnemies(), clearEnemies();
 	void clearDrops();
+	void clearItems();
+	void clearPartEmitter();
 	// hud
 	struct Hud {
 		Object *display;
@@ -185,7 +211,7 @@ private:
 			Object *obj;
 			glm::vec4 pos;
 			float scale;
-		} play, quit;
+		} play, quit, resume, credits;
 		Camera *camera;
 		Light *light;
 	} screen;
