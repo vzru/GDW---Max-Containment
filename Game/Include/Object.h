@@ -35,10 +35,10 @@ public:
 	~Object();
 
 	// set transformation
-	void setPosition(glm::vec3 newPos);
-	void setRotation(glm::vec3 newAng);
-	void setScale(glm::vec3 newScale);
-	void setVelocity(glm::vec3 newVel);
+	Object* setPosition(glm::vec3 newPos);
+	Object* setRotation(glm::vec3 newAng);
+	Object* setScale(glm::vec3 newScale);
+	Object* setVelocity(glm::vec3 newVel);
 
 	// getters
 	glm::vec3 getPosition();
@@ -47,26 +47,26 @@ public:
 	glm::vec3 getVelocity();
 	glm::mat4 getTransformation();
 
-	// loading functions
+	// Loading functions
 	//void loadTexture(Type::Texture type, const std::string &texFile);
-	void loadTexture(Type::Texture type, Texture *texPtr);
+	Object* loadTexture(Type::Texture type, Texture *texPtr);
 	//void loadMesh(const std::string &meshFile);
-	void loadMesh(Mesh *meshPtr);
-	void loadAnimationFrame(AnimationMesh *m);
+	Object* loadMesh(Mesh *meshPtr);
+	Object* loadAnimationFrame(AnimationMesh *meshPtr);
 	// Updating functions
-	void collide(float dt, Level* level, bool ai = false);
-	virtual void update(float dt);
+	Object* collide(float dt, Level* level, bool ai = false);
+	virtual Object* update(float dt = 0.f, glm::vec3 offset = glm::vec3(0.f));
 	//virtual void physics(float dt);
-	virtual void draw(Shader *shader, Camera *camera, std::vector<Light*> lights, int a, float lightCount = 0.0f);
-	virtual void aDraw(Shader *shader, Camera *camera, std::vector<Light*> lights, int a, float lightCount = 0.0f);
-
-
-	// Physical properties
-	glm::vec4 color;
-	Mesh* mesh;// , currentMesh, nextMesh;
+	virtual Object* draw(Shader *shader, Camera *camera, std::vector<Light*> lights = {});
+	virtual Object* draw(Shader *shader, Camera *camera, Light* light);
+	
+	// Assets
+	Mesh* mesh; //, currentMesh, nextMesh;
 	AnimationMesh* aMesh;
 	std::vector<AnimationMesh*> animationList;
 	Material* mat;
+	// Physical properties
+	glm::vec4 color;
 	int ammo;
 	float life, cooldown, timer, t, timerReset = 35.0f;
 	bool collect;

@@ -16,40 +16,40 @@ class Sound
 {
 public:
 	Sound();
-	Sound(char *filename, bool loop, int dimension);
+	Sound(const std::string &file, bool loop, int dimension);
 	~Sound();
 	
 	// Init
-	void loadSound(char * filename, bool loop, int dimension);
-	void createChannel(int mode, bool pause);
-	void createChannel(int mode, bool pause, FMOD_VECTOR pos, FMOD_VECTOR velocity = { 0.0f, 0.0f, 0.0f });
-	void playSound(int mode);
+	Sound* loadSound(const char *filename, bool loop, int dimension);
+	Sound* createChannel(int mode, bool pause);
+	Sound* createChannel(int mode, bool pause, FMOD_VECTOR pos, FMOD_VECTOR velocity = { 0.0f, 0.0f, 0.0f });
+	Sound* playSound(int mode);
 	
 	// Channel Control
-	void stopSound();
-	void stopSound(int index);
-	void pauseSound(int index);
-	void setPause(bool p);
-	void setPause(int index, bool p);
-	void setVolume(float l);
-	void setVolume(int index, float l);
+	Sound* stopSound();
+	Sound* stopSound(int index);
+	Sound* pauseSound(int index);
+	Sound* setPause(bool p);
+	Sound* setPause(int index, bool p);
+	Sound* setVolume(float l);
+	Sound* setVolume(int index, float l);
 	
 	// Attribute Changes
-	void changeSoundLoc(int index, FMOD_VECTOR pos);
-	void changeSoundVelo(int index, FMOD_VECTOR pos);
-	void changeListenerLoc(FMOD_VECTOR p);
-	void changeRolloffMode(bool l);
-	void changeRolloffMode(int index, bool l);
-	void changeMinMaxDist(float min, float max);
-	void changeMinMaxDist(int index, float min, float max);
-	void set3DDist(float min, float max);
-	void setMode(FMOD_MODE mode);
+	Sound* changeSoundLoc(int index, FMOD_VECTOR pos);
+	Sound* changeSoundVelo(int index, FMOD_VECTOR pos);
+	Sound* changeListenerLoc(FMOD_VECTOR p);
+	Sound* changeRolloffMode(bool l);
+	Sound* changeRolloffMode(int index, bool l);
+	Sound* changeMinMaxDist(float min, float max);
+	Sound* changeMinMaxDist(int index, float min, float max);
+	Sound* set3DDist(float min, float max);
+	Sound* setMode(FMOD_MODE mode);
 	
 	// Update
-	void update();
+	Sound* update();
 	
 	// Clean up
-	void unload();
+	Sound* unload();
 
 	// Array of channels
 	std::vector<Channel*> chList;

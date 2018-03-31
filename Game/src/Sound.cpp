@@ -5,40 +5,28 @@
 FMOD_RESULT Sound::result;
 SoundE Sound::sSys;
 
-Sound::Sound()
-{
+Sound::Sound() {
 	if (!sSys.init)
-	{
 		sSys.initializeS();
-	}
 }
 
-Sound::Sound(char * f, bool l, int d)
-{
+Sound::Sound(const std::string &file, bool l, int d) {
 	if (!sSys.init)
-	{
 		sSys.initializeS();
-	}
 	// Create and load sound when constructer is called
-	loadSound(f, l, d);
+	loadSound(file.c_str(), l, d);
 }
 
-
-Sound::~Sound()
-{
+Sound::~Sound() {
 	unload();
 }
 
-void Sound::loadSound(char * filename, bool loop, int dimension)
-{
+Sound* Sound::loadSound(const char *filename, bool loop, int dimension) {
 	// 2D vs 3D checker
-	if (dimension == 2)
-	{
+	if (dimension == 2) {
 		result = sSys.getSystem()->createSound(filename, FMOD_2D, 0, &sound);
 		sSys.fmodErrorCK(result);
-	}
-	else if (dimension == 3)
-	{
+	} else if (dimension == 3) {
 		result = sSys.getSystem()->createSound(filename, FMOD_3D, 0, &sound);
 		sSys.fmodErrorCK(result);
 		result = sound->set3DMinMaxDistance(0.5f, 100.0f);
@@ -49,19 +37,14 @@ void Sound::loadSound(char * filename, bool loop, int dimension)
 	sound->setMode(FMOD_3D_LINEARROLLOFF);
 
 	// Playback Loop checker
-	if (loop)
-	{
-		result = sound->setMode(FMOD_LOOP_NORMAL);
-	}
-	else
-	{
-		result = sound->setMode(FMOD_LOOP_OFF);
-	}
+	if (loop)	result = sound->setMode(FMOD_LOOP_NORMAL);
+	else		result = sound->setMode(FMOD_LOOP_OFF);
+
 	sSys.fmodErrorCK(result);
+	return this;
 }
 
-void Sound::createChannel(int mode, bool pause)
-{
+Sound* Sound::createChannel(int mode, bool pause) {
 	// Temp channel holder
 	Channel* ch = new Channel;
 
@@ -70,8 +53,7 @@ void Sound::createChannel(int mode, bool pause)
 	sSys.fmodErrorCK(result);
 
 	// Check for 3D attribute
-	if (mode == 3)
-	{
+	if (mode == 3) {
 		result = ch->channel->set3DAttributes(&ch->pos, &ch->vel);
 		sSys.fmodErrorCK(result);
 	}
@@ -82,10 +64,10 @@ void Sound::createChannel(int mode, bool pause)
 
 	// Add into array of channels for the specific sound
 	chList.push_back(ch);
+	return this;
 }
 
-void Sound::createChannel(int mode, bool pause, FMOD_VECTOR p, FMOD_VECTOR v)
-{
+Sound* Sound::createChannel(int mode, bool pause, FMOD_VECTOR p, FMOD_VECTOR v) {
 	// Temp channel holder
 	Channel* ch = new Channel;
 
@@ -98,8 +80,7 @@ void Sound::createChannel(int mode, bool pause, FMOD_VECTOR p, FMOD_VECTOR v)
 	// Setting new attributes
 	ch->pos = p;
 	ch->vel = v;
-	if (mode == 3)
-	{
+	if (mode == 3) {
 		result = ch->channel->set3DAttributes(&ch->pos, &ch->vel);
 		sSys.fmodErrorCK(result);
 	}
@@ -108,166 +89,145 @@ void Sound::createChannel(int mode, bool pause, FMOD_VECTOR p, FMOD_VECTOR v)
 
 	// Add into array of channels for the specific sound
 	chList.push_back(ch);
+	return this;
 }
 
-void Sound::pauseSound(int index)
-{
+Sound* Sound::pauseSound(int index) {
 	// Flip paused state
 	chList[index]->channel->setPaused(!chList[index]->pause);
 	chList[index]->pause = !chList[index]->pause;
+	return this;
 }
 
-void Sound::setPause(bool p)
-{
-	for (int i = 0; i < chList.size(); i++)
-	{
-		chList[i]->channel->setPaused(p);
-	}
+Sound* Sound::setPause(bool p) {
+	for (auto& ch : chList)
+		ch->channel->setPaused(p);
+	return this;
 }
 
-void Sound::setPause(int index, bool p)
-{
+Sound* Sound::setPause(int index, bool p) {
 	// Set paused or unpaused
 	chList[index]->channel->setPaused(p);
+	return this;
 }
 
-void Sound::stopSound()
-{
-	for (int i = 0; i < chList.size(); i++)
-	{
-		chList[i]->channel->stop();
+Sound* Sound::stopSound() {
+	for (auto& ch : chList) {
+		ch->channel->stop();
 		chList.pop_back();
 	}
+	return this;
 }
 
-void Sound::stopSound(int index)
-{
+Sound* Sound::stopSound(int index) {
 	// Delete the channel and sound
 	chList[index]->channel->stop();
 	chList.pop_back();
+	return this;
 }
 
-void Sound::playSound(int mode)
-{
+Sound* Sound::playSound(int mode) {
 	// Create new channel
 	Channel* ch = new Channel;
 	result = sSys.getSystem()->playSound(sound, 0, true, &ch->channel);
 	sSys.fmodErrorCK(result);
-	if (mode == 3)
-	{
+	if (mode == 3) {
 		result = ch->channel->set3DAttributes(&ch->pos, &ch->vel);
 		sSys.fmodErrorCK(result);
 	}
 	result = ch->channel->setPaused(false);
 	sSys.fmodErrorCK(result);
 	chList.push_back(ch);
+	return this;
 }
 
-void Sound::setVolume(float l)
-{
+Sound* Sound::setVolume(float l) {
 	// Change volume levels
-	for (int i = 0; i < chList.size(); i++)
-	{
-		chList[i]->channel->setVolume(l);
-	}
+	for (auto& ch : chList)
+		ch->channel->setVolume(l);
+	return this;
 }
 
-void Sound::setVolume(int index, float l)
-{
+Sound* Sound::setVolume(int index, float l) {
 	// Change volume levels
 	chList[index]->channel->setVolume(l);
+	return this;
 }
 
-void Sound::changeSoundLoc(int index, FMOD_VECTOR p)
-{
+Sound* Sound::changeSoundLoc(int index, FMOD_VECTOR p) {
 	// Change sound channel location
 	chList[index]->pos = p;
 	chList[index]->channel->set3DAttributes(&chList[index]->pos, &chList[index]->vel);
+	return this;
 }
 
-void Sound::changeSoundVelo(int index, FMOD_VECTOR v)
-{
+Sound* Sound::changeSoundVelo(int index, FMOD_VECTOR v) {
 	// Change sound channel velocity
 	chList[index]->vel = v;
 	chList[index]->channel->set3DAttributes(&chList[index]->pos, &chList[index]->vel);
+	return this;
 }
 
-void Sound::changeListenerLoc(FMOD_VECTOR p)
-{
+Sound* Sound::changeListenerLoc(FMOD_VECTOR p) {
 	// Change listener location
 	sSys.changeListenerLoc(p);
+	return this;
 }
 
-void Sound::changeRolloffMode(bool l)
-{
-	for (int i = 0; i < chList.size(); i++)
-	{
-		if (l)
-		{
-			chList[i]->channel->setMode(FMOD_3D_INVERSEROLLOFF);
-		}
-		else
-		{
-			chList[i]->channel->setMode(FMOD_3D_LINEARROLLOFF);
-		}
-	}
+Sound* Sound::changeRolloffMode(bool l) {
+	for (auto& ch : chList)
+		if (l)	ch->channel->setMode(FMOD_3D_INVERSEROLLOFF);
+		else	ch->channel->setMode(FMOD_3D_LINEARROLLOFF);
+	return this;
 }
 
-void Sound::changeRolloffMode(int index, bool l)
-{
+Sound* Sound::changeRolloffMode(int index, bool l) {
 	// Change roll off mode 
-	if (l)
-	{
-		chList[index]->channel->setMode(FMOD_3D_INVERSEROLLOFF);
-	}
-	else
-	{
-		chList[index]->channel->setMode(FMOD_3D_LINEARROLLOFF);
-	}
+	if (l)	chList[index]->channel->setMode(FMOD_3D_INVERSEROLLOFF);
+	else	chList[index]->channel->setMode(FMOD_3D_LINEARROLLOFF);
+	return this;
 }
 
-void Sound::changeMinMaxDist(float min, float max)
-{
-	for (int i = 0; i < chList.size(); i++)
-	{
-		result = chList[i]->channel->set3DMinMaxDistance(min, max);
+Sound* Sound::changeMinMaxDist(float min, float max) {
+	for (auto& ch : chList) {
+		result = ch->channel->set3DMinMaxDistance(min, max);
 		sSys.fmodErrorCK(result);
 	}
+	return this;
 }
 
-void Sound::changeMinMaxDist(int index, float min, float max)
-{
+Sound* Sound::changeMinMaxDist(int index, float min, float max) {
 	// Change Min and Max Distances for Roll Off
 	result = chList[index]->channel->set3DMinMaxDistance(min, max);
 	sSys.fmodErrorCK(result);
+	return this;
 }
 
-void Sound::set3DDist(float min, float max)
-{
+Sound* Sound::set3DDist(float min, float max) {
 	result = sound->set3DMinMaxDistance(min, max);
 	sSys.fmodErrorCK(result);
+	return this;
 }
 
-void Sound::setMode(FMOD_MODE mode)
-{
+Sound* Sound::setMode(FMOD_MODE mode) {
 	result = sound->setMode(mode);
 	sSys.fmodErrorCK(result);
+	return this;
 }
 
-void Sound::update()
-{
+Sound* Sound::update() {
 	sSys.updateS();
+	return this;
 }
 
-void Sound::unload()
-{
+Sound* Sound::unload() {
 	// Clean up the channel list
-	for (int i = 0; i < chList.size(); i++)
-	{
+	for (int i = 0; i < chList.size(); i++) {
 		chList[i]->channel->stop();
 		delete chList[i];
 	}
 	result = sound->release();
 	sSys.fmodErrorCK(result);
 	sSys.unload();
+	return this;
 }

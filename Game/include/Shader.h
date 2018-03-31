@@ -22,10 +22,10 @@ public:
 	bool linkProgram();
 
 	// use the shader
-	void bind() const;
+	Shader* bind();
 
 	// detach the shader from use
-	void unbind();
+	Shader* unbind();
 
 	// Returns -1 if attribute does not exist
 	int getAttribLocation(const std::string &attribName);
@@ -37,14 +37,14 @@ public:
 	void addAttribute(unsigned int index, const std::string &attribName);
 
 	// send uniform data to the shaders
-	void sendUniform(const std::string &name, int integer);
-	void sendUniform(const std::string &name, unsigned int unsignedInteger);
-	void sendUniform(const std::string &name, float scalar);
-	void sendUniform(const std::string &name, const glm::vec2 &vector);
-	void sendUniform(const std::string &name, const glm::vec3 &vector);
-	void sendUniform(const std::string &name, const glm::vec4 &vector);
-	void sendUniformMat3(const std::string &name, float *matrix, bool transpose);
-	void sendUniformMat4(const std::string &name, float *matrix, bool transpose);
+	Shader* sendUniform(const std::string &name, int integer);
+	Shader* sendUniform(const std::string &name, unsigned int uInteger);
+	Shader* sendUniform(const std::string &name, float scalar);
+	Shader* sendUniform(const std::string &name, const glm::vec2 &vector);
+	Shader* sendUniform(const std::string &name, const glm::vec3 &vector);
+	Shader* sendUniform(const std::string &name, const glm::vec4 &vector);
+	Shader* sendUniformMat3(const std::string &name, float *matrix, bool transpose);
+	Shader* sendUniformMat4(const std::string &name, float *matrix, bool transpose);
 
 	bool isLoaded() const;
 private:

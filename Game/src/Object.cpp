@@ -25,17 +25,21 @@ Object::~Object() {
 	//delete mat;
 }
 
-void Object::setPosition(glm::vec3 newPosition) {
+Object* Object::setPosition(glm::vec3 newPosition) {
 	position = newPosition;
+	return this;
 }
-void Object::setRotation(glm::vec3 newAngles) {
+Object* Object::setRotation(glm::vec3 newAngles) {
 	rotation = newAngles;
+	return this;
 }
-void Object::setScale(glm::vec3 newScale) {
+Object* Object::setScale(glm::vec3 newScale) {
 	scale = newScale;
+	return this;
 }
-void Object::setVelocity(glm::vec3 newVelocity) {
+Object* Object::setVelocity(glm::vec3 newVelocity) {
 	velocity = newVelocity;
+	return this;
 }
 
 glm::vec3 Object::getPosition() {
@@ -58,8 +62,9 @@ glm::mat4 Object::getTransformation() {
 //void Object::loadTexture(Type::Texture type, const std::string &texFile) {
 //	mat->load(type, texFile);
 //}
-void Object::loadTexture(Type::Texture type, Texture *texture) {
+Object* Object::loadTexture(Type::Texture type, Texture *texture) {
 	mat->load(type, texture);
+	return this;
 }
 //void Object::loadMesh(const std::string &meshFile) {
 //	if (!mesh->load(meshFile)) {
@@ -68,57 +73,36 @@ void Object::loadTexture(Type::Texture type, Texture *texture) {
 //		exit(0);
 //	}
 //}
-void Object::loadMesh(Mesh *meshPtr) {
+Object* Object::loadMesh(Mesh *meshPtr) {
 	mesh = meshPtr;
+	return this;
 }
 
-void Object::loadAnimationFrame(AnimationMesh * m)
-{
-	animationList.push_back(m);
+Object* Object::loadAnimationFrame(AnimationMesh * meshPtr) {
+	animationList.push_back(meshPtr);
+	return this;
 }
 
-/*float lineCheck(glm::vec2 p, glm::vec2 p0, glm::vec2 p1) {
-	return (p1.y - p0.y) * p.x + (p0.x - p1.x) * p.y + (p1.x * p0.y - p0.x * p1.y);
-}*/
-
-void Object::collide(float dt, Level* level, bool ai) {
+Object* Object::collide(float dt, Level* level, bool ai) {
 	glm::vec3 vOrig = velocity;
 	glm::vec2 pX = { position.x + velocity.x * dt / 200.f, position.z };
 	glm::vec2 pY = { position.x, position.z + velocity.z * dt / 200.f };
 	for (auto box : level->hitBoxes) {
-		if (pX.x > box.min.x && pX.x < box.max.x && pX.y > box.min.y && pX.y < box.max.y) {
-			//std::cout << "CollideX" << std::endl;
+		if (pX.x > box.min.x && pX.x < box.max.x && pX.y > box.min.y && pX.y < box.max.y)
 			velocity.x = 0.f;
-		}
-		if (pY.x > box.min.x && pY.x < box.max.x && pY.y > box.min.y && pY.y < box.max.y) {
-			//std::cout << "CollideY" << std::endl;
+		if (pY.x > box.min.x && pY.x < box.max.x && pY.y > box.min.y && pY.y < box.max.y)
 			velocity.z = 0.f;
-		}
 	}
 	if (ai && ((velocity.x == 0.f && velocity.z != 0.f) || (velocity.x != 0.f && velocity.z == 0.f)))
 		velocity = glm::normalize(velocity) * glm::length(vOrig);
-	//bool collided = false;
-	//glm::vec2 p0 = { position.x, position.z };
-	//glm::vec2 p1 = { position.x + velocity.x * dt / 200.f, position.z + velocity.z * dt / 200.f };
-	//for (auto box : level->hitBoxes) {
-	//	glm::vec2 mix = { box.min.x, box.max.y };
-	//	glm::vec2 man = { box.max.x, box.min.y };
-	//	float v0 = lineCheck(box.min, p0, p1);
-	//	float v1 = lineCheck(mix, p0, p1);
-	//	float v2 = lineCheck(box.max, p0, p1);
-	//	float v3 = lineCheck(man, p0, p1);
-	//	if ((v0 > 0.f && v1 > 0.f && v2 > 0.f && v3 > 0.f) || (v0 < 0.f && v1 < 0.f && v2 < 0.f && v3 < 0.f))
-	//		continue;
-	//	if ((p0.x < box.min.x && p1.x < box.min.x) || (p0.x > box.max.x && p1.x < box.max.x)
-	//		|| (p0.y < box.min.y && p1.y < box.min.y) || (p0.y > box.max.y && p1.y < box.max.y))
-	//		continue;
-	//	std::cout << p0.x << ":" << p0.y << ";" << p1.x << ":" << p1.y << "," << v0 << ":" << v1 << ":" << v2 << ":" << v3 << "," << box.min.x << ":" << box.min.y << ";" << box.max.x << ":" << box.max.y << std::endl;
-	//	collided = true;
-	//}
-	//return collided;
+
+	return this;
 }
 
-void Object::update(float dt) {
+Object* Object::update(float dt, glm::vec3 offset) {
+	// Offset it (mostly off of the player)
+	position += offset;
+
 	// Create 4x4 transformation matrix
 
 	// 1. Create the X,Y, and Z rotation matrices
@@ -141,74 +125,59 @@ void Object::update(float dt) {
 	// 5. Combine all above transforms into a single matrix
 	transform = tran * rotate * scal;
 
-	//if (p)
-	//{
-		// Animation mesh morphing
-	if (timer >= timerReset)
-	{
+	// Animation mesh morphing
+	if (timer >= timerReset) {
 		keyFrame++;
 		timer = 1.0f;
 	}
 	if (keyFrame >= animationList.size())
-	{
 		keyFrame = 0;
-	}
 	timer += dt * glm::length(velocity);
 	t = timer / timerReset;
-	//}
-	//std::cout << keyFrame << std::endl;
+
 	if (animationList.size() > 0)
-	{
 		aMesh = animationList[keyFrame];
-	}
-	//if(keyFrame)
-	//std::cout << keyFrame << std::endl;
+	
+	// move it back to it's own position
+	position -= offset;
+	return this;
 }
 
-void Object::draw(Shader* shader, Camera* camera, std::vector<Light*> lights, int a, float lightCount) {
+Object* Object::draw(Shader* shader, Camera* camera, std::vector<Light*> lights) {
 	// Start
-	shader->bind();
+	shader->bind()
 	// Basic
-	shader->sendUniformMat4("uModel", glm::value_ptr(transform), false);
-	shader->sendUniformMat4("uView", glm::value_ptr(camera->getView()), false);
-	shader->sendUniformMat4("uProj", glm::value_ptr(camera->getProj()), false);
-	shader->sendUniform("objectColor", color);
-	shader->sendUniform("animate", a);
-	//shader->sendUniform("ammo", ammo);
-	if (lightCount == 0.0f)
-	{
-		//std::cout << lights.size() << std::endl;
-		shader->sendUniform("numLights", lights.size());
-	}
-	else
-	{
-		//std::cout << lightCount << std::endl;
-		shader->sendUniform("numLights", lightCount);
-	}
+		->sendUniformMat4("uModel", glm::value_ptr(transform), false)
+		->sendUniformMat4("uView", glm::value_ptr(camera->getView()), false)
+		->sendUniformMat4("uProj", glm::value_ptr(camera->getProj()), false)
+		->sendUniform("objectColor", color)
+		->sendUniform("animated", aMesh != nullptr)
+		->sendUniform("ammo", ammo)
+		->sendUniform("t", t)
 	// Material
-	shader->sendUniform("material.diffuse", 0);
-	shader->sendUniform("material.specular", 1);
-	shader->sendUniform("material.normal", 2);
-	shader->sendUniform("material.hue", mat->hue);
-	shader->sendUniform("material.specExponent", mat->specExponent);
+		->sendUniform("material.diffuse", 0)
+		->sendUniform("material.specular", 1)
+		->sendUniform("material.normal", 2)
+		->sendUniform("material.hue", mat->hue)
+		->sendUniform("material.specExponent", mat->specExponent);
 	// Lights
 	for (int i = 0; i < lights.size(); i++) {
 		std::string prefix = "lights[" + std::to_string(i) + "].";
 
 		//shader->sendUniform("NUM_LIGHTS", lights.size());
-		shader->sendUniform(prefix + "type", lights[i]->type);
-		shader->sendUniform(prefix + "position", camera->getView() * lights[i]->position);
-		shader->sendUniform(prefix + "direction", camera->getView() * lights[i]->direction);
-		shader->sendUniform(prefix + "original", camera->getView() * lights[i]->original);
-		shader->sendUniform(prefix + "ambient", lights[i]->ambient);
-		shader->sendUniform(prefix + "diffuse", lights[i]->diffuse);
-		shader->sendUniform(prefix + "specular", lights[i]->specular);
-		shader->sendUniform(prefix + "specExponent", lights[i]->specExponent);
-		shader->sendUniform(prefix + "spotExponent", lights[i]->spotExponent);
-		shader->sendUniform(prefix + "cutoff", lights[i]->cutoff);
-		shader->sendUniform(prefix + "outerCutoff", lights[i]->outerCutoff);
-		shader->sendUniform(prefix + "partial", lights[i]->partial);
-		shader->sendUniform(prefix + "attenuation", lights[i]->attenuation);
+		shader->sendUniform(prefix + "type", lights[i]->type)
+			->sendUniform(prefix + "position", camera->getView() * lights[i]->position)
+			->sendUniform(prefix + "direction", camera->getView() * lights[i]->direction)
+			->sendUniform(prefix + "original", camera->getView() * lights[i]->original)
+			->sendUniform(prefix + "ambient", lights[i]->ambient)
+			->sendUniform(prefix + "diffuse", lights[i]->diffuse)
+			->sendUniform(prefix + "specular", lights[i]->specular)
+			->sendUniform(prefix + "specExponent", lights[i]->specExponent)
+			->sendUniform(prefix + "spotExponent", lights[i]->spotExponent)
+			->sendUniform(prefix + "cutoff", lights[i]->cutoff)
+			->sendUniform(prefix + "outerCutoff", lights[i]->outerCutoff)
+			->sendUniform(prefix + "partial", lights[i]->partial)
+			->sendUniform(prefix + "attenuation", lights[i]->attenuation);
 	}
 	// Textures
 	glActiveTexture(GL_TEXTURE0);
@@ -218,8 +187,13 @@ void Object::draw(Shader* shader, Camera* camera, std::vector<Light*> lights, in
 	glActiveTexture(GL_TEXTURE2);
 	mat->normal->bind();
 	// Mesh
-	glBindVertexArray(mesh->vao);
-	glDrawArrays(GL_TRIANGLES, 0, mesh->getNumVertices());
+	if (aMesh) {
+		glBindVertexArray(aMesh->vao);
+		glDrawArrays(GL_TRIANGLES, 0, aMesh->getNumVertices());
+	} else {
+		glBindVertexArray(mesh->vao);
+		glDrawArrays(GL_TRIANGLES, 0, mesh->getNumVertices());
+	}
 	glBindVertexArray(GL_NONE);
 	// Textures
 	mat->normal->unbind();
@@ -229,73 +203,5 @@ void Object::draw(Shader* shader, Camera* camera, std::vector<Light*> lights, in
 	mat->diffuse->unbind();
 	// End
 	shader->unbind();
-}
-
-void Object::aDraw(Shader * shader, Camera * camera, std::vector<Light*> lights, int a, float lightCount)
-{
-	// Start
-	shader->bind();
-	// Basic
-	shader->sendUniformMat4("uModel", glm::value_ptr(transform), false);
-	shader->sendUniformMat4("uView", glm::value_ptr(camera->getView()), false);
-	shader->sendUniformMat4("uProj", glm::value_ptr(camera->getProj()), false);
-	shader->sendUniform("objectColor", color);
-	shader->sendUniform("animate", a);
-	shader->sendUniform("t", t);
-	//shader->sendUniform("timerReset", t);
-	//shader->sendUniform("ammo", ammo);
-	if (lightCount == 0.0f)
-	{
-		//std::cout << lights.size() << std::endl;
-		shader->sendUniform("numLights", lights.size());
-	}
-	else
-	{
-		//std::cout << lightCount << std::endl;
-		shader->sendUniform("numLights", lightCount);
-	}
-	// Material
-	shader->sendUniform("material.diffuse", 0);
-	shader->sendUniform("material.specular", 1);
-	shader->sendUniform("material.normal", 2);
-	shader->sendUniform("material.hue", mat->hue);
-	shader->sendUniform("material.specExponent", mat->specExponent);
-	// Lights
-	for (int i = 0; i < lights.size(); i++) {
-		std::string prefix = "lights[" + std::to_string(i) + "].";
-
-		//shader->sendUniform("NUM_LIGHTS", lights.size());
-		shader->sendUniform(prefix + "type", lights[i]->type);
-		shader->sendUniform(prefix + "position", camera->getView() * lights[i]->position);
-		shader->sendUniform(prefix + "direction", camera->getView() * lights[i]->direction);
-		shader->sendUniform(prefix + "original", camera->getView() * lights[i]->original);
-		shader->sendUniform(prefix + "ambient", lights[i]->ambient);
-		shader->sendUniform(prefix + "diffuse", lights[i]->diffuse);
-		shader->sendUniform(prefix + "specular", lights[i]->specular);
-		shader->sendUniform(prefix + "specExponent", lights[i]->specExponent);
-		shader->sendUniform(prefix + "spotExponent", lights[i]->spotExponent);
-		shader->sendUniform(prefix + "cutoff", lights[i]->cutoff);
-		shader->sendUniform(prefix + "outerCutoff", lights[i]->outerCutoff);
-		shader->sendUniform(prefix + "partial", lights[i]->partial);
-		shader->sendUniform(prefix + "attenuation", lights[i]->attenuation);
-	}
-	// Textures
-	glActiveTexture(GL_TEXTURE0);
-	mat->diffuse->bind();
-	glActiveTexture(GL_TEXTURE1);
-	mat->specular->bind();
-	glActiveTexture(GL_TEXTURE2);
-	mat->normal->bind();
-	// Mesh
-	glBindVertexArray(aMesh->vao);
-	glDrawArrays(GL_TRIANGLES, 0, aMesh->getNumVertices());
-	glBindVertexArray(GL_NONE);
-	// Textures
-	mat->normal->unbind();
-	glActiveTexture(GL_TEXTURE1);
-	mat->specular->unbind();
-	glActiveTexture(GL_TEXTURE0);
-	mat->diffuse->unbind();
-	// End
-	shader->unbind();
+	return this;
 }

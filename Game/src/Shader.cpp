@@ -160,12 +160,14 @@ bool Shader::linkProgram() {
 	return success == GL_TRUE;
 }
 
-void Shader::bind() const {
+Shader* Shader::bind() {
 	glUseProgram(program);
+	return this;
 }
 
-void Shader::unbind() {
+Shader* Shader::unbind() {
 	glUseProgram(GL_NONE);
+	return this;
 }
 
 void Shader::addAttribute(unsigned int index, const std::string & attribName) {
@@ -180,44 +182,52 @@ int Shader::getUniformLocation(const std::string & uniformName) {
 	return glGetUniformLocation(program, uniformName.c_str());
 }
 
-void Shader::sendUniform(const std::string & name, int integer) {
+Shader* Shader::sendUniform(const std::string & name, int integer) {
 	GLint location = getUniformLocation(name);
 	glUniform1i(location, integer);
+	return this;
 }
 
-void Shader::sendUniform(const std::string & name, unsigned int unsignedInteger) {
+Shader* Shader::sendUniform(const std::string & name, unsigned int uInteger) {
 	GLint location = getUniformLocation(name);
-	glUniform1ui(location, unsignedInteger);
+	glUniform1ui(location, uInteger);
+	return this;
 }
 
-void Shader::sendUniform(const std::string & name, float scalar) {
+Shader* Shader::sendUniform(const std::string & name, float scalar) {
 	GLint location = getUniformLocation(name);
 	glUniform1f(location, scalar);
+	return this;
 }
 
-void Shader::sendUniform(const std::string & name, const glm::vec2 & vector) {
+Shader* Shader::sendUniform(const std::string & name, const glm::vec2 & vector) {
 	GLint location = getUniformLocation(name);
 	glUniform2f(location, vector.x, vector.y);
+	return this;
 }
 
-void Shader::sendUniform(const std::string & name, const glm::vec3 & vector) {
+Shader* Shader::sendUniform(const std::string & name, const glm::vec3 & vector) {
 	GLint location = getUniformLocation(name);
 	glUniform3f(location, vector.x, vector.y, vector.z);
+	return this;
 }
 
-void Shader::sendUniform(const std::string & name, const glm::vec4 & vector) {
+Shader* Shader::sendUniform(const std::string & name, const glm::vec4 & vector) {
 	GLint location = getUniformLocation(name);
 	glUniform4f(location, vector.x, vector.y, vector.z, vector.w);
+	return this;
 }
 
-void Shader::sendUniformMat3(const std::string & name, float * matrix, bool transpose) {
+Shader* Shader::sendUniformMat3(const std::string & name, float * matrix, bool transpose) {
 	GLint location = getUniformLocation(name);
 	glUniformMatrix3fv(location, 1, transpose, matrix);
+	return this;
 }
 
-void Shader::sendUniformMat4(const std::string & name, float * matrix, bool transpose) {
+Shader* Shader::sendUniformMat4(const std::string & name, float * matrix, bool transpose) {
 	GLint location = getUniformLocation(name);
 	glUniformMatrix4fv(location, 1, transpose, matrix);
+	return this;
 }
 
 std::string Shader::readFile(const std::string & fileName) const {

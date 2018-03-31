@@ -9,7 +9,7 @@
 
 class Mesh;		class Material;
 class Shader;	class Texture;
-class ShaderProgram;
+class Sound;
 class AnimationMesh;
 
 class Assets {
@@ -20,12 +20,17 @@ public:
 	~Assets();
 
 	// loaders
-	Mesh *loadMesh(const std::string &name, const std::string &file);
-	AnimationMesh *loadAnimationMesh(const std::string &name, const std::string &file1, const std::string &file2);
-	Texture *loadTexture(const std::string &name, const std::string &file);
+	Mesh* loadMesh(const std::string &name, const std::string &file);
+	AnimationMesh* loadAnimationMesh(const std::string &name, const std::string &file1, const std::string &file2);
+	Texture* loadTexture(const std::string &name, const std::string &file);
+	Sound* loadSound(const std::string &name, const std::string &file, bool loop = false, int dim = 3);
+	Shader* loadShader(const std::string &name, const std::string &vertFile, const std::string &fragFile);
+	Shader* loadShader(const std::string &name, const std::string &vertFile, const std::string &geoFile, const std::string &fragFile);
 
 	// assets
 	std::unordered_map<std::string, Mesh*> meshes;
 	std::unordered_map<std::string, AnimationMesh*> aMeshes;
 	std::unordered_map<std::string, Texture*> textures;
+	std::unordered_map<std::string, Sound*> sounds;
+	std::unordered_map<std::string, Shader*> shaders;
 };
