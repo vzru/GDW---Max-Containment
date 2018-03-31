@@ -473,7 +473,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	soundList.push_back(sound2);
 	Sound* sound3 = new Sound("assets/sounds/Reload_sound.wav", false, 3);
 	soundList.push_back(sound3);
-	Sound* sound4 = new Sound("assets/sounds/Dialogue Placeholder.wav", false, 2);
+	Sound* sound4 = new Sound("assets/sounds/pop.wav", false, 2);
 	soundList.push_back(sound4);
 	Sound* sound5 = new Sound("assets/sounds/Damaged.wav", true, 3);
 	//sound5->set3DDist(0.5f, 5.f);
@@ -1043,11 +1043,15 @@ void Game::update() {
 				}
 				if (player->nightCD > 0.0f)
 				{
-					enemies[i]->color = glm::vec4(0.0f, 0.5f, 0.0f, 1.0f);
+					enemies[i]->color = glm::vec4(0.5f, 0.0f, 0.0f, 1.0f);
+					for (int i = 0; i < dropItems.size(); i++)
+						dropItems[i]->color = glm::vec4(0.0f, 0.5f, 0.0f, 1.0f);
 				}
 				else
 				{
 					enemies[i]->color = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+					for (int i = 0; i < dropItems.size(); i++)
+						dropItems[i]->color = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 				}
 
 				if (enemies[i]->range)
@@ -1141,6 +1145,8 @@ void Game::update() {
 				if (dist < 0.5) {
 					//std::cout << dropItems[i]->ammo << '/' << dropItems[i]->hp << std::endl;
 					dropItems[i]->collect = true;
+					soundList[4]->playSound(2);
+					player->popCD = 10.f;
 					player->nightV += dropItems[i]->nightV;
 					if (dropItems[i]->nightV > 0.0f)
 					{
@@ -1495,7 +1501,10 @@ void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 					this->state = State::Play;
 				//soundList[1]->playSound();
 				if (mouse.x > screen.quit.pos.x * windowSize.x && mouse.x < screen.quit.pos.y * windowSize.x && mouse.y > screen.quit.pos.z * windowSize.y && mouse.y < screen.quit.pos.w * windowSize.y)
+				{
+					reset();
 					this->state = State::Menu;
+				}
 				break;
 			case GLUT_UP:
 				break;
@@ -1674,19 +1683,19 @@ void Game::createDropItem(glm::vec3 pos, int type) {
 		dropHP->update(deltaTime);
 		//std::cout << "DROP!" << dropItems.size() << std::endl;
 		dropItems.push_back(new Object(*dropHP));
-		partD->color = glm::vec3(1.0f, 0.0f, 0.0f);
+		partD->color = glm::vec3(0.0f, 1.0f, 0.0f);
 	}
-	else if ((temp > 50 & temp <= 70) || type == 3) {
+	else if ((temp > 60 & temp <= 70) || type == 3) {
 		//drop->ammo = 30.0f;
 		//dropAmmo->color = glm::vec4(1.0f, 0.647f, 0.f, 0.5f);
 		dropNight->setPosition(pos);
 		dropNight->update(deltaTime);
 		//std::cout << "DROP!" << dropItems.size() << std::endl;
 		dropItems.push_back(new Object(*dropNight));
-		partD->color = glm::vec3(0.0f, 1.0f, 0.0f);
+		partD->color = glm::vec3(0.0f, 0.0f, 1.0f);
 	}
 
-	if (temp > 50.0f || type)
+	if (temp > 60.0f || type)
 	{
 		partD->lifeR = glm::vec3(0.01f, 0.7f, 0.0f);
 		partD->initForceMin = glm::vec3(-0.5f, 0.0f, -0.5f);
