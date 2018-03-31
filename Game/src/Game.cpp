@@ -940,7 +940,7 @@ void Game::update() {
 		}
 		else
 		{
-			player->popCD -= deltaTime / 100.f;
+			player->popCD -= deltaTime / 10.f;
 		}
 
 		std::cout << player->popCD << std::endl;
@@ -1171,7 +1171,7 @@ void Game::update() {
 					}
 					if (dropItems[i]->collect) {
 						soundList[4]->playSound(2);
-						soundList[4]->setVolume(0.5f);
+						soundList[4]->setVolume(0.2f);
 						player->popCD = 10.f;
 					}
 				}
