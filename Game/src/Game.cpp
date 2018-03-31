@@ -468,6 +468,14 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	//sound7->setMode(FMOD_3D_INVERSEROLLOFF);
 	soundList.push_back(sound7);
 
+	Sound* dial0 = new Sound("assets/sounds/first.wav", false, 2);
+	dialogue.push_back(dial0);
+	Sound* dial1 = new Sound("assets/sounds/second.wav", false, 2);
+	dialogue.push_back(dial1);
+	Sound* dial2 = new Sound("assets/sounds/third.wav", false, 2);
+	dialogue.push_back(dial2);
+	Sound* dial3 = new Sound("assets/sounds/fourth.wav", false, 2);
+	dialogue.push_back(dial3);
 
 	// Initialize Player
 	player = new Player({ 4.f, 0.f, 6.f });
@@ -873,6 +881,9 @@ void Game::update() {
 		//partEList[0]->direction = { cos(partAngle), 0, -sin(partAngle), 0.f };
 		partEList[0]->initPos = player->getPosition() + glm::vec3(cos(partAngle) * 0.7f, 1.0f, -sin(partAngle)* 0.7f);
 
+		if (temp.x > level.exit.x && temp.x < level.exit.y && temp.z > level.exit.z && temp.z < level.exit.w)
+			state = State::Win;
+
 		FMOD_VECTOR tempS = { player->getPosition().x, 0.0f, player->getPosition().z };
 		if (soundList[2]->chList.size())
 		{
@@ -1177,8 +1188,8 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 			soundList[0]->stopSound(0);
 			soundList[1]->playSound(2);
 			soundList[1]->setVolume(0.05f);
-			soundList[4]->playSound(2);
-			soundList[4]->setVolume(0.5f);
+			//dialogue[4]->playSound(2);
+			//soundList[4]->setVolume(0.5f);
 			soundList[5]->setPause(false);
 			soundList[6]->setPause(false);
 			soundList[7]->setPause(false);
@@ -1492,7 +1503,7 @@ void Game::controllerInput(unsigned short index, Input::Button button) {
 				soundList[0]->stopSound();
 				soundList[1]->playSound(2);
 				soundList[1]->setVolume(0.05f);
-				soundList[4]->playSound(2);
+				//soundList[4]->playSound(2);
 				soundList[5]->setPause(false);
 				soundList[6]->setPause(false);
 				soundList[7]->setPause(false);
@@ -1618,7 +1629,7 @@ void Game::reset()
 	clearPartEmitter();
 	lightOn = false;
 	soundList[1]->stopSound();
-	soundList[4]->stopSound();
+	//soundList[4]->stopSound();
 	soundList[5]->setPause(true);
 	soundList[6]->setPause(true);
 	soundList[7]->setPause(true);
