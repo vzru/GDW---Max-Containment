@@ -599,7 +599,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	std::get<0>(enemys) = new Enemy();			std::get<1>(enemys) = new Enemy();			std::get<2>(enemys) = new Enemy();
 	std::get<0>(enemys)->life = 15.f;			std::get<1>(enemys)->life = 25.f;			std::get<2>(enemys)->life = 10.f;
 	std::get<0>(enemys)->movementSpeed = 250.f;	std::get<1>(enemys)->movementSpeed = 300.f;	std::get<2>(enemys)->movementSpeed = 150.f;
-	std::get<0>(enemys)->damage = 1.f;			std::get<1>(enemys)->damage = 4.f;			std::get<2>(enemys)->damage = 5.f;
+	std::get<0>(enemys)->damage = 2.f;			std::get<1>(enemys)->damage = 4.f;			std::get<2>(enemys)->damage = 5.f;
 	std::get<0>(enemys)->KB = true;				std::get<1>(enemys)->KB = false;			std::get<2>(enemys)->KB = true;
 	/*std::get<0>(enemys)->KB = true;				std::get<1>(enemys)->KB = false;*/		std::get<2>(enemys)->KBtoggle = true;
 
@@ -714,7 +714,7 @@ void Game::loadDrops()
 	createDropItem(glm::vec3(149.9, 0, 22.2), 2);
 	createDropItem(glm::vec3(152, 0, 36.5), 2);
 
-	createDropItem(glm::vec3(16.7, 0, 5.4), 3);
+	//createDropItem(glm::vec3(16.7, 0, 5.4), 3);
 
 }
 
@@ -934,8 +934,16 @@ void Game::update() {
 		{
 			player->nightCD -= deltaTime/100.f;
 		}
+		if (player->popCD <= 0.0f)
+		{
+			soundList[4]->stopSound();
+		}
+		else
+		{
+			player->popCD -= deltaTime / 100.f;
+		}
 
-		//std::cout << player->nightCD << std::endl;
+		std::cout << player->popCD << std::endl;
 
 		if (temp.x > level.dial0.x && temp.x < level.dial0.y && temp.z > level.dial0.z && temp.z < level.dial0.w && dialMode == 0)
 		{
@@ -1097,7 +1105,7 @@ void Game::update() {
 					float distToEnemy = cos(bang - dang) * glm::length(diff);
 					//std::cout << glm::degrees(bang) << '/' << glm::degrees(dang) << '/' << dist << std::endl;
 					// seek towards player
-					if (((glm::length(diff) < 5.0f) || enemies[i]->triggered || glm::length(diff) < 15.0f && dist < 2.f && lightOn) && glm::length(diff) > 1.0f && enemies[i]->knockbackCD <= 0 && distToEnemy > 0.0f)
+					if (((glm::length(diff) < 5.0f) || enemies[i]->triggered || glm::length(diff) < 15.0f && dist < 2.f && lightOn && distToEnemy > 0.0f) && glm::length(diff) > 1.0f && enemies[i]->knockbackCD <= 0 )
 					{
 						enemies[i]->setRotation({ 0.f, glm::degrees(atan2(-diff.z, diff.x)) - 90.f, 0.f });
 						enemies[i]->setVelocity(-glm::normalize(diff));
@@ -1123,6 +1131,7 @@ void Game::update() {
 		{
 			player->nightV = 0.0f;
 		}
+		
 
 		if (player->newShot == true)
 		{
@@ -1145,8 +1154,6 @@ void Game::update() {
 				if (dist < 0.5) {
 					//std::cout << dropItems[i]->ammo << '/' << dropItems[i]->hp << std::endl;
 					dropItems[i]->collect = true;
-					soundList[4]->playSound(2);
-					player->popCD = 10.f;
 					player->nightV += dropItems[i]->nightV;
 					if (dropItems[i]->nightV > 0.0f)
 					{
@@ -1159,8 +1166,14 @@ void Game::update() {
 						else
 							player->life += dropItems[i]->life;
 					}
-					else if (player->life == 20.0f & dropItems[i]->life > 0.0f)
+					else if (player->life == 20.0f & dropItems[i]->life > 0.0f) {
 						dropItems[i]->collect = false;
+					}
+					if (dropItems[i]->collect) {
+						soundList[4]->playSound(2);
+						soundList[4]->setVolume(0.5f);
+						player->popCD = 10.f;
+					}
 				}
 			}
 	}
