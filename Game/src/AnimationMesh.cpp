@@ -182,73 +182,67 @@ bool AnimationMesh::load(const std::string &file1, const std::string &file2) {
 	numVertices2 = numFaces2 * 3;
 
 	// Send data to OpenGL
-	glGenVertexArrays(1, &vao);
-	glGenBuffers(1, &vboVertices);	// Vertices
-	glGenBuffers(1, &vboUVs);		// UVs
-	glGenBuffers(1, &vboNormals);	// Normals
-	glGenBuffers(1, &vboVertices2);	// Vertices
-	glGenBuffers(1, &vboUVs2);		// UVs
-	glGenBuffers(1, &vboNormals2);	// Normals
+	AttributeDescriptor verts1, verts2;
+	verts1.attributeLocation = AttributeLocations::VERTEX;
+	verts1.elementType = GL_FLOAT;
+	verts1.elementSize = sizeof(float);
+	verts1.numElementsPerAttrib = 3;
+	verts1.numElements = unpackedVertexData.size();
+	verts1.data = &unpackedVertexData[0];
+	verts1.attributeName = "vIn_vertex";
+	verts2 = verts1;
+	verts2.numElements = unpackedVertexData2.size();
+	verts2.data = &unpackedVertexData2[0];
+	verts2.attributeName = "vIn_vertex2";
+	vbo.addAttributeArray(verts1);
+	vbo.addAttributeArray(verts2);
 
-	glBindVertexArray(vao);
+	AttributeDescriptor uvs1, uvs2;
+	uvs1.attributeLocation = AttributeLocations::TEX_COORD;
+	uvs1.elementType = GL_FLOAT;
+	uvs1.elementSize = sizeof(float);
+	uvs1.numElementsPerAttrib = 2;
+	uvs1.numElements = unpackedTextureData.size();
+	uvs1.data = &unpackedTextureData[0];
+	uvs1.attributeName = "vIn_uv";
+	uvs2 = uvs1;
+	uvs2.numElements = unpackedTextureData2.size();
+	uvs2.data = &unpackedTextureData2[0];
+	uvs2.attributeName = "vIn_uv2";
+	vbo.addAttributeArray(uvs1);
+	vbo.addAttributeArray(uvs2);
 
-	glEnableVertexAttribArray(0);	// Vertices
-	glEnableVertexAttribArray(1);	// UVs
-	glEnableVertexAttribArray(2);	// Normals
+	AttributeDescriptor norms1, norms2;
+	norms1.attributeLocation = AttributeLocations::NORMAL;
+	norms1.elementType = GL_FLOAT;
+	norms1.elementSize = sizeof(float);
+	norms1.numElementsPerAttrib = 3;
+	norms1.numElements = unpackedNormalData.size();
+	norms1.data = &unpackedNormalData[0];
+	norms1.attributeName = "vIn_normal";
+	norms2 = norms1;
+	norms2.numElements = unpackedNormalData2.size();
+	norms2.data = &unpackedNormalData2[0];
+	norms2.attributeName = "vIn_normal2";
+	vbo.addAttributeArray(norms1);
+	vbo.addAttributeArray(norms2);
 
-	glEnableVertexAttribArray(3);	// Vertices
-	glEnableVertexAttribArray(4);	// UVs
-	glEnableVertexAttribArray(5);	// Normals
-	// Vertices
-	glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * unpackedVertexData.size(), &unpackedVertexData[0], GL_STATIC_DRAW);
-	glVertexAttribPointer((GLuint)0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, BUFFER_OFFSET(0));
-	glBindBuffer(GL_ARRAY_BUFFER, vboVertices2);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * unpackedVertexData2.size(), &unpackedVertexData2[0], GL_STATIC_DRAW);
-	glVertexAttribPointer((GLuint)3, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, BUFFER_OFFSET(0));
-	// UVs
-	glBindBuffer(GL_ARRAY_BUFFER, vboUVs);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * unpackedTextureData.size(), &unpackedTextureData[0], GL_STATIC_DRAW);
-	glVertexAttribPointer((GLuint)1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, BUFFER_OFFSET(0));
-	glBindBuffer(GL_ARRAY_BUFFER, vboUVs2);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * unpackedTextureData2.size(), &unpackedTextureData2[0], GL_STATIC_DRAW);
-	glVertexAttribPointer((GLuint)4, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, BUFFER_OFFSET(0));
-	// Normals
-	glBindBuffer(GL_ARRAY_BUFFER, vboNormals);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * unpackedNormalData.size(), &unpackedNormalData[0], GL_STATIC_DRAW);
-	glVertexAttribPointer((GLuint)2, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, BUFFER_OFFSET(0));
-	glBindBuffer(GL_ARRAY_BUFFER, vboNormals2);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * unpackedNormalData2.size(), &unpackedNormalData2[0], GL_STATIC_DRAW);
-	glVertexAttribPointer((GLuint)5, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, BUFFER_OFFSET(0));
-
-	// Vertices
-	// UVs
-	// Normals
-
-	glBindBuffer(GL_ARRAY_BUFFER, GL_NONE);
-	glBindVertexArray(GL_NONE);
+	vbo.createVBO(GL_STATIC_DRAW);
 
 	return true;
 }
 
 void AnimationMesh::unload() {
-	glDeleteBuffers(1, &vboVertices);
-	glDeleteBuffers(1, &vboUVs);
-	glDeleteBuffers(1, &vboNormals);
-	glDeleteBuffers(1, &vboVertices2);
-	glDeleteBuffers(1, &vboUVs2);
-	glDeleteBuffers(1, &vboNormals2);
-	glDeleteVertexArrays(1, &vao);
-
-	vboVertices = NULL;
-	vboUVs = NULL;
-	vboNormals = NULL;
-	vao = NULL;
+	vbo.destroy();
 
 	numFaces = 0;
 	numVertices = 0;
 	numFaces2 = 0;
 	numVertices2 = 0;
+}
+
+void AnimationMesh::draw() {
+	vbo.draw();
 }
 
 unsigned int AnimationMesh::getNumFaces() { return numFaces; }

@@ -19,7 +19,7 @@ FrameBufferObject::~FrameBufferObject()
 // Frame Buffers do not store any actual data but instead we attach textures to them.
 // We can write to the textures in a fragment shader.
 
-void FrameBufferObject::createFrameBuffer(unsigned int fboWidth, unsigned int fboHeight, unsigned int numColourBuffers, bool useDepth)
+void FrameBufferObject::create(unsigned int fboWidth, unsigned int fboHeight, unsigned int numColourBuffers, bool useDepth)
 {
 	width = fboWidth;
 	height = fboHeight;
@@ -85,16 +85,14 @@ void FrameBufferObject::createFrameBuffer(unsigned int fboWidth, unsigned int fb
 	// It's a good idea to check if we did everything correctly
 	GLenum fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (fboStatus != GL_FRAMEBUFFER_COMPLETE)
-	{
 		std::cout << "Error Creating FBO " << fboStatus << std::endl;
-	}
 
 	// Unbind FBO
 	// When we unbind an FBO it goes back to the system provided FBO
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE);
 }
 
-void FrameBufferObject::bindFrameBufferForDrawing()
+void FrameBufferObject::bindForDrawing()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, handle);
 	glViewport(0, 0, width, height);
@@ -102,8 +100,7 @@ void FrameBufferObject::bindFrameBufferForDrawing()
 
 void FrameBufferObject::bindDepthTextureForSampling(GLenum textureUnit)
 {
-	if (depthTexHandle)
-	{
+	if (depthTexHandle) {
 		glActiveTexture(textureUnit);
 		glBindTexture(GL_TEXTURE_2D, depthTexHandle);
 	}
@@ -111,17 +108,26 @@ void FrameBufferObject::bindDepthTextureForSampling(GLenum textureUnit)
 		std::cout << "FBO does not have a depth texture!" << std::endl;
 }
 
-void FrameBufferObject::unbindFrameBuffer(int backBufferWidth, int backBufferHeight)
+void FrameBufferObject::unbind()
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE);
+	glViewport(0, 0, width, height);
+}
+
+void FrameBufferObject::unbind(int backBufferWidth, int backBufferHeight)
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE);
 	glViewport(0, 0, backBufferWidth, backBufferHeight);
 }
 
-void FrameBufferObject::clearFrameBuffer(glm::vec4 clearColour)
-{
-	glClearColor(clearColour.x, clearColour.y, clearColour.z, clearColour.w);
+void FrameBufferObject::clear(glm::vec4 clearColour) {
+	glClearColor(clearColour.r, clearColour.g, clearColour.b, clearColour.a);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	//glMatrixMode(GL_PROJECTION);
+	//glLoadIdentity();
+	//gluPerspective(glm::radians(60.0f), windowSize.x / windowSize.y, 0.001f, 10000.0f);
+	//glMatrixMode(GL_MODELVIEW);
 }
 
 void FrameBufferObject::bindTextureForSampling(int textureAttachment, GLenum textureUnit)
@@ -133,7 +139,7 @@ void FrameBufferObject::bindTextureForSampling(int textureAttachment, GLenum tex
 void FrameBufferObject::unbindTexture(GLenum textureUnit)
 {
 	glActiveTexture(textureUnit);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 }
 
 void FrameBufferObject::destroy()
@@ -150,5 +156,5 @@ void FrameBufferObject::destroy()
 	if (handle)
 		glDeleteFramebuffers(1, &handle);
 
-	unbindFrameBuffer(width, height);
+	unbind(width, height);
 }

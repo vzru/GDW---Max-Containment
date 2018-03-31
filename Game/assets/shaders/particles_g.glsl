@@ -8,25 +8,23 @@ layout(triangle_strip, max_vertices = 4) out;
 uniform mat4 u_mvp;
 uniform mat4 u_mv;
 uniform mat4 u_proj;
+uniform vec4 u_color;
 
 // Input from Vertex shader
-in VertexData
-{
+in VertexData {
+	vec3 position;
+	vec2 texCoord;
 	vec3 normal;
-	vec3 texCoord;
-	vec4 colour;
-	vec3 posEye;
+	vec4 color;
 } vIn[]; // array size = num vertices in primitve
 
 // Output from geometry shader
-out VertexData
-{
+out VertexData {
+	vec3 position;
+	vec2 texCoord;
 	vec3 normal;
-	vec3 texCoord;
-	vec4 colour;
-	vec3 posEye;
+	vec4 color;
 } vOut; // array size depends on max_vertices
-
 
 // Creates a quad of specified size around point p
 void PointToQuadBillboarded(vec4 p, float size)
@@ -42,22 +40,22 @@ void PointToQuadBillboarded(vec4 p, float size)
 
 	gl_Position = u_proj * bottomLeft;
 	vOut.texCoord.xy = vec2(0.0f, 0.0f);
-	vOut.colour = vIn[0].colour;
+	vOut.color = vIn[0].color;
 	EmitVertex();
 
 	gl_Position = u_proj * topLeft;
 	vOut.texCoord.xy = vec2(0.0f, 1.0f);
-	vOut.colour = vIn[0].colour;
+	vOut.color = vIn[0].color;
 	EmitVertex();
 
 	gl_Position = u_proj * bottomRight;
 	vOut.texCoord.xy = vec2(1.0f, 0.0f);
-	vOut.colour = vIn[0].colour;
+	vOut.color = vIn[0].color;
 	EmitVertex();
 
 	gl_Position = u_proj * topRight;
 	vOut.texCoord.xy = vec2(1.0f, 1.0f);
-	vOut.colour = vIn[0].colour;
+	vOut.color = vIn[0].color;
 	EmitVertex();
 
 	EndPrimitive();

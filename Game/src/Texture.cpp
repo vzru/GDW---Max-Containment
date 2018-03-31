@@ -34,10 +34,12 @@ void Texture::unload() {
 	texObj = 0;
 }
 
-void Texture::bind() {
+void Texture::bind(GLenum unit) {
+	glActiveTexture(unit);
 	glBindTexture(GL_TEXTURE_2D, texObj);
 }
 
-void Texture::unbind() {
+void Texture::unbind(GLenum unit) {
+	glActiveTexture(unit);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 }

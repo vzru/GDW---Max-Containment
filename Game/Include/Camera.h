@@ -11,15 +11,15 @@ public:
 	~Camera();
 
 	// updates the view matrix and applies it to OpenGL
-	void update(glm::vec3 center);
+	void update(glm::vec3 center = { 0.f, 0.f, 0.f });
 	// reset the window position
 	void reset(glm::vec2 size);
 
 	// rotate the window
-	void processMotion(glm::vec2 change, float dt);
+	//void processMotion(glm::vec2 change, float dt);
 	// move the camera
-	void pan(glm::vec3 amount);
-	void move(glm::vec3 amount);
+	//void pan(glm::vec3 amount);
+	//void move(glm::vec3 amount);
 	// getters
 	glm::vec3 getPosition();
 	void setPosition(glm::vec3 pos);
@@ -38,6 +38,6 @@ private:
 	//glm::mat4 rotate;
 	//glm::mat4 transform;
 	// helpers
-	float movementScalar;
+	//float movementScalar;
 	//void calcRightVector();
 };

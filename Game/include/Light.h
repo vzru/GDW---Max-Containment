@@ -1,7 +1,9 @@
 #pragma once
 
 #include <glm\glm.hpp>
+#include <string>
 
+class Shader;
 
 class Light {
 public:
@@ -25,4 +27,6 @@ public:
 	float partial; // percentage of point light
 
 	glm::vec3 attenuation; // constant, linear, quadratic
+
+	void sendUniforms(Shader* shader, glm::mat4 view, std::string prefix);
 };

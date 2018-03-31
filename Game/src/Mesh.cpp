@@ -5,6 +5,7 @@
 #include "glm\glm.hpp"
 
 #include "Mesh.h"
+#include "VertexBufferObject.h"
 
 #define BUFFER_OFFSET(i) ((char*)0 + (i))
 
@@ -106,48 +107,50 @@ bool Mesh::load(const std::string &file) {
 	numVertices = numFaces * 3;
 
 	// Send data to OpenGL
-	glGenVertexArrays(1, &vao);
-	glGenBuffers(1, &vboVertices);	// Vertices
-	glGenBuffers(1, &vboUVs);		// UVs
-	glGenBuffers(1, &vboNormals);	// Normals
+	AttributeDescriptor verts;
+	verts.attributeLocation = AttributeLocations::VERTEX;
+	verts.elementType = GL_FLOAT;
+	verts.elementSize = sizeof(float);
+	verts.numElementsPerAttrib = 3;
+	verts.numElements = unpackedVertexData.size();
+	verts.data = &unpackedVertexData[0];
+	verts.attributeName = "vertex";
+	vbo.addAttributeArray(verts);
 
-	glBindVertexArray(vao);
+	AttributeDescriptor uvs;
+	uvs.attributeLocation = AttributeLocations::TEX_COORD;
+	uvs.elementType = GL_FLOAT;
+	uvs.elementSize = sizeof(float);
+	uvs.numElementsPerAttrib = 2;
+	uvs.numElements = unpackedTextureData.size();
+	uvs.data = &unpackedTextureData[0];
+	uvs.attributeName = "texcoord";
+	vbo.addAttributeArray(uvs);
 
-	glEnableVertexAttribArray(0);	// Vertices
-	glEnableVertexAttribArray(1);	// UVs
-	glEnableVertexAttribArray(2);	// Normals
-	// Vertices
-	glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * unpackedVertexData.size(), &unpackedVertexData[0], GL_STATIC_DRAW);
-	glVertexAttribPointer((GLuint)0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, BUFFER_OFFSET(0));
-	// UVs
-	glBindBuffer(GL_ARRAY_BUFFER, vboUVs);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * unpackedTextureData.size(), &unpackedTextureData[0], GL_STATIC_DRAW);
-	glVertexAttribPointer((GLuint)1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, BUFFER_OFFSET(0));
-	// Normals
-	glBindBuffer(GL_ARRAY_BUFFER, vboNormals);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * unpackedNormalData.size(), &unpackedNormalData[0], GL_STATIC_DRAW);
-	glVertexAttribPointer((GLuint)2, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, BUFFER_OFFSET(0));
+	AttributeDescriptor norms;
+	norms.attributeLocation = AttributeLocations::NORMAL;
+	norms.elementType = GL_FLOAT;
+	norms.elementSize = sizeof(float);
+	norms.numElementsPerAttrib = 3;
+	norms.numElements = unpackedNormalData.size();
+	norms.data = &unpackedNormalData[0];
+	norms.attributeName = "normal";
+	vbo.addAttributeArray(norms);
 
-	glBindBuffer(GL_ARRAY_BUFFER, GL_NONE);
-	glBindVertexArray(GL_NONE);
+	vbo.createVBO(GL_STATIC_DRAW);
 
 	return true;
 }
 
 void Mesh::unload() {
-	glDeleteBuffers(1, &vboVertices);
-	glDeleteBuffers(1, &vboUVs);
-	glDeleteBuffers(1, &vboNormals);
-	glDeleteVertexArrays(1, &vao);
-
-	vboVertices = NULL;
-	vboUVs = NULL;
-	vboNormals = NULL;
-	vao = NULL;
+	vbo.destroy();
 
 	numFaces = 0;
 	numVertices = 0;
+}
+
+void Mesh::draw() {
+	vbo.draw();
 }
 
 unsigned int Mesh::getNumFaces() { return numFaces; }

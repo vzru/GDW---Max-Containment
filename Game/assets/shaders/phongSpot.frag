@@ -41,15 +41,18 @@ uniform Light lights[MAX_NUM_LIGHTS];
 
 uniform Material material;
 
-in vec3 position;
-in vec2 texCoord;
-in vec3 normal;
+in VertexData {
+	vec3 position;
+	vec2 texCoord;
+	vec3 normal;
+	vec4 color;
+} vIn;
 
 out vec4 outColor;
 
 vec3 calculateLight(Light light, vec3 norm, vec4 diff, vec4 spec) {
 	float attenuation = 1.0;
-	vec3 lightVec = light.position.xyz - position;
+	vec3 lightVec = light.position.xyz - vIn.position;
 	float lightLen = length(lightVec);
 	vec3 lightDir = normalize(lightVec);
 	switch(light.type) {
@@ -78,8 +81,8 @@ vec3 calculateLight(Light light, vec3 norm, vec4 diff, vec4 spec) {
 	vec3 diffuse = light.diffuse * NdotL * attenuation * diff.rgb;
 	// Reflection
 	vec3 reflectDir = reflect(-lightDir, norm);
-	float VdotR = max(dot(normalize(-position), -reflectDir), 0.0);
-	float NdotHV = max(dot(norm, normalize(lightDir + normalize(-position))), 0.0);
+	float VdotR = max(dot(normalize(-vIn.position), -reflectDir), 0.0);
+	float NdotHV = max(dot(norm, normalize(lightDir + normalize(-vIn.position))), 0.0);
 	vec3 specular = light.specular * pow(NdotHV, material.specExponent) * attenuation * spec.rgb;
 
 	return ambient + diffuse + specular;
@@ -87,9 +90,9 @@ vec3 calculateLight(Light light, vec3 norm, vec4 diff, vec4 spec) {
 
 void main() {
 	// account for rasterizer interpolating
-	vec3 norm = normalize(texture(material.normal, texCoord).rgb * 2 - vec3(1.f));
-	vec4 diff = texture(material.diffuse, texCoord);
-	vec4 spec = texture(material.specular, texCoord);
+	vec3 norm = normalize(texture(material.normal, vIn.texCoord).rgb * 2 - vec3(1.f));
+	vec4 diff = texture(material.diffuse, vIn.texCoord);
+	vec4 spec = texture(material.specular, vIn.texCoord);
 
 	for(int i = 0; i < numLights; i++) {
 		outColor.rgb += calculateLight(lights[i], norm, diff, spec);

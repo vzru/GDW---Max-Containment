@@ -24,6 +24,7 @@ class Timer;	class Camera;
 class Enemy;	class Player;
 class Shader;	class Light;
 class Level;	class Object;
+class Mesh;
 class ParticleEmitterSoA;
 namespace Input {
 	using Triggers = std::pair<float, float>;
@@ -179,6 +180,7 @@ private:
 	} hud;
 	// screens
 	struct Screen {
+		Object *quad;
 		Object *menu, *pause, *win, *lose, *loading, *controls;
 		struct Button {
 			Object *obj;

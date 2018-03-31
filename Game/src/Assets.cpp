@@ -2,6 +2,8 @@
 #include "Mesh.h"
 #include "AnimationMesh.h"
 #include "Material.h"
+#include "Texture.h"
+
 #include <iostream>
 
 Assets *Assets::assets = nullptr;

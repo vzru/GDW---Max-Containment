@@ -29,7 +29,7 @@ void Camera::reset(glm::vec2 size) {
 	proj = glm::perspective(45.f, size.x / size.y, 0.1f, 10000.f);
 }
 
-void Camera::processMotion(glm::vec2 change, float dt) {
+//void Camera::processMotion(glm::vec2 change, float dt) {
 //	// yaw rotation
 //	forwardVector = glm::rotate(glm::normalize(forwardVector), glm::radians(0.08f * change.x), { 0.0f, 1.0f, 0.0f });
 //	// calc right vector
@@ -38,18 +38,18 @@ void Camera::processMotion(glm::vec2 change, float dt) {
 //	forwardVector = glm::rotate(forwardVector, glm::radians(0.08f * change.y), rightVector);
 //	// calc up vector
 //	upVector = glm::normalize(glm::cross(rightVector, forwardVector));
-}
+//}
 
-void Camera::pan(glm::vec3 amount) {
+//void Camera::pan(glm::vec3 amount) {
 //	calcRightVector();
 //	position += rightVector * amount.x;
 //	position += glm::vec3(0.0f, 1.0f, 0.0f) * amount.y;
 //	position += forwardVector * amount.z;
-}
-void Camera::move(glm::vec3 amount) {
+//}
+//void Camera::move(glm::vec3 amount) {
 //	position += amount;
-	position += amount;
-}
+//	position += amount;
+//}
 
 //void Camera::calcRightVector() {
 //	rightVector = glm::cross(forwardVector, { 0.0f, 1.0f, 0.0f });

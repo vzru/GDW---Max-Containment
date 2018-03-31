@@ -8,19 +8,17 @@ layout(location = 0) in vec3 in_vert;
 layout(location = 1) in vec2 in_uv;
 layout(location = 2) in vec3 in_normal;
 
-//layout(location = 3) in vec3 in_vert;
-//layout(location = 4) in vec2 in_uv;
-//layout(location = 5) in vec3 in_normal;
-
-out vec3 position;
-out vec2 texCoord;
-out vec3 normal;
+out VertexData {
+	vec3 position;
+	vec2 texCoord;
+	vec3 normal;
+} vOut;
 
 void main() {
-	texCoord = in_uv;
-	normal = mat3(uView * uModel) * in_normal;
+	vOut.texCoord = in_uv;
+	vOut.normal = mat3(uView * uModel) * in_normal;
 	
 	vec4 viewSpacePos = uView * uModel * vec4(in_vert, 1.f);
-	position = viewSpacePos.xyz;
+	vOut.position = viewSpacePos.xyz;
 	gl_Position = uProj * viewSpacePos;
 }
