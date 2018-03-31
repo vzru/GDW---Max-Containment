@@ -47,7 +47,7 @@ void FrameBufferObject::createFrameBuffer(unsigned int fboWidth, unsigned int fb
 		// We need to initialize the size of the texture
 		// Here I am making each texture the same size, but you may want to
 		// extend this class to allow textures of different size
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, 0);
 
 		// Texture filtering
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

@@ -238,6 +238,8 @@
     <None Include="assets\shaders\PhongColorSIdes.vert" />
     <None Include="assets\shaders\PhongNoTexture.frag" />
     <None Include="assets\shaders\phongSpot.frag" />
+    <None Include="assets\shaders\unlit.vert" />
+    <None Include="assets\shaders\unlitText.frag" />
     <None Include="assets\shaders\unlitTexture_f.glsl" />
     <None Include="assets\sounds\Slap.ogg" />
   </ItemGroup>

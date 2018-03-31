@@ -29,7 +29,7 @@ void main() {
 	vec3 newVert = in_vert;
 	vec3 newNormal = in_normal;
 
-	if(animate)
+	if(animate > 0)
 	{
 		newVert = vec3(	lerp(in_vert.x, in_vert2.x, t),
 								lerp(in_vert.y, in_vert2.y, t),

@@ -56,19 +56,20 @@ public:
 	// Updating functions
 	void collide(float dt, Level* level, bool ai = false);
 	virtual void update(float dt);
+	void drawQuad(Shader * shader, Camera * camera);
 	//virtual void physics(float dt);
 	virtual void draw(Shader *shader, Camera *camera, std::vector<Light*> lights, int a, float lightCount = 0.0f);
 	virtual void aDraw(Shader *shader, Camera *camera, std::vector<Light*> lights, int a, float lightCount = 0.0f);
 
 
 	// Physical properties
-	glm::vec4 color;
+	glm::vec4 color = glm::vec4(0.0f);
 	Mesh* mesh;// , currentMesh, nextMesh;
 	AnimationMesh* aMesh;
 	std::vector<AnimationMesh*> animationList;
 	Material* mat;
 	int ammo;
-	float life, cooldown, timer, t, timerReset = 35.0f;
+	float life, cooldown, timer, t, timerReset = 35.0f, nightV;
 	bool collect;
 	int keyFrame = 0;
 };

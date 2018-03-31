@@ -22,6 +22,7 @@ public:
 	bool reloaded = false;
 	bool reload = false;
 	bool play = false;
+	float nightCD;
 
 	bool newShot = false;
 

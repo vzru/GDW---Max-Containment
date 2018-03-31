@@ -41,6 +41,8 @@ uniform Light lights[MAX_NUM_LIGHTS];
 
 uniform Material material;
 
+uniform vec4 objectColor;
+
 in vec3 position;
 in vec2 texCoord;
 in vec3 normal;
@@ -95,6 +97,7 @@ void main() {
 		outColor.rgb += calculateLight(lights[i], norm, diff, spec);
 	}
 
+	outColor.rgb += objectColor.xyz;
 	outColor.rgb *= material.hue;
 	outColor.a = diff.a;
 }

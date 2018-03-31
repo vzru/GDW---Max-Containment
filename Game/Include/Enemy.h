@@ -12,6 +12,7 @@ public:
 	bool triggered = false;
 	bool range = false;
 	bool KB = true;
+	bool KBtoggle = false;
 	float attackSpeed = 0.5f; // time between attacks (in seconds)
 	float movementSpeed; // amount to divide dt by
 	float damage; // damage dealt to the player per attack

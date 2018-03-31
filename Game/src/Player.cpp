@@ -78,10 +78,11 @@ void Player::reset(glm::vec3 pos) {
 	velocity = { 0.f, 0.f, 0.f };
 	acceleration = { 0.f, 0.f, 0.f };
 	cooldown = 0.f;
-	life = 15.f;
+	life = 16.f;
 	ammo = 30.0f;
 	ammoDepo = 90.0f;
 	reloadCd = 0.0f;
+	nightCD = 0.0f;
 	firing = false;
 }
 

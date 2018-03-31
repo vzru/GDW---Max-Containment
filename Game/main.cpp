@@ -64,6 +64,8 @@ int main(int argc, char **argv) {
 	glutTimerFunc(1, TimerCallbackFunction, 0);
 	glutSpecialFunc(SpecialInputCallbackFunction);
 
+
+
 	// initialize game
 	game->init(ControllerInputCallbackFunction, ControllerSpecialCallbackFunction);
 
