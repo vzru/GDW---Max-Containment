@@ -130,7 +130,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	//Sound* sound = new Sound("assets/sounds/SW.mp3", true, 2);
 	soundList.push_back(sound);
 	soundList[0]->createChannel(0, false);
-	soundList[0]->setVolume(0, 0.1f);
+	soundList[0]->setVolume(0, 0.03f);
 
 	//Initialize Assets
 	// level
@@ -669,7 +669,7 @@ void Game::initializeParticles()
 	part->lifeR = glm::vec3(0.001f, 0.01f, 0.0f);
 	part->initForceMin = glm::vec3(-0.3f, -0.5f, -0.3f);
 	part->initForceMax = glm::vec3(0.3f, 0.0f, 0.3f);
-	part->size = 0.02f;
+	part->size = 0.1f;
 	part->color = glm::vec3(0.70f, 0.70f, 0.7f);
 	//part->material = materials["particles"];
 	//part[index].texture = textures["smoke"];
