@@ -14,8 +14,8 @@
 
 Object::Object(glm::vec3 pos)
 	: scale(1.0f), position(pos) {
-	mesh = new Mesh();
-	aMesh = new AnimationMesh();
+	//mesh = new Mesh();
+	//aMesh = new AnimationMesh();
 	mat = new Material();
 	update(0.f);
 }
@@ -199,6 +199,20 @@ Object* Object::draw(Shader *shader, Camera *camera, Light* light) {
 	glActiveTexture(GL_TEXTURE0);
 	mat->diffuse->unbind();
 	// End
+	shader->sendUniform("u_model", transform);
+	shader->sendUniform("u_view", camera->getView());
+	shader->sendUniform("u_proj", camera->getProj());
+	shader->sendUniform("u_color", color);
+	shader->sendUniform("animate", a);
+	// Material
+	mat->sendUniforms(shader, "material.");
+	// Lights
+	for (int i = 0; i < lights.size(); i++)
+		lights[i]->sendUniforms(shader, camera->getView(), "lights[" + std::to_string(i) + "].");
+
+	mat->bind();
+	mesh->draw();
+	mat->unbind();
 	shader->unbind();
 	return this;
 }
@@ -263,6 +277,22 @@ Object* Object::draw(Shader* shader, Camera* camera, std::vector<Light*> lights)
 	glActiveTexture(GL_TEXTURE0);
 	mat->diffuse->unbind();
 	// End
+=======
+	shader->sendUniform("u_model", transform);
+	shader->sendUniform("u_view", camera->getView());
+	shader->sendUniform("u_proj", camera->getProj());
+	shader->sendUniform("u_color", color);
+	shader->sendUniform("animate", a);
+	shader->sendUniform("t", t);
+	// Material
+	mat->sendUniforms(shader, "material.");
+	// Lights
+	for (int i = 0; i < lights.size(); i++)
+		lights[i]->sendUniforms(shader, camera->getView(), "lights[" + std::to_string(i) + "].");
+
+	mat->bind();
+	mesh->draw();
+	mat->unbind();
 	shader->unbind();
 	return this;
 }

@@ -1,10 +1,13 @@
 #include "Material.h"
 #include <iostream>
 
+#include "Texture.h"
+#include "Shader.h"
+
 Material::Material() {
-	diffuse = new Texture();
-	specular = new Texture();
-	normal = new Texture();
+	//diffuse = new Texture();
+	//specular = new Texture();
+	//normal = new Texture();
 }
 
 //Material::Material(std::string diffusePath, std::string specularPath, std::string normalPath) {
@@ -71,4 +74,30 @@ void Material::load(Type::Texture type, Texture *texture) {
 void Material::setData(float specExp, glm::vec3 &color) {
 	specExponent = specExp;
 	hue = color;
+}
+
+void Material::bind() {
+	if (diffuse)
+		diffuse->bind(GL_TEXTURE0);
+	if (specular)
+		specular->bind(GL_TEXTURE1);
+	if (normal)
+		normal->bind(GL_TEXTURE2);
+}
+
+void Material::unbind() {
+	if (normal)
+		normal->unbind(GL_TEXTURE0);
+	if (specular)
+		specular->unbind(GL_TEXTURE1);
+	if (diffuse)
+		diffuse->unbind(GL_TEXTURE2);
+}
+
+void Material::sendUniforms(Shader* shader, std::string prefix) {
+	shader->sendUniform(prefix + "diffuse", 0);
+	shader->sendUniform(prefix + "specular", 1);
+	shader->sendUniform(prefix + "normal", 2);
+	shader->sendUniform(prefix + "hue", hue);
+	shader->sendUniform(prefix + "specExponent", specExponent);
 }

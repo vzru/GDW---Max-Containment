@@ -1,8 +1,9 @@
 #version 420
 
-uniform mat4 uModel;
-uniform mat4 uView;
-uniform mat4 uProj;
+uniform mat4 u_model;
+uniform mat4 u_view;
+uniform mat4 u_proj;
+uniform vec4 u_color;
 
 uniform int animate;
 uniform float t;
@@ -15,35 +16,28 @@ layout(location = 3) in vec3 in_vert2;
 layout(location = 4) in vec2 in_uv2;
 layout(location = 5) in vec3 in_normal2;
 
-out vec3 position;
-out vec3 normal;
-out vec2 texCoord;
-
-
-float lerp(float d0, float d1, float dt)
-{
-	return (1 - dt) * d0 + d1 * dt;
-}
+out VertexData {
+	vec3 position;
+	vec2 texCoord;
+	vec3 normal;
+	vec4 color;
+} vOut;
 
 void main() {
 	vec3 newVert = in_vert;
 	vec3 newNormal = in_normal;
+	vec2 newUV = in_uv;
 
-	if(animate)
-	{
-		newVert = vec3(	lerp(in_vert.x, in_vert2.x, t),
-								lerp(in_vert.y, in_vert2.y, t),
-								lerp(in_vert.z, in_vert2.z, t)	);
-
-		newNormal = vec3(	lerp(in_normal.x, in_normal2.x, t),
-								lerp(in_normal.y, in_normal2.y, t),
-								lerp(in_normal.z, in_normal2.z, t)	);
+	if (animate) {
+		newVert = mix(in_vert, in_vert2, t);
+		newNormal = mix(in_normal, in_normal2, t);
+		newUV = mix(in_uv, in_uv2, t);
 	}
 
-	vec4 viewSpacePos = uView * uModel * vec4(newVert, 1.f);
-	position = viewSpacePos.xyz;
-	normal = mat3(uView * uModel) * newNormal;
+	vec4 viewSpacePos = u_view * u_model * vec4(newVert, 1.f);
+	vOut.position = viewSpacePos.xyz;
+	vOut.normal = mat3(u_view * u_model) * newNormal;
 
-	texCoord = in_uv;
-	gl_Position = uProj * viewSpacePos;
+	vOut.texCoord = newUV;
+	gl_Position = u_proj * viewSpacePos;
 }

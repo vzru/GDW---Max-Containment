@@ -2,6 +2,7 @@
 
 #include <string>
 #include <GL\glew.h>
+#include <VertexBufferObject.h>
 
 class Mesh {
 public:
@@ -16,13 +17,10 @@ public:
 	unsigned int getNumFaces();
 	unsigned int getNumVertices();
 
-	// OpenGL buffers and objects
-	GLuint vboVertices = 0;
-	GLuint vboUVs = 0;
-	GLuint vboNormals = 0;
-	GLuint vao = 0;
+	VertexBufferObject vbo;
 	
-	
+	void draw();
+
 protected:
 	unsigned int numFaces = 0;
 	unsigned int numVertices = 0;

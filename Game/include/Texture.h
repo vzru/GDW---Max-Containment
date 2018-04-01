@@ -12,8 +12,8 @@ public:
 	bool load(const std::string &file);
 	void unload();
 
-	void bind();
-	void unbind();
+	void bind(GLenum unit);
+	void unbind(GLenum unit);
 
 	// The handle to the texture object
 	GLuint texObj = 0;

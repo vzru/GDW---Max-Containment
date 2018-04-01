@@ -74,10 +74,8 @@ Game* Game::init(InputControl) {
 	//fboD.bindFrameBufferForDrawing();
 
 	// Initialize loading screen
-	glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	screen.camera = new Camera(windowSize);
-	screen.camera->setPosition({ 0.f, 5.f, 0.01f });
+	screen.camera->setPosition({ 0.f, 5.f, 0.f });
 	screen.camera->update({ 0.f, 0.f, 0.f });
 	screen.light = new Light();
 	screen.light->type = (unsigned int)Type::Light::DIRECTIONAL;
@@ -97,6 +95,13 @@ Game* Game::init(InputControl) {
 	//fboD.unbindFrameBuffer(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load get to the loading screen" << std::endl;
+	fboD.create(windowSize.x, windowSize.y, 1, false);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	fboD.clear({ 0,1,0, 1.0f });
+	screen.loading->draw(program["Unlit"], screen.camera, { }, 0);
+	glutSwapBuffers();
+
+	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to get to loading screen" << std::endl;
 
 	assets->loadSound("soundtrack", "game soundtrack.wav", true, 2)
 		->createChannel(2, false)
@@ -171,7 +176,8 @@ void Game::loadAssets() {
 	assets->loadTexture("level color", "new level texture.png");
 	assets->loadTexture("level normal", "new level texture normals.png");
 	// screens
-	assets->loadMesh("screen", "screen.obj");
+	//assets->loadMesh("screen", "screen.obj");
+	assets->loadMesh("quad", "quad.obj");
 	assets->loadTexture("pause", "pause.png");
 	assets->loadTexture("win", "win.png");
 	assets->loadTexture("lose", "lose.png");
@@ -598,6 +604,7 @@ Game::~Game() {
 	delete screen.lose;
 	delete screen.camera;
 	delete screen.light;
+	delete screen.loading;
 	delete screen.play.obj;
 	delete screen.quit.obj;
 	delete screen.resume.obj;
@@ -844,6 +851,7 @@ void Game::draw() {
 		screen.pause->draw(assets->shaders["Phong"], level.camera, hud.light);
 		screen.resume.obj->draw(assets->shaders["PhongNoTexture"], screen.camera, screen.light);
 		screen.quit.obj->draw(assets->shaders["PhongNoTexture"], screen.camera, screen.light);
+	fboD.clear({ 0,1,0, 1.0f });
 		break;
 	case State::Play: {
 		player->draw(assets->shaders["PhongSpot"], level.camera, level.lights);
@@ -891,6 +899,18 @@ void Game::draw() {
 		break;
 	case State::Lose:
 		screen.lose->draw(assets->shaders["Phong"], screen.camera, screen.light);
+		screen.menu->draw(program["Unlit"], screen.camera, {}, 0);
+		screen.play.obj->draw(program["PhongNoTexture"], screen.camera, { screen.light }, 0);
+		screen.quit.obj->draw(program["PhongNoTexture"], screen.camera, { screen.light }, 0);
+		break;
+	case State::Win:
+		screen.win->draw(program["Unlit"], screen.camera, {}, 0);
+		break;
+	case State::Lose:
+		screen.lose->draw(program["Unlit"], screen.camera, {}, 0);
+		break;
+	case State::Control:
+		screen.controls->draw(program["Unlit"], screen.camera, {}, 0);
 		break;
 	default:
 		break;

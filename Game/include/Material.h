@@ -1,8 +1,12 @@
 #pragma once
 
 #include <glm\glm.hpp>
-#include "Texture.h"
+#include <string>
+
 #include "Type.h"
+
+class Texture;
+class Shader;
 
 class Material {
 public:
@@ -11,10 +15,13 @@ public:
 	Material(Texture *diffuse, Texture *specular = nullptr, Texture *normal = nullptr);
 	~Material();
 
-	// loaders
+	// Methods
 	//void load(Type::Texture type, std::string texFile);
 	void load(Type::Texture type, Texture *texPtr);
 	void setData(float specExp = 50.f, glm::vec3 &hue = glm::vec3(1.0f));
+	void bind();
+	void unbind();
+	void sendUniforms(Shader* shader, std::string prefix);
 
 	// Data members
 	Texture *diffuse, *specular, *normal;

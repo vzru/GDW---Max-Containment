@@ -25,6 +25,7 @@ class Timer;	class Camera;
 class Enemy;	class Player;
 class Shader;	class Light;
 class Level;	class Object;
+class Mesh;
 class ParticleEmitterSoA;
 class Assets;
 namespace Input {

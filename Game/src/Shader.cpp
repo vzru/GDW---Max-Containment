@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "Shader.h"
 
@@ -10,42 +11,13 @@ Shader::~Shader() {
 	if (loaded)	unload();
 }
 
-bool Shader::load(const std::string &vertFile, const std::string &fragFile) {
-	// create shader and program objects
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-	program = glCreateProgram();
-
-	// load our source code
-	std::string source = readFile(vertFile);
-	const GLchar *temp = static_cast<const GLchar*>(source.c_str());
-	glShaderSource(vertexShader, 1, &temp, NULL);
-
-	source = readFile(fragFile);
-	temp = static_cast<const GLchar*>(source.c_str());
-	glShaderSource(fragShader, 1, &temp, NULL);
-
-	// Compile Code
-	std::cout << "Loading shader: " << vertFile << std::endl;
-	if (!compileShader(vertexShader)) {
-		std::cout << "Vertex shader failed to compile." << std::endl;
-		outputShaderLog(vertexShader);
-		unload();
-		system("pause");
-		return false;
-	}
-
-	std::cout << "Loading shader: " << fragFile << std::endl;
-	if (!compileShader(fragShader)) {
-		std::cout << "Fragment shader failed to compile." << std::endl;
-		outputShaderLog(fragShader);
-		unload();
-		system("pause");
-		return false;
-	}
+bool Shader::load(const std::string& vertFile, const std::string& fragFile) {
+	vertShader = load(vertFile, GL_VERTEX_SHADER);
+	fragShader = load(fragFile, GL_FRAGMENT_SHADER);
 
 	// Setup program object
-	glAttachShader(program, vertexShader);
+	program = glCreateProgram();
+	glAttachShader(program, vertShader);
 	glAttachShader(program, fragShader);
 
 	if (!linkProgram()) {
@@ -55,60 +27,17 @@ bool Shader::load(const std::string &vertFile, const std::string &fragFile) {
 		return false;
 	}
 
-	loaded = true;
-	return true;
+	return loaded = true;
 }
 
-bool Shader::load(const std::string & vertFile, const std::string & geoFile, const std::string & fragFile)
-{
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	geoShader = glCreateShader(GL_GEOMETRY_SHADER);
-	fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-	program = glCreateProgram();
-
-	// load our source code
-	std::string source = readFile(vertFile);
-	const GLchar *temp = static_cast<const GLchar*>(source.c_str());
-	glShaderSource(vertexShader, 1, &temp, NULL);
-
-	source = readFile(geoFile);
-	temp = static_cast<const GLchar*>(source.c_str());
-	glShaderSource(geoShader, 1, &temp, NULL);
-
-	source = readFile(fragFile);
-	temp = static_cast<const GLchar*>(source.c_str());
-	glShaderSource(fragShader, 1, &temp, NULL);
-
-	// Compile Code
-	std::cout << "Loading shader: " << vertFile << std::endl;
-	if (!compileShader(vertexShader)) {
-		std::cout << "Vertex shader failed to compile." << std::endl;
-		outputShaderLog(vertexShader);
-		unload();
-		system("pause");
-		return false;
-	}
-
-	std::cout << "Loading shader: " << geoFile << std::endl;
-	if (!compileShader(geoShader)) {
-		std::cout << "Geometry shader failed to compile." << std::endl;
-		outputShaderLog(geoShader);
-		unload();
-		system("pause");
-		return false;
-	}
-
-	std::cout << "Loading shader: " << fragFile << std::endl;
-	if (!compileShader(fragShader)) {
-		std::cout << "Fragment shader failed to compile." << std::endl;
-		outputShaderLog(fragShader);
-		unload();
-		system("pause");
-		return false;
-	}
+bool Shader::load(const std::string& vertFile, const std::string& geoFile, const std::string& fragFile) {
+	vertShader = load(vertFile, GL_VERTEX_SHADER);
+	geoShader = load(geoFile, GL_GEOMETRY_SHADER);
+	fragShader = load(fragFile, GL_FRAGMENT_SHADER);
 
 	// Setup program object
-	glAttachShader(program, vertexShader);
+	program = glCreateProgram();
+	glAttachShader(program, vertShader);
 	glAttachShader(program, geoShader);
 	glAttachShader(program, fragShader);
 
@@ -119,36 +48,50 @@ bool Shader::load(const std::string & vertFile, const std::string & geoFile, con
 		return false;
 	}
 
-	loaded = true;
-	return true;
+	return loaded = true;
 }
 
-bool Shader::isLoaded() const {
-	return loaded;
+GLuint Shader::load(const std::string& file, GLenum type) {
+	GLuint handle = glCreateShader(type);
+	std::string source = readFile(file);
+	const GLchar *temp = static_cast<const GLchar*>(source.c_str());
+	//std::cout << temp << std::endl;
+	glShaderSource(handle, 1, &temp, NULL);
+	
+	std::cout << "Loading shader: " << file << std::endl;
+
+	glCompileShader(handle);
+	GLint success;
+	glGetShaderiv(handle, GL_COMPILE_STATUS, &success);
+
+	if (!success) {
+		std::cout << "Shader failed to compile." << std::endl;
+		outputShaderLog(handle);
+		unload();
+		system("pause");
+	}
+
+	return handle;
 }
 
 void Shader::unload() {
-	if (vertexShader != 0) {
-		glDetachShader(program, vertexShader);
-		glDeleteShader(vertexShader);
-		vertexShader = 0;
-	}
-	if (geoShader != 0) {
-		glDetachShader(program, geoShader);
-		glDeleteShader(geoShader);
-		geoShader = 0;
-	}
-	if (fragShader != 0) {
-		glDetachShader(program, fragShader);
-		glDeleteShader(fragShader);
-		fragShader = 0;
-	}
+	unload(vertShader);
+	unload(geoShader);
+	unload(fragShader);
 	if (program != 0) {
 		glDeleteProgram(program);
 		program = 0;
 	}
 
 	loaded = false;
+}
+
+void Shader::unload(GLuint& handle) {
+	if (handle != 0) {
+		glDetachShader(program, handle);
+		glDeleteShader(handle);
+		handle = 0;
+	}
 }
 
 bool Shader::linkProgram() {
@@ -170,16 +113,18 @@ Shader* Shader::unbind() {
 	return this;
 }
 
-void Shader::addAttribute(unsigned int index, const std::string & attribName) {
+void Shader::addAttribute(unsigned int index, const std::string& attribName) {
 	glBindAttribLocation(program, index, attribName.c_str());
 }
 
-int Shader::getAttribLocation(const std::string & attribName) {
+int Shader::getAttribLocation(const std::string& attribName) {
 	return glGetAttribLocation(program, attribName.c_str());
 }
 
-int Shader::getUniformLocation(const std::string & uniformName) {
-	return glGetUniformLocation(program, uniformName.c_str());
+int Shader::getUniformLocation(const std::string& uniformName) {
+	if (uniformLocations.find(uniformName) == uniformLocations.end())
+		uniformLocations.emplace(uniformName, glGetUniformLocation(program, uniformName.c_str()));
+	return uniformLocations.at(uniformName);
 }
 
 Shader* Shader::sendUniform(const std::string & name, int integer) {
@@ -228,6 +173,24 @@ Shader* Shader::sendUniformMat4(const std::string & name, float * matrix, bool t
 	GLint location = getUniformLocation(name);
 	glUniformMatrix4fv(location, 1, transpose, matrix);
 	return this;
+void Shader::sendUniform(const std::string& name, const glm::mat2 &matrix, bool transpose) {
+	GLint location = getUniformLocation(name);
+	glUniformMatrix2fv(location, 1, transpose, glm::value_ptr(matrix));
+}
+void Shader::sendUniform(const std::string& name, const glm::mat3 &matrix, bool transpose) {
+	GLint location = getUniformLocation(name);
+	glUniformMatrix3fv(location, 1, transpose, glm::value_ptr(matrix));
+}
+void Shader::sendUniform(const std::string& name, const glm::mat4 &matrix, bool transpose) {
+	GLint location = getUniformLocation(name);
+	glUniformMatrix4fv(location, 1, transpose, glm::value_ptr(matrix));
+}
+
+template<class T>
+void Shader::sendUniform(const std::string& name, std::vector<T> vector) {
+	for (int i = 0; i < vector.size(); i++) {
+		Shader::sendUniform(name + "[" + std::to_string(i) + "]", vector[i]);
+	}
 }
 
 std::string Shader::readFile(const std::string & fileName) const {
@@ -240,15 +203,6 @@ std::string Shader::readFile(const std::string & fileName) const {
 
 	std::string data(std::istreambuf_iterator<char>(input), (std::istreambuf_iterator<char>()));
 	return data;
-}
-
-bool Shader::compileShader(GLuint shader) const {
-	glCompileShader(shader);
-
-	GLint success;
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-
-	return success == GL_TRUE;
 }
 
 void Shader::outputShaderLog(GLuint shader) const {

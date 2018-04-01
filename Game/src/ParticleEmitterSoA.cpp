@@ -42,10 +42,9 @@ void ParticleEmitterSoA::init(int numP)
 		numParticles = numP;
 		allocated = true; // mark that memory has been allocated
 
-						  // Set up VBO
-						  // **** LOOK HERE ****
+		// Set up VBO
 		AttributeDescriptor posAttrib;
-		posAttrib.attributeLocation = VERTEX;
+		posAttrib.attributeLocation = AttributeLocations::VERTEX;
 		posAttrib.data = particles.positions; // data points to particles.positions
 		posAttrib.elementSize = sizeof(float);
 		posAttrib.elementType = GL_FLOAT;
@@ -125,6 +124,9 @@ void ParticleEmitterSoA::draw(Shader *shader, Camera *cam)
 	//shader->sendUniformMat4["u_mvp"] = cam->viewProjMatrix;
 	//shader->sendUniformMat4["u_mv"] = cam->viewMatrix;
 	//shader->sendUniformMat4["u_proj"] = cam->projMatrix;
+	shader->sendUniform("u_model", transform);
+	shader->sendUniform("u_view", cam->getView());
+	shader->sendUniform("u_proj", cam->getProj());
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -133,7 +135,6 @@ void ParticleEmitterSoA::draw(Shader *shader, Camera *cam)
 	vbo.draw();
 
 	glDepthMask(true);
-
 }
 
 void ParticleEmitterSoA::freeMemory()

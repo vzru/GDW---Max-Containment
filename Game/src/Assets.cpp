@@ -4,6 +4,7 @@
 #include "Material.h"
 #include "Sound.h"
 #include "Shader.h"
+#include "Texture.h"
 #include <iostream>
 
 Assets *Assets::assets = nullptr;

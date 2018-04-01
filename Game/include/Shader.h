@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <unordered_map>
 
 #include <GL\glew.h>
 #include <glm\glm.hpp>
@@ -15,9 +16,11 @@ public:
 	// and places them in a program
 	bool load(const std::string &vertFile, const std::string &fragFile);
 	bool load(const std::string &vertFile, const std::string &geoFile, const std::string &fragFile);
+	GLuint load(const std::string &file, GLenum type);
 
 	// clears all data from OpenGL
 	void unload();
+	void unload(GLuint& handle);
 
 	bool linkProgram();
 
@@ -45,21 +48,25 @@ public:
 	Shader* sendUniform(const std::string &name, const glm::vec4 &vector);
 	Shader* sendUniformMat3(const std::string &name, float *matrix, bool transpose);
 	Shader* sendUniformMat4(const std::string &name, float *matrix, bool transpose);
+	void sendUniform(const std::string &name, const glm::mat2 &matrix, bool transpose = false);
+	void sendUniform(const std::string &name, const glm::mat3 &matrix, bool transpose = false);
+	void sendUniform(const std::string &name, const glm::mat4 &matrix, bool transpose = false);
+	template<class T>
+	void sendUniform(const std::string &name, std::vector<T> vector);
 
 	bool isLoaded() const;
-private:
 	bool loaded = false;
+private:
 
-	GLuint vertexShader = 0;
+	GLuint vertShader = 0;
 	GLuint geoShader = 0;
 	GLuint fragShader = 0;
 	GLuint program = 0;
 
+	std::unordered_map<std::string, GLint> uniformLocations;
+
 	std::string readFile(const std::string &fileName) const;
 
-	bool compileShader(GLuint shader) const;
-
 	void outputShaderLog(GLuint shader) const;
-
 	void outputProgramLog() const;
 };

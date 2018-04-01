@@ -9,14 +9,15 @@ public:
 	FrameBufferObject();
 	~FrameBufferObject();
 
-	void createFrameBuffer(unsigned int fboWidth, unsigned int fboHeight, unsigned int numColourBuffers, bool useDepth);
+	void create(unsigned int fboWidth, unsigned int fboHeight, unsigned int numColourBuffers, bool useDepth);
 
 	// Set active frame buffer for rendering
-	void bindFrameBufferForDrawing();
+	void bindForDrawing();
 	void bindDepthTextureForSampling(GLenum textureUnit);
-	static void unbindFrameBuffer(int backBufferWidth, int backBufferHeight);
+	void unbind();
+	static void unbind(int backBufferWidth, int backBufferHeight);
 
-	static void clearFrameBuffer(glm::vec4 clearColour);
+	static void clear(glm::vec4 clearColour);
 
 	// Bind specific textures
 	// Allows us to sample textures in a shader

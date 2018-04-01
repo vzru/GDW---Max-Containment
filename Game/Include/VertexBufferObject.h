@@ -11,9 +11,9 @@
 enum AttributeLocations
 {
 	VERTEX = 0,
-	NORMAL,
 	TEX_COORD,
-	COLOUR
+	NORMAL,
+	//COLOUR
 };
 
 // This struct describes the array for an attribute
@@ -86,5 +86,5 @@ public:
 	// Tip: Might want to put this in the destructor  
 	void destroy();
 
-	GLenum primitiveType; // defaults to GL_TRIANGLES
+	GLenum primitiveType = GL_TRIANGLES; // defaults to GL_TRIANGLES
 };
