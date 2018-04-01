@@ -31,7 +31,6 @@ Game::Game(int& argc, char** argv)
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-
 	/* initialize the window and OpenGL properly */
 	/// Request an OpenGL 4.4 compatibility
 	/// A compatibility context is needed to use the provided rendering utilities
@@ -110,6 +109,8 @@ Game* Game::init(InputControl) {
 	//sounds[0]->createChannel(0, false);
 	//sounds[0]->setVolume(0, 0.1f);
 
+	loadAssets();
+
 	// Initialize Player
 	player = new Player();
 	player->loadTexture(Type::Texture::DIFFUSE, assets->textures["player color"])
@@ -121,20 +122,21 @@ Game* Game::init(InputControl) {
 	player->bullet->loadMesh(assets->meshes["bullet"]);
 	player->bullet->color = glm::vec4(consts.color.white, 0.3f);
 
-	player->loadAnimationFrame(assets->aMeshes["playerFrame0"]);
-	player->loadAnimationFrame(assets->aMeshes["playerFrame1"]);
-	player->loadAnimationFrame(assets->aMeshes["playerFrame2"]);
-	player->loadAnimationFrame(assets->aMeshes["playerFrame3"]);
-	player->loadAnimationFrame(assets->aMeshes["playerFrame4"]);
-	player->loadAnimationFrame(assets->aMeshes["playerFrame5"]);
-	player->loadAnimationFrame(assets->aMeshes["playerFrame6"]);
-	player->loadAnimationFrame(assets->aMeshes["playerFrame7"]);
-	player->loadAnimationFrame(assets->aMeshes["playerFrame8"]);
-
+	player->loadAnimationFrame(assets->aMeshes["playerFrame0"])
+		->loadAnimationFrame(assets->aMeshes["playerFrame1"])
+		->loadAnimationFrame(assets->aMeshes["playerFrame2"])
+		->loadAnimationFrame(assets->aMeshes["playerFrame3"])
+		->loadAnimationFrame(assets->aMeshes["playerFrame4"])
+		->loadAnimationFrame(assets->aMeshes["playerFrame5"])
+		->loadAnimationFrame(assets->aMeshes["playerFrame6"])
+		->loadAnimationFrame(assets->aMeshes["playerFrame7"])
+		->loadAnimationFrame(assets->aMeshes["playerFrame8"]);
 
 
 	// Initialize Shaders
 	initShaders();
+	// Initialize Sounds
+	initSounds();
 	// Initialize Level
 	initLevel();
 	// Initialize Screens
@@ -145,7 +147,8 @@ Game* Game::init(InputControl) {
 	initEnemies();
 	// Initialize Particles
 	initParts();
-
+	// Initialize Items
+	initItems();
 
 	// Load Enemies
 	loadEnemies();
@@ -156,6 +159,144 @@ Game* Game::init(InputControl) {
 
 	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load in things" << std::endl;
 	//soundList[1]->createChannel();
+	return this;
+}
+
+void Game::loadAssets() {
+	// level
+	//assets->loadMesh("level", "Laboratory Level Triangulated.obj");
+	assets->loadMesh("level", "new level.obj");
+	//assets->loadMesh("hitboxes", "Laboratory Level Hitboxes Triangulated.obj");
+	//assets->loadTexture("level color", "Lab_textures.png");
+	assets->loadTexture("level color", "new level texture.png");
+	assets->loadTexture("level normal", "new level texture normals.png");
+	// screens
+	assets->loadMesh("screen", "screen.obj");
+	assets->loadTexture("pause", "pause.png");
+	assets->loadTexture("win", "win.png");
+	assets->loadTexture("lose", "lose.png");
+	assets->loadTexture("controls", "controlsNew.png");
+	assets->loadTexture("menu", "menu.png");
+	// buttons
+	assets->loadMesh("play", "Play Button.obj");
+	assets->loadMesh("quit", "Quit Button.obj");
+	assets->loadMesh("resume", "resume.obj");
+	assets->loadMesh("credits", "credits.obj");
+	// player
+	assets->loadMesh("player", "character_model.obj");
+	assets->loadTexture("player color", "character texture.png");
+	assets->loadTexture("player normal", "character normals.png");
+	// other
+	assets->loadTexture("fullSpecular", "fullSpecular.png");
+	assets->loadTexture("noSpecular", "noSpecular.png");
+	assets->loadMesh("bullet", "bullet.obj");
+	// hud
+	assets->loadMesh("hud", "hud.obj");
+	assets->loadMesh("hp bar", "hp bar.obj");
+	assets->loadTexture("hud", "hud.png");
+	assets->loadTexture("numbers", "Numbers.png");
+	// drops
+	assets->loadMesh("health", "health.obj");
+	assets->loadMesh("ammo", "ammo.obj");
+	assets->loadMesh("night_v", "night_v.obj");
+	assets->loadTexture("item", "drops.png");
+	assets->loadMesh("splatter", "splatter.obj");
+	assets->loadTexture("corpse", "splatter.png");
+	assets->loadMesh("exitR", "exit.obj");
+	assets->loadMesh("exitL", "exit left.obj");
+	assets->loadTexture("exitR", "exit1.png");
+	assets->loadTexture("exitL", "exit1.png");
+	// enemy
+	assets->loadMesh("enemy0", "enemy3_model.obj");
+	assets->loadMesh("enemy1", "enemy_model.obj");
+	assets->loadMesh("enemy2", "enemy2_model.obj");
+	assets->loadTexture("enemy0 color", "enemy3 texture.png");
+	assets->loadTexture("enemy1 color", "enemy texture.png");
+	assets->loadTexture("enemy2 color", "enemy2 texture.png");
+	assets->loadTexture("enemy0 normal", "enemy3N.png");
+	assets->loadTexture("enemy1 normal", "enemy1N.png");
+	assets->loadTexture("enemy2 normal", "enemy2N.png");
+
+	// animation
+	//assets->loadMesh("dam0", "dam0.obj");
+	//assets->loadMesh("dam1", "dam1.obj");
+	//assets->loadMesh("dam2", "dam2.obj");
+	//assets->loadMesh("dam3", "dam3.obj");
+	//assets->loadMesh("dam4", "dam4.obj");
+	//assets->loadMesh("dam5", "dam5.obj");
+	//assets->loadMesh("dam6", "dam6.obj");
+	//assets->loadMesh("dam7", "dam7.obj");
+	//assets->loadMesh("dam8", "dam8.obj");
+
+	//assets->loadMesh("playerFrame0", "c_kframe_1.obj");
+	//assets->loadMesh("playerFrame1", "c_kframe_2.obj");
+	//assets->loadMesh("playerFrame2", "c_kframe_3.obj");
+	//assets->loadMesh("playerFrame3", "c_kframe_4.obj");
+	//assets->loadMesh("playerFrame4", "c_kframe_5.obj");
+
+	assets->loadAnimation("playerFrame", "player0", "obj", 9);
+
+	assets->loadAnimation("damaged", "dam0", "obj", level.enemy[0].frames);
+
+	assets->loadAnimation("deformed", "def0", "obj", level.enemy[1].frames);
+
+	assets->loadAnimation("demented", "dem0", "obj", level.enemy[2].frames);
+
+	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load in assets" << std::endl;
+}
+
+void Game::initShaders() {
+	assets->loadShader("PhongSpot", "animation.vert", "phongSpot.frag");
+	assets->loadShader("passThrough", "passThrough.vert", "passThrough.frag");
+	assets->loadShader("PhongNoTexture", "Phong.vert", "PhongNoTexture.frag");
+	assets->loadShader("PhongColorSides", "PhongColorSides.vert", "PhongColorSides.frag");
+	assets->loadShader("numbers", "Phong.vert", "numbers.frag");
+	assets->loadShader("particles", "passThru.glsl", "particles_g.glsl", "unlitTexture_f.glsl");
+}
+
+void Game::initSounds() {
+	assets->loadSound("soundtrack", "game soundtrack.wav", true, 2)
+		->createChannel(2, false)
+		->setVolume(0.03f);
+	assets->loadSound("dialogue", "Dialogue Placeholder.wav", false, 2);
+	assets->loadSound("ambient", "ambient machine noise.wav", true, 2);
+
+	assets->loadSound("gunshot", "Gunshot_sound2.wav", true, 3);
+	assets->loadSound("reload", "Reload_sound.wav", false, 3);
+
+	assets->loadSound("damaged", "Damaged.wav", true, 3);
+	assets->loadSound("deformed", "Deformed.wav", true, 3);
+	assets->loadSound("demented", "Demented.wav", true, 3);
+
+	//Sound* sound = new Sound("assets/sounds/game soundtrack.wav", true, 2);
+	//soundList.push_back(sound);
+	//sound = new Sound("assets/sounds/ambient machine noise.wav", true, 2);
+	//soundList.push_back(sound);
+	//sound = new Sound("assets/sounds/Gunshot_sound.wav", true, 3);
+	//soundList.push_back(sound);
+	//sound = new Sound("assets/sounds/Reload_sound.wav", false, 3);
+	//soundList.push_back(sound);
+
+	//Sound* sound1 = new Sound("assets/sounds/ambient machine noise.wav", true, 2);
+	//sounds.push_back(sound1);
+	//Sound* sound2 = new Sound("assets/sounds/Gunshot_sound2.wav", false, 3);
+	//sounds.push_back(sound2);
+	//Sound* sound3 = new Sound("assets/sounds/Reload_sound.wav", false, 3);
+	//sounds.push_back(sound3);
+	//Sound* sound4 = new Sound("assets/sounds/Dialogue Placeholder.wav", false, 2);
+	//sounds.push_back(sound4);
+	//Sound* sound5 = new Sound("assets/sounds/Damaged.wav", true, 3);
+	////sound5->set3DDist(0.5f, 5.f);
+	////sound5->setMode(FMOD_3D_INVERSEROLLOFF);
+	//sounds.push_back(sound5);
+	//Sound* sound6 = new Sound("assets/sounds/Deformed.wav", true, 3);
+	////sound6->set3DDist(0.5f, 5.f);
+	////sound6->setMode(FMOD_3D_INVERSEROLLOFF);
+	//sounds.push_back(sound6);
+	//Sound* sound7 = new Sound("assets/sounds/Demented.wav", true, 3);
+	////sound7->set3DDist(0.5f, 5.f);
+	////sound7->setMode(FMOD_3D_INVERSEROLLOFF);
+	//sounds.push_back(sound7);
 }
 
 void Game::initLevel() {
@@ -236,147 +377,31 @@ void Game::initLevel() {
 	level.light3->attenuation = { 1.f, 0.5f, 0.1f };*/
 }
 
-void Game::initHUD() {
-	// Initialize HUD
-	hud.display = (new Object({ 0.004f, 10.6f, 1.967f }))
-		->loadMesh(assets->meshes["hud"])
-		->loadTexture(Type::Texture::DIFFUSE, assets->textures["hud"])
-		->setRotation(hud.angle)
-		->setScale(glm::vec3(0.395f))
-		->update();
-	hud.healthBar = (new Object({ -1.846f, 10.4f, 3.027f }))
-		->loadMesh(assets->meshes["hp bar"])
-		->setRotation(hud.angle)
-		->update();
-	hud.healthBar->color = glm::vec4(consts.color.red, 1.f);
-	hud.light = new Light();
-	hud.light->type = (unsigned int)Type::Light::DIRECTIONAL;
-	hud.light->direction = glm::vec4(consts.direction.down, 0.f);
-	hud.light->ambient = { 0.15f, 0.15f, 0.15f };
-	hud.light->diffuse = { 0.7f, 0.7f, 0.7f };
-	hud.light->specular = { 1.f, 1.f, 1.f };
-	hud.light->specExponent = 50.f;
-	hud.light->attenuation = { 1.f, 0.1f, 0.01f };
-	hud.ammo.number = (new Object())
-		->loadMesh(assets->meshes["screen"])
-		->loadTexture(Type::Texture::DIFFUSE, assets->textures["numbers"])
-		->setScale(glm::vec3(0.02f, 1.f, 0.05f))
-		->setRotation(hud.angle);
+void Game::initEnemies() {
+	for (int i = 0; i < 3; i++) {
+		level.enemy[i].type = new Enemy();
+		for (int t = 0; t < level.enemy[i].frames; t++)
+			level.enemy[i].type->loadAnimationFrame(assets->aMeshes[level.enemy[i].name + std::to_string(t)]);
+		level.enemy[i].type->loadTexture(Type::Texture::DIFFUSE, assets->textures["enemy" + std::to_string(i) + " color"]);
+		level.enemy[i].type->loadTexture(Type::Texture::NORMAL, assets->textures["enemy" + std::to_string(i) + " normal"]);
+	}
 }
 
-void Game::loadAssets() {
-	// level
-	//assets->loadMesh("level", "Laboratory Level Triangulated.obj");
-	assets->loadMesh("level", "new level.obj");
-	//assets->loadMesh("hitboxes", "Laboratory Level Hitboxes Triangulated.obj");
-	//assets->loadTexture("level color", "Lab_textures.png");
-	assets->loadTexture("level color", "new level texture.png");
-	assets->loadTexture("level normal", "new level texture normals.png");
-	// screens
-	assets->loadMesh("screen", "screen.obj");
-	assets->loadTexture("pause", "pause.png");
-	assets->loadTexture("win", "win.png");
-	assets->loadTexture("lose", "lose.png");
-	assets->loadTexture("controls", "controlsNew.png");
-	assets->loadTexture("menu", "menu.png");
-	// buttons
-	assets->loadMesh("play", "Play Button.obj");
-	assets->loadMesh("quit", "Quit Button.obj");
-	assets->loadMesh("resume", "resume.obj");
-	assets->loadMesh("credits", "credits.obj");
-	// player
-	assets->loadMesh("player", "character_model.obj");
-	assets->loadTexture("player color", "character texture.png");
-	assets->loadTexture("player normal", "character normals.png");
-	// other
-	assets->loadTexture("fullSpecular", "fullSpecular.png");
-	assets->loadTexture("noSpecular", "noSpecular.png");
-	assets->loadMesh("bullet", "bullet.obj");
-	// hud
-	assets->loadMesh("hud", "hud.obj");
-	assets->loadMesh("hp bar", "hp bar.obj");
-	assets->loadTexture("hud", "hud.png");
-	assets->loadTexture("numbers", "Numbers.png");
-	// drops
-	assets->loadMesh("health", "health.obj");
-	assets->loadMesh("ammo", "ammo.obj");
-	assets->loadMesh("night_v", "night_v.obj");
-	assets->loadTexture("item", "drops.png");
-	assets->loadMesh("splatter", "splatter.obj");
-	assets->loadTexture("corpse", "splatter.png");
-	assets->loadMesh("exitR", "exit.obj");
-	assets->loadMesh("exitL", "exit left.obj");
-	assets->loadTexture("exitR", "exit1.png");
-	assets->loadTexture("exitL", "exit1.png");
-	// enemy
-	assets->loadMesh("enemy0", "enemy3_model.obj");
-	assets->loadMesh("enemy1", "enemy_model.obj");
-	assets->loadMesh("enemy2", "enemy2_model.obj");
-	assets->loadTexture("enemy0 color", "enemy3 texture.png");
-	assets->loadTexture("enemy1 color", "enemy texture.png");
-	assets->loadTexture("enemy2 color", "enemy2 texture.png");
-	assets->loadTexture("enemy0 normal", "enemy3N.png");
-	assets->loadTexture("enemy1 normal", "enemy1N.png");
-	assets->loadTexture("enemy2 normal", "enemy2N.png");
-
-	// animation
-	//assets->loadMesh("dam0", "dam0.obj");
-	//assets->loadMesh("dam1", "dam1.obj");
-	//assets->loadMesh("dam2", "dam2.obj");
-	//assets->loadMesh("dam3", "dam3.obj");
-	//assets->loadMesh("dam4", "dam4.obj");
-	//assets->loadMesh("dam5", "dam5.obj");
-	//assets->loadMesh("dam6", "dam6.obj");
-	//assets->loadMesh("dam7", "dam7.obj");
-	//assets->loadMesh("dam8", "dam8.obj");
-
-	//assets->loadMesh("playerFrame0", "c_kframe_1.obj");
-	//assets->loadMesh("playerFrame1", "c_kframe_2.obj");
-	//assets->loadMesh("playerFrame2", "c_kframe_3.obj");
-	//assets->loadMesh("playerFrame3", "c_kframe_4.obj");
-	//assets->loadMesh("playerFrame4", "c_kframe_5.obj");
-
-	assets->loadAnimationMesh("playerFrame0", "player00.obj", "player01.obj");
-	assets->loadAnimationMesh("playerFrame1", "player01.obj", "player02.obj");
-	assets->loadAnimationMesh("playerFrame2", "player02.obj", "player03.obj");
-	assets->loadAnimationMesh("playerFrame3", "player03.obj", "player04.obj");
-	assets->loadAnimationMesh("playerFrame4", "player04.obj", "player05.obj");
-	assets->loadAnimationMesh("playerFrame5", "player05.obj", "player06.obj");
-	assets->loadAnimationMesh("playerFrame6", "player06.obj", "player07.obj");
-	assets->loadAnimationMesh("playerFrame7", "player07.obj", "player08.obj");
-	assets->loadAnimationMesh("playerFrame8", "player08.obj", "player00.obj");
-
-	assets->loadAnimationMesh("dam0", "dam00.obj", "dam01.obj");
-	assets->loadAnimationMesh("dam1", "dam01.obj", "dam02.obj");
-	assets->loadAnimationMesh("dam2", "dam02.obj", "dam03.obj");
-	assets->loadAnimationMesh("dam3", "dam03.obj", "dam04.obj");
-	assets->loadAnimationMesh("dam4", "dam04.obj", "dam05.obj");
-	assets->loadAnimationMesh("dam5", "dam05.obj", "dam06.obj");
-	assets->loadAnimationMesh("dam6", "dam06.obj", "dam07.obj");
-	assets->loadAnimationMesh("dam7", "dam07.obj", "dam08.obj");
-	assets->loadAnimationMesh("dam8", "dam08.obj", "dam00.obj");
-
-	assets->loadAnimationMesh("def0", "def00.obj", "def01.obj");
-	assets->loadAnimationMesh("def1", "def01.obj", "def02.obj");
-	assets->loadAnimationMesh("def2", "def02.obj", "def03.obj");
-	assets->loadAnimationMesh("def3", "def03.obj", "def04.obj");
-	assets->loadAnimationMesh("def4", "def04.obj", "def05.obj");
-	assets->loadAnimationMesh("def5", "def05.obj", "def06.obj");
-	assets->loadAnimationMesh("def6", "def06.obj", "def07.obj");
-	assets->loadAnimationMesh("def7", "def07.obj", "def08.obj");
-	assets->loadAnimationMesh("def8", "def08.obj", "def09.obj");
-	assets->loadAnimationMesh("def9", "def09.obj", "def10.obj");
-	assets->loadAnimationMesh("def10", "def10.obj", "def11.obj");
-	assets->loadAnimationMesh("def11", "def11.obj", "def12.obj");
-	assets->loadAnimationMesh("def12", "def12.obj", "def00.obj");
-
-	assets->loadAnimationMesh("dem0", "dem00.obj", "dem01.obj");
-	assets->loadAnimationMesh("dem1", "dem01.obj", "dem02.obj");
-	assets->loadAnimationMesh("dem2", "dem02.obj", "dem03.obj");
-	assets->loadAnimationMesh("dem3", "dem03.obj", "dem04.obj");
-	assets->loadAnimationMesh("dem4", "dem04.obj", "dem00.obj");
-
-	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load in assets" << std::endl;
+void Game::initParts() {
+	ParticleEmitterSoA *part = new ParticleEmitterSoA();
+	part->lifeR = { 0.001f, 0.01f, 0.0f };
+	part->initForceMin = { -0.3f, -0.5f, -0.3f };
+	part->initForceMax = { 0.3f, 0.0f, 0.3f };
+	part->size = 0.02f;
+	part->color = { 0.70f, 0.70f, 0.7f };
+	//part->material = materials["particles"];
+	//part[index].texture = textures["smoke"];
+	part->dtFactor = 50.f;
+	part->init(10);
+	part->play();
+	part->initPos = player->getPosition() + glm::vec3(1.0f, 1.0f, 0.0f);
+	parts.push_back(part);
+	parts[0]->pause();
 }
 
 void Game::initItems() {
@@ -458,82 +483,39 @@ void Game::initScreens() {
 		->update();
 	screen.resume.obj->color = glm::vec4(consts.color.white, 1.f);
 
-	screen.credits.obj = (new Object(screen.credits.center))
-		->loadMesh(assets->meshes["credits"])
-		->setScale(glm::vec3(screen.credits.scale))
+	screen.credit.obj = (new Object(screen.credit.center))
+		->loadMesh(assets->meshes["credit"])
+		->setScale(glm::vec3(screen.credit.scale))
 		->update();
-	screen.credits.obj->color = glm::vec4(consts.color.white, 1.f);
+	screen.credit.obj->color = glm::vec4(consts.color.white, 1.f);
 }
 
-void Game::initShaders() {
-	assets->loadShader("PhongSpot", "animation.vert", "phongSpot.frag");
-	assets->loadShader("passThrough", "passThrough.vert", "passThrough.frag");
-	assets->loadShader("PhongNoTexture", "Phong.vert", "PhonNoTexture.frag");
-	assets->loadShader("PhongColorSides", "PhongColorSides.vert", "PhongColorSides.frag");
-	assets->loadShader("numbers", "Phong.vert", "numbers.frag");
-	assets->loadShader("particles", "passThru.glsl", "particles_g.glsl", "unlitTexture_f.glsl");
-}
-
-void Game::initSounds() {
-	assets->loadSound("soundtrack", "game soundtrack.wav", true, 2)
-		->createChannel(2, false)
-		->setVolume(0.03f);
-	assets->loadSound("dialogue", "Dialogue Placeholder.wav", false, 2);
-	assets->loadSound("ambient", "ambient machine noise.wav", true, 2);
-
-	assets->loadSound("gunshot", "Gunshot_sound2.wav", true, 3);
-	assets->loadSound("reload", "Reload_sound.wav", false, 3);
-
-	assets->loadSound("damaged", "Damaged.wav", true, 3);
-	assets->loadSound("deformed", "Deformed.wav", true, 3);
-	assets->loadSound("demented", "Demented.wav", true, 3);
-
-	//Sound* sound = new Sound("assets/sounds/game soundtrack.wav", true, 2);
-	//soundList.push_back(sound);
-	//sound = new Sound("assets/sounds/ambient machine noise.wav", true, 2);
-	//soundList.push_back(sound);
-	//sound = new Sound("assets/sounds/Gunshot_sound.wav", true, 3);
-	//soundList.push_back(sound);
-	//sound = new Sound("assets/sounds/Reload_sound.wav", false, 3);
-	//soundList.push_back(sound);
-
-	//Sound* sound1 = new Sound("assets/sounds/ambient machine noise.wav", true, 2);
-	//sounds.push_back(sound1);
-	//Sound* sound2 = new Sound("assets/sounds/Gunshot_sound2.wav", false, 3);
-	//sounds.push_back(sound2);
-	//Sound* sound3 = new Sound("assets/sounds/Reload_sound.wav", false, 3);
-	//sounds.push_back(sound3);
-	//Sound* sound4 = new Sound("assets/sounds/Dialogue Placeholder.wav", false, 2);
-	//sounds.push_back(sound4);
-	//Sound* sound5 = new Sound("assets/sounds/Damaged.wav", true, 3);
-	////sound5->set3DDist(0.5f, 5.f);
-	////sound5->setMode(FMOD_3D_INVERSEROLLOFF);
-	//sounds.push_back(sound5);
-	//Sound* sound6 = new Sound("assets/sounds/Deformed.wav", true, 3);
-	////sound6->set3DDist(0.5f, 5.f);
-	////sound6->setMode(FMOD_3D_INVERSEROLLOFF);
-	//sounds.push_back(sound6);
-	//Sound* sound7 = new Sound("assets/sounds/Demented.wav", true, 3);
-	////sound7->set3DDist(0.5f, 5.f);
-	////sound7->setMode(FMOD_3D_INVERSEROLLOFF);
-	//sounds.push_back(sound7);
-}
-
-void Game::initParts() {
-	ParticleEmitterSoA *part = new ParticleEmitterSoA();
-	part->lifeR = { 0.001f, 0.01f, 0.0f };
-	part->initForceMin = { -0.3f, -0.5f, -0.3f };
-	part->initForceMax = { 0.3f, 0.0f, 0.3f };
-	part->size = 0.02f;
-	part->color = { 0.70f, 0.70f, 0.7f };
-	//part->material = materials["particles"];
-	//part[index].texture = textures["smoke"];
-	part->dtFactor = 50.f;
-	part->init(10);
-	part->play();
-	part->initPos = player->getPosition() + glm::vec3(1.0f, 1.0f, 0.0f);
-	parts.push_back(part);
-	parts[0]->pause();
+void Game::initHUD() {
+	// Initialize HUD
+	hud.display = (new Object({ 0.004f, 10.6f, 1.967f }))
+		->loadMesh(assets->meshes["hud"])
+		->loadTexture(Type::Texture::DIFFUSE, assets->textures["hud"])
+		->setRotation(hud.angle)
+		->setScale(glm::vec3(0.395f))
+		->update();
+	hud.healthBar = (new Object({ -1.846f, 10.4f, 3.027f }))
+		->loadMesh(assets->meshes["hp bar"])
+		->setRotation(hud.angle)
+		->update();
+	hud.healthBar->color = glm::vec4(consts.color.red, 1.f);
+	hud.light = new Light();
+	hud.light->type = (unsigned int)Type::Light::DIRECTIONAL;
+	hud.light->direction = glm::vec4(consts.direction.down, 0.f);
+	hud.light->ambient = { 0.15f, 0.15f, 0.15f };
+	hud.light->diffuse = { 0.7f, 0.7f, 0.7f };
+	hud.light->specular = { 1.f, 1.f, 1.f };
+	hud.light->specExponent = 50.f;
+	hud.light->attenuation = { 1.f, 0.1f, 0.01f };
+	hud.ammo.number = (new Object())
+		->loadMesh(assets->meshes["screen"])
+		->loadTexture(Type::Texture::DIFFUSE, assets->textures["numbers"])
+		->setScale(glm::vec3(0.02f, 1.f, 0.05f))
+		->setRotation(hud.angle);
 }
 
 void Game::loadDrops() {
@@ -558,15 +540,14 @@ void Game::loadSigns() {
 }
 
 void Game::loadEnemies() {
-	static int i;
-	for (i = 0; i < 3; i++)
-		for (auto& position : level.enemy[i].positions) {
+	for (auto& enemy : level.enemy)
+		for (auto& position : enemy.positions) {
 			glm::vec3 temp = { position.x, 0.0f, position.y };
-			level.enemy[i].type->setPosition(temp);
-			enemies.push_back(new Enemy(*level.enemy[i].type));
-			assets->sounds[level.enemy[i].name]->createChannel(3, true, Helper::castVec(temp));
-			assets->sounds[level.enemy[i].name]->changeRolloffMode(false);
-			assets->sounds[level.enemy[i].name]->changeMinMaxDist(0.f, 11.0f);
+			enemy.type->setPosition(temp);
+			enemies.push_back(new Enemy(*enemy.type));
+			assets->sounds[enemy.name]->createChannel(3, true, Helper::castVec(temp))
+				->changeRolloffMode(false)
+				->changeMinMaxDist(0.f, 11.0f);
 		}
 	assets->sounds["damaged"]->setVolume(0.4f);
 }
@@ -610,6 +591,7 @@ Game::~Game() {
 	// screen components
 	delete screen.loading;
 	delete screen.controls;
+	delete screen.credits;
 	delete screen.menu;
 	delete screen.pause;
 	delete screen.win;
@@ -619,7 +601,7 @@ Game::~Game() {
 	delete screen.play.obj;
 	delete screen.quit.obj;
 	delete screen.resume.obj;
-	delete screen.credits.obj;
+	delete screen.credit.obj;
 	// hud components
 	delete hud.display;
 	delete hud.healthBar;
@@ -715,7 +697,7 @@ void Game::update() {
 		// stuff based on player
 		glm::vec3 pPos = player->getPosition();
 		FMOD_VECTOR listener = Helper::castVec(pPos);
-		assets->sounds[0]->changeListenerLoc(listener);
+		assets->sounds["soundrack"]->changeListenerLoc(listener);
 		//std::cout << temp.x << '/' << temp.y << '/' << temp.z << std::endl;
 		//std::cout << rand() % 100 << std::endl
 		float partAngle = glm::radians(player->getRotation().y);
@@ -902,7 +884,7 @@ void Game::draw() {
 		screen.menu->draw(assets->shaders["Phong"], screen.camera, screen.light);
 		screen.play.obj->draw(assets->shaders["PhongNoTexture"], screen.camera, screen.light);
 		screen.quit.obj->draw(assets->shaders["PhongNoTexture"], screen.camera, screen.light);
-		screen.credits.obj->draw(assets->shaders["PhongNoTexture"], screen.camera, screen.light);
+		screen.credit.obj->draw(assets->shaders["PhongNoTexture"], screen.camera, screen.light);
 		break;
 	case State::Win:
 		screen.win->draw(assets->shaders["Phong"], screen.camera, screen.light);

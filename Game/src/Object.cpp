@@ -87,10 +87,10 @@ Object* Object::collide(float dt, Level* level, bool ai) {
 	glm::vec3 vOrig = velocity;
 	glm::vec2 pX = { position.x + velocity.x * dt / 200.f, position.z };
 	glm::vec2 pY = { position.x, position.z + velocity.z * dt / 200.f };
-	for (auto box : level->hitBoxes) {
-		if (pX.x > box.min.x && pX.x < box.max.x && pX.y > box.min.y && pX.y < box.max.y)
+	for (auto& box : level->hitBoxes) {
+		if (Helper::inside(pX, Helper::castBox(box)))
 			velocity.x = 0.f;
-		if (pY.x > box.min.x && pY.x < box.max.x && pY.y > box.min.y && pY.y < box.max.y)
+		if (Helper::inside(pY, Helper::castBox(box)))
 			velocity.z = 0.f;
 	}
 	if (ai && ((velocity.x == 0.f && velocity.z != 0.f) || (velocity.x != 0.f && velocity.z == 0.f)))
@@ -143,6 +143,66 @@ Object* Object::update(float dt, glm::vec3 offset) {
 	return this;
 }
 
+Object* Object::draw(Shader *shader, Camera *camera, Light* light) {
+	// Start
+	shader->bind()
+	// Basic
+		->sendUniformMat4("uModel", glm::value_ptr(transform), false)
+		->sendUniformMat4("uView", glm::value_ptr(camera->getView()), false)
+		->sendUniformMat4("uProj", glm::value_ptr(camera->getProj()), false)
+		->sendUniform("objectColor", color)
+		->sendUniform("animated", aMesh != nullptr)
+		->sendUniform("ammo", ammo)
+		->sendUniform("t", t)
+	// Material
+		->sendUniform("material.diffuse", 0)
+		->sendUniform("material.specular", 1)
+		->sendUniform("material.normal", 2)
+		->sendUniform("material.hue", mat->hue)
+		->sendUniform("material.specExponent", mat->specExponent)
+	// Light
+		->sendUniform("light.type", light->type)
+		->sendUniform("light.position", camera->getView() * light->position)
+		->sendUniform("light.direction", camera->getView() * light->direction)
+		->sendUniform("light.original", camera->getView() * light->original)
+		->sendUniform("light.ambient", light->ambient)
+		->sendUniform("light.diffuse", light->diffuse)
+		->sendUniform("light.specular", light->specular)
+		->sendUniform("light.specExponent", light->specExponent)
+		->sendUniform("light.spotExponent", light->spotExponent)
+		->sendUniform("light.cutoff", light->cutoff)
+		->sendUniform("light.outerCutoff", light->outerCutoff)
+		->sendUniform("light.partial", light->partial)
+		->sendUniform("light.attenuation", light->attenuation);
+
+	// Textures
+	glActiveTexture(GL_TEXTURE0);
+	mat->diffuse->bind();
+	glActiveTexture(GL_TEXTURE1);
+	mat->specular->bind();
+	glActiveTexture(GL_TEXTURE2);
+	mat->normal->bind();
+	// Mesh
+	if (aMesh) {
+		glBindVertexArray(aMesh->vao);
+		glDrawArrays(GL_TRIANGLES, 0, aMesh->getNumVertices());
+	}
+	else {
+		glBindVertexArray(mesh->vao);
+		glDrawArrays(GL_TRIANGLES, 0, mesh->getNumVertices());
+	}
+	glBindVertexArray(GL_NONE);
+	// Textures
+	mat->normal->unbind();
+	glActiveTexture(GL_TEXTURE1);
+	mat->specular->unbind();
+	glActiveTexture(GL_TEXTURE0);
+	mat->diffuse->unbind();
+	// End
+	shader->unbind();
+	return this;
+}
+
 Object* Object::draw(Shader* shader, Camera* camera, std::vector<Light*> lights) {
 	// Start
 	shader->bind()
@@ -159,8 +219,9 @@ Object* Object::draw(Shader* shader, Camera* camera, std::vector<Light*> lights)
 		->sendUniform("material.specular", 1)
 		->sendUniform("material.normal", 2)
 		->sendUniform("material.hue", mat->hue)
-		->sendUniform("material.specExponent", mat->specExponent);
+		->sendUniform("material.specExponent", mat->specExponent)
 	// Lights
+		->sendUniform("numLights", lights.size());
 	for (int i = 0; i < lights.size(); i++) {
 		std::string prefix = "lights[" + std::to_string(i) + "].";
 

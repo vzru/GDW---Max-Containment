@@ -75,7 +75,7 @@ Sound* Sound::createChannel(int mode, bool pause, FMOD_VECTOR p, FMOD_VECTOR v) 
 	result = sSys.getSystem()->playSound(sound, 0, pause, &ch->channel);
 	sSys.fmodErrorCK(result);
 	
-	std::cout << p.x << '/' << p.z << std::endl;
+	//std::cout << p.x << '/' << p.z << std::endl;
 
 	// Setting new attributes
 	ch->pos = p;

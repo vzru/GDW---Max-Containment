@@ -175,9 +175,10 @@ private:
 		};
 		
 		struct EnemyData {
-			EnemyData(std::string id, float hp, float v, float dmg, std::vector<glm::vec2> pos)
-				: name(id), stats(hp, v, dmg), positions(pos) {}
+			EnemyData(std::string id, int a, float hp, float v, float dmg, std::vector<glm::vec2> pos)
+				: name(id), frames(a), stats(hp, v, dmg), positions(pos) {}
 			std::string name;
+			int frames;
 			Enemy* type;
 			struct EnemyStats {
 				EnemyStats(float hp, float v, float dmg)
@@ -185,20 +186,19 @@ private:
 				float life, moveSpeed, damage;
 			} stats;
 			std::vector<glm::vec2> positions;
-		};
-		EnemyData enemy[3] = {
-			{    "damaged", 15.f, 250.f, 1.f, {
+		} enemy[3] = {
+			{    "damaged", 9, 15.f, 250.f, 1.f, {
 					{ 4.0, 29.4 },{ 32.7, 50.2 },{ 63.5, 51.3 },{ 51.1, 44.6 },
 					{ 23.6, 40.2 },{ 26.3, 22.8 },{ 19.5, 6.2 },{ 66.8, 13.8 },
 					{ 65.8, 20.8 },{ 93.3, 9.2 },{ 145.7, 18.1 },{ 114.3, 27.4 },
 					{ 134.6, 35.4 },{ 125.9, 55 },{ 111.2, 53.5 },{ 96.2, 53.4 },
 					{ 85.5, 36.5 },{ 59.0, 30.2 },{ 21.7, 13.4 },{ 143.1, 42.2 }
 				}
-			}, { "deformed", 20.f, 300.f, 3.f, {
+			}, { "deformed", 13, 20.f, 300.f, 3.f, {
 					{ 34.7, 18.4 },{ 79.5, 60.1 },{ 77.0, 20.7 },{ 118, 15.5 },
 					{ 143.2, 57.4 },{ 101.6, 42.1 }
 				}
-			}, { "demented", 10.f, 150.f, 5.f, {
+			}, { "demented", 5, 10.f, 150.f, 5.f, {
 					{ 147.9, 62.7 },	{ 136.9, 41.5 },	{ 102.5, 33.8 },	{ 76.8, 48.2 }
 				}
 			}
@@ -232,25 +232,16 @@ private:
 
 		Object *loading, *credits, *menu, *controls, *pause, *win, *lose;
 
-		std::tuple<float, glm::vec3, glm::vec4> buttons[4] = {
-			{ 1.7f,	{ 0.f, 0.2f, 0.3f },	{ 0.30677083f, 0.73802083f, 0.44351851f, 0.6648f } },
-			{ 1.5f,	{ 0.f, 0.2f, 1.75f },	{ 0.36822917f, 0.64583333f, 0.72962963f, 0.99722223f } },
-			{ 1.f,	{ 0.f, 0.2f, 1.75f },	{ 0.36822917f, 0.64583333f, 1.72962963f, 0.99722223f } },
-			{ 1.f,	{ 0.f, 0.2f, 1.75f },	{ 0.36822917f, 0.64583333f, 0.92962963f, 0.99722223f } }
-		};
 		struct ButtonData {
-			ButtonData(unsigned int i, Screen *screen)
-				: scale(std::get<0>(screen->buttons[i]))
-				, center(std::get<1>(screen->buttons[i]))
-				, pos(std::get<2>(screen->buttons[i])) {}
-			Object *obj;
+			ButtonData(float s, glm::vec3 c, glm::vec4 p)
+				: scale(s), center(c), pos(p) {}
 			float scale;
+			Object *obj;
 			glm::vec3 center;
 			glm::vec4 pos;
-		};
-		ButtonData play = { 0, this };
-		ButtonData quit = { 1, this };
-		ButtonData resume = { 2, this };
-		ButtonData credits = { 3, this };
+		} play = { 1.7f, { 0.f, 0.2f, 0.3f }, { 0.30677083f, 0.73802083f, 0.44351851f, 0.6648f } },
+			quit = { 1.5f, { 0.f, 0.2f, 1.75f }, { 0.36822917f, 0.64583333f, 0.72962963f, 0.99722223f } },
+			resume = { 1.f, { 0.f, 0.2f, 1.75f }, { 0.36822917f, 0.64583333f, 1.72962963f, 0.99722223f } },
+			credit = { 1.f, { 0.f, 0.2f, 1.75f }, { 0.36822917f, 0.64583333f, 0.92962963f, 0.99722223f } };
 	} screen;
 };

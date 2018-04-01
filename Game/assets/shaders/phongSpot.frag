@@ -35,24 +35,29 @@ struct Material {
 	float specExponent;
 };
 
+uniform int numLights;
+
 uniform Light lights[MAX_NUM_LIGHTS];
 
 uniform Material material;
 
-in vec3 position;
-in vec2 texCoord;
-in vec3 normal;
+in VertexData {
+	vec3 position;
+	vec2 texCoord;
+	vec3 normal;
+	vec4 color;
+} vIn;
 
 out vec4 outColor;
 
 vec3 calculateLight(Light light, vec3 norm, vec4 diff, vec4 spec) {
 	float attenuation = 1.0;
 	float intensity = 0.0;
-	vec3 lightVec = light.position.xyz - position;
+	vec3 lightVec = light.position.xyz - vIn.position;
 	float lightLen = length(lightVec);
 	vec3 lightDir = normalize(lightVec);
 	float NdotL = max(dot(norm, lightDir), 0.0);
-	float NdotHV = max(dot(norm, normalize(lightDir + normalize(-position))), 0.0);
+	float NdotHV = max(dot(norm, normalize(lightDir + normalize(-vIn.position))), 0.0);
 	
 	// Ambient
 	vec3 ambient = light.ambient * diff.rgb;
@@ -63,10 +68,10 @@ vec3 calculateLight(Light light, vec3 norm, vec4 diff, vec4 spec) {
 
 	// Reflection
 	//vec3 reflectDir = reflect(-lightDir, norm);
-	//float VdotR = max(dot(normalize(-position), -reflectDir), 0.0);
+	//float VdotR = max(dot(normalize(-vIn.position), -reflectDir), 0.0);
 	switch(light.type) {
 	case SPOT:
-<<<<<<< HEAD
+//<<<<<<< HEAD
 		//attenuation = 0.0;
 		float thetra = dot(lightDir, normalize(-light.direction.xyz));
 		thetra = clamp(thetra, 0.0, 1.0);
@@ -96,11 +101,11 @@ vec3 calculateLight(Light light, vec3 norm, vec4 diff, vec4 spec) {
 			//}
 		//}
 		break;
-=======
+//=======
 		float spotDot = dot(normalize(light.direction.xyz), -lightDir);
-		float spotValue = smoothstep(light.innerCutoff, light.cutoff, spotDot);
+		float spotValue = smoothstep(light.outerCutoff, light.cutoff, spotDot);
 		attenuation = (spotDot < light.cutoff) ? light.partial : attenuation = pow(spotValue, light.spotExponent);
->>>>>>> Flashlight
+//>>>>>>> Flashlight
 	case POINT:
 		attenuation /= (light.attenuation[0] + light.attenuation[1] * lightLen + light.attenuation[2] * lightLen * lightLen);
 		break;
@@ -111,33 +116,33 @@ vec3 calculateLight(Light light, vec3 norm, vec4 diff, vec4 spec) {
 		break;
 	}
 
-<<<<<<< HEAD
+//<<<<<<< HEAD
 	ambient *= attenuation;
 	diffuse *= attenuation;
 	specular *= attenuation;
-=======
-	// Ambient
-	vec3 ambient = attenuation * light.ambient;
-	// Diffuse
-	float NdotL = max(dot(norm, lightDir), 0.0);
-	vec3 diffuse = light.diffuse * NdotL * attenuation * diff.rgb;
-	// Reflection (Phong)
-	//vec3 reflectDir = reflect(-lightDir, norm);
-	//float VdotR = max(dot(normalize(-position), -reflectDir), 0.0);
-	//vec3 specular = light.specular * pow(VdotR, material.specExponent) * attenuation * spec.rgb;
-	// Half-vector (Blinn-Phong)
-	float NdotHV = max(dot(norm, normalize(lightDir + normalize(-position))), 0.0);
-	vec3 specular = light.specular * pow(NdotHV, material.specExponent) * attenuation * spec.rgb;
->>>>>>> Flashlight
+//=======
+	//// Ambient
+	//vec3 ambient = attenuation * light.ambient;
+	//// Diffuse
+	//float NdotL = max(dot(norm, lightDir), 0.0);
+	//vec3 diffuse = light.diffuse * NdotL * attenuation * diff.rgb;
+	//// Reflection (Phong)
+	////vec3 reflectDir = reflect(-lightDir, norm);
+	////float VdotR = max(dot(normalize(-position), -reflectDir), 0.0);
+	////vec3 specular = light.specular * pow(VdotR, material.specExponent) * attenuation * spec.rgb;
+	//// Half-vector (Blinn-Phong)
+	//float NdotHV = max(dot(norm, normalize(lightDir + normalize(-position))), 0.0);
+	//vec3 specular = light.specular * pow(NdotHV, material.specExponent) * attenuation * spec.rgb;
+//>>>>>>> Flashlight
 
 	return ambient + diffuse + specular;
 }
 
 void main() {
 	// account for rasterizer interpolating
-	vec3 norm = normalize(texture(material.normal, texCoord).rgb * 2 - vec3(1.0));
-	vec4 diff = texture(material.diffuse, texCoord);
-	vec4 spec = texture(material.specular, texCoord);
+	vec3 norm = normalize(texture(material.normal, vIn.texCoord).rgb * 2 - vec3(1.0));
+	vec4 diff = texture(material.diffuse, vIn.texCoord);
+	vec4 spec = texture(material.specular, vIn.texCoord);
 
 	for(int i = 0; i < numLights; i++) {
 		outColor.rgb += calculateLight(lights[i], norm, diff, spec);

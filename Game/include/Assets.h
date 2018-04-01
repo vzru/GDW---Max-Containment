@@ -22,8 +22,9 @@ public:
 	// loaders
 	Mesh* loadMesh(const std::string &name, const std::string &file);
 	AnimationMesh* loadAnimationMesh(const std::string &name, const std::string &file1, const std::string &file2);
+	void loadAnimation(const std::string &name, const std::string &file, const std::string &extension, const int num);
 	Texture* loadTexture(const std::string &name, const std::string &file);
-	Sound* loadSound(const std::string &name, const std::string &file, bool loop = false, int dim = 3);
+	Sound* loadSound(const std::string &name, const std::string &file, const bool loop = false, const int dim = 3);
 	Shader* loadShader(const std::string &name, const std::string &vertFile, const std::string &fragFile);
 	Shader* loadShader(const std::string &name, const std::string &vertFile, const std::string &geoFile, const std::string &fragFile);
 

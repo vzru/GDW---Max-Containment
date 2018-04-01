@@ -30,7 +30,12 @@ Mesh* Assets::loadMesh(const std::string &name, const std::string &file) {
 	return meshes[name];
 }
 
-AnimationMesh* Assets::loadAnimationMesh(const std::string &name, const std::string & file1, const std::string & file2) {
+void Assets::loadAnimation(const std::string &name, const std::string &file, const std::string &extension, const int num) {
+	for (int i = 0; i < num; i++)
+		loadAnimationMesh(name + std::to_string(i), file + std::to_string(i) + "." + extension, file + std::to_string((i + 1) % num) + "." + extension);
+}
+
+AnimationMesh* Assets::loadAnimationMesh(const std::string &name, const std::string &file1, const std::string &file2) {
 	aMeshes[name] = new AnimationMesh();
 	assert(aMeshes[name]->load(MESH_PATH(file1), MESH_PATH(file2)));
 	return aMeshes[name];
