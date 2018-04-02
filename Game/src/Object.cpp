@@ -250,7 +250,7 @@ void Object::draw(Shader* shader, Camera* camera, std::vector<Light*> lights, in
 	shader->sendUniformMat4("uProj", glm::value_ptr(camera->getProj()), false);
 	shader->sendUniform("objectColor", color);
 	shader->sendUniform("animate", a);
-	//shader->sendUniform("ammo", ammo);
+	shader->sendUniform("ammo", ammo);
 	if (lightCount == 0.0f)
 	{
 		//std::cout << lights.size() << std::endl;
