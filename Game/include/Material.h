@@ -1,12 +1,10 @@
 #pragma once
 
 #include <glm\glm.hpp>
-#include <string>
-
 #include "Type.h"
 
-class Texture;
 class Shader;
+class Texture;
 
 class Material {
 public:

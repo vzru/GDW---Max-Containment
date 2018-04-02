@@ -1,8 +1,7 @@
 #include "Material.h"
-#include <iostream>
-
 #include "Texture.h"
 #include "Shader.h"
+#include <iostream>
 
 Material::Material() {
 	//diffuse = new Texture();
@@ -95,9 +94,9 @@ void Material::unbind() {
 }
 
 void Material::sendUniforms(Shader* shader, std::string prefix) {
-	shader->sendUniform(prefix + "diffuse", 0);
-	shader->sendUniform(prefix + "specular", 1);
-	shader->sendUniform(prefix + "normal", 2);
-	shader->sendUniform(prefix + "hue", hue);
-	shader->sendUniform(prefix + "specExponent", specExponent);
+	shader->sendUniform(prefix + "diffuse", 0)
+		->sendUniform(prefix + "specular", 1)
+		->sendUniform(prefix + "normal", 2)
+		->sendUniform(prefix + "hue", hue)
+		->sendUniform(prefix + "specExponent", specExponent);
 }

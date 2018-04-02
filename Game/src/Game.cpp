@@ -68,6 +68,7 @@ Game* Game::init(InputControl) {
 	input.xBox = new Input::XBox();
 	input.xBox->callback = _controllerInput;
 	input.xBox->special = _controllerSpecial;
+	fboD.create(windowSize.x, windowSize.y, 1, false);
 
 	//fboD.createFrameBuffer(WINDOW_WIDTH, WINDOW_HEIGHT, 1, true);
 
@@ -76,10 +77,10 @@ Game* Game::init(InputControl) {
 	// Initialize loading screen
 	screen.camera = new Camera(windowSize);
 	screen.camera->setPosition({ 0.f, 5.f, 0.f });
-	screen.camera->update({ 0.f, 0.f, 0.f });
+	screen.camera->update();
 	screen.light = new Light();
 	screen.light->type = (unsigned int)Type::Light::DIRECTIONAL;
-	screen.light->direction = { 0.f, -1.f, 0.f, 0.f };
+	screen.light->direction = glm::vec4(consts.direction.down, 0.f);
 	screen.light->ambient = { 0.15f, 0.15f, 0.15f };
 	screen.light->diffuse = { 0.7f, 0.7f, 0.7f };
 	screen.light->specular = { 1.f, 1.f, 1.f };
@@ -88,32 +89,24 @@ Game* Game::init(InputControl) {
 	screen.loading = new Object();
 	screen.loading->loadMesh(assets->loadMesh("screen", "screen.obj"));
 	screen.loading->loadTexture(Type::DIFFUSE, assets->loadTexture("loading", "loading.png"));
-	assets->loadShader("Phong", "animation.vert", "Phong.frag");
-	screen.loading->draw(assets->shaders["Phong"], screen.camera, screen.light);
-	glutSwapBuffers();
 
-	//fboD.unbindFrameBuffer(WINDOW_WIDTH, WINDOW_HEIGHT);
-
-	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load get to the loading screen" << std::endl;
-	fboD.create(windowSize.x, windowSize.y, 1, false);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	fboD.clear({ 0,1,0, 1.0f });
-	screen.loading->draw(program["Unlit"], screen.camera, { }, 0);
+	screen.loading->draw(assets->loadShader("Unlit", "animation.vert", "unlitTexture_f.glsl"), screen.camera);
 	glutSwapBuffers();
 
-	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to get to loading screen" << std::endl;
+	times.open = glutGet(GLUT_ELAPSED_TIME);
+
+	std::cout << times.open << " milliseconds to get to loading screen" << std::endl;
 
 	assets->loadSound("soundtrack", "game soundtrack.wav", true, 2)
-		->createChannel(2, false)
-		//->createChannel(0, false)
-		->setVolume(0.03f);
-		//->setVolume(0, 0.1f);
+		->createChannel(2, false)//(0, false)
+		->setVolume(0.03f);//(0, 0.1f);
 	//Sound* sound = new Sound("assets/sounds/game soundtrack.wav", true, 2);
 	//Sound* sound = new Sound("assets/sounds/SW.mp3", true, 2);
 	//sounds.push_back(sound);
 	//sounds[0]->createChannel(0, false);
 	//sounds[0]->setVolume(0, 0.1f);
-
+	
 	loadAssets();
 
 	// Initialize Player
@@ -122,21 +115,12 @@ Game* Game::init(InputControl) {
 		->loadTexture(Type::Texture::SPECULAR, assets->textures["fullSpecular"])
 		->loadTexture(Type::Texture::NORMAL, assets->textures["player normal"]);
 	//	->loadMesh(assets->meshes["player"]);
+	for (int i = 0; i < 9; i++)
+		player->loadAnimationFrame(assets->aMeshes["playerFrame" + std::to_string(i)]);
 	player->reset(level.start)
 		->bullet = new Bullet();
 	player->bullet->loadMesh(assets->meshes["bullet"]);
 	player->bullet->color = glm::vec4(consts.color.white, 0.3f);
-
-	player->loadAnimationFrame(assets->aMeshes["playerFrame0"])
-		->loadAnimationFrame(assets->aMeshes["playerFrame1"])
-		->loadAnimationFrame(assets->aMeshes["playerFrame2"])
-		->loadAnimationFrame(assets->aMeshes["playerFrame3"])
-		->loadAnimationFrame(assets->aMeshes["playerFrame4"])
-		->loadAnimationFrame(assets->aMeshes["playerFrame5"])
-		->loadAnimationFrame(assets->aMeshes["playerFrame6"])
-		->loadAnimationFrame(assets->aMeshes["playerFrame7"])
-		->loadAnimationFrame(assets->aMeshes["playerFrame8"]);
-
 
 	// Initialize Shaders
 	initShaders();
@@ -162,8 +146,10 @@ Game* Game::init(InputControl) {
 	// Load Signs
 	loadSigns();
 
-	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load in things" << std::endl;
-	//soundList[1]->createChannel();
+
+	times.init = glutGet(GLUT_ELAPSED_TIME);
+	std::cout << times.init - times.load - times.open << " milliseconds to initialize the rest" << std::endl;
+	std::cout << times.init << " milliseconds to load and initialize everything" << std::endl;
 	return this;
 }
 
@@ -189,7 +175,7 @@ void Game::loadAssets() {
 	assets->loadMesh("resume", "resume.obj");
 	assets->loadMesh("credits", "credits.obj");
 	// player
-	assets->loadMesh("player", "character_model.obj");
+	//assets->loadMesh("player", "character_model.obj");
 	assets->loadTexture("player color", "character texture.png");
 	assets->loadTexture("player normal", "character normals.png");
 	// other
@@ -213,9 +199,9 @@ void Game::loadAssets() {
 	assets->loadTexture("exitR", "exit1.png");
 	assets->loadTexture("exitL", "exit1.png");
 	// enemy
-	assets->loadMesh("enemy0", "enemy3_model.obj");
-	assets->loadMesh("enemy1", "enemy_model.obj");
-	assets->loadMesh("enemy2", "enemy2_model.obj");
+	//assets->loadMesh("enemy0", "enemy3_model.obj");
+	//assets->loadMesh("enemy1", "enemy_model.obj");
+	//assets->loadMesh("enemy2", "enemy2_model.obj");
 	assets->loadTexture("enemy0 color", "enemy3 texture.png");
 	assets->loadTexture("enemy1 color", "enemy texture.png");
 	assets->loadTexture("enemy2 color", "enemy2 texture.png");
@@ -248,7 +234,8 @@ void Game::loadAssets() {
 
 	assets->loadAnimation("demented", "dem0", "obj", level.enemy[2].frames);
 
-	std::cout << glutGet(GLUT_ELAPSED_TIME) << " milliseconds to load in assets" << std::endl;
+	times.load = glutGet(GLUT_ELAPSED_TIME);
+	std::cout << times.load - times.open << " milliseconds to load in assets" << std::endl;
 }
 
 void Game::initShaders() {
@@ -303,6 +290,8 @@ void Game::initSounds() {
 	////sound7->set3DDist(0.5f, 5.f);
 	////sound7->setMode(FMOD_3D_INVERSEROLLOFF);
 	//sounds.push_back(sound7);
+
+	//soundList[1]->createChannel();
 }
 
 void Game::initLevel() {
@@ -319,7 +308,7 @@ void Game::initLevel() {
 	level.hitboxes->update(deltaTime);
 	level.camera = new Camera(windowSize);
 	level.camera->setPosition({ 0.f, 12.5f, 2.5f });
-	level.camera->update({ 0.f,0.f,0.f });
+	level.camera->update();
 
 	level.light = new Light();
 	level.light->type = (unsigned int)Type::Light::POINT;
@@ -390,6 +379,10 @@ void Game::initEnemies() {
 			level.enemy[i].type->loadAnimationFrame(assets->aMeshes[level.enemy[i].name + std::to_string(t)]);
 		level.enemy[i].type->loadTexture(Type::Texture::DIFFUSE, assets->textures["enemy" + std::to_string(i) + " color"]);
 		level.enemy[i].type->loadTexture(Type::Texture::NORMAL, assets->textures["enemy" + std::to_string(i) + " normal"]);
+		level.enemy[i].type->life = level.enemy[i].stats.life;
+		level.enemy[i].type->moveSpeed = level.enemy[i].stats.moveSpeed;
+		level.enemy[i].type->damage = level.enemy[i].stats.damage;
+		level.enemy[i].type->points = level.enemy[i].points;
 	}
 }
 
@@ -399,7 +392,7 @@ void Game::initParts() {
 	part->initForceMin = { -0.3f, -0.5f, -0.3f };
 	part->initForceMax = { 0.3f, 0.0f, 0.3f };
 	part->size = 0.02f;
-	part->color = { 0.70f, 0.70f, 0.7f };
+	part->color = { 0.7f, 0.7f, 0.7f };
 	//part->material = materials["particles"];
 	//part[index].texture = textures["smoke"];
 	part->dtFactor = 50.f;
@@ -672,6 +665,7 @@ void Game::update() {
 		sound.second->update();
 
 	if (state == State::Play) {
+		times.current += deltaTime;
 		if (player->reloadCd > 0.0f && !player->reloaded) {
 			assets->sounds["gunshot"]->stopSound();
 			player->reloaded = true;
@@ -775,7 +769,7 @@ void Game::update() {
 					float dang = Helper::getAngle(diff);
 					glm::vec2 dist = Helper::getDist(bang - dang, diff); // line-point, to-current
 					// seek towards player
-					if ((enemy->triggered || glm::length(diff) < 5.0f || (glm::length(diff) < 15.0f && dist.x < 2.f && lightOn)) && glm::length(diff) > 1.0f && enemy->knockbackCD <= 0 && dist.y > 0.0f) {
+					if ((enemy->triggered || glm::length(diff) < 5.0f || (glm::length(diff) < 15.0f && dist.x < 2.f && player->lightOn)) && glm::length(diff) > 1.0f && enemy->knockbackCD <= 0 && dist.y > 0.0f) {
 						enemy->setRotation({ 0.f, glm::degrees(dang) - 90.f, 0.f });
 						enemy->setVelocity(-glm::normalize(diff));
 					} else	enemy->setVelocity(glm::vec3(0.f));
@@ -796,6 +790,7 @@ void Game::update() {
 		if (target != nullptr) {
 			target->life -= 2.5;
 			target->triggered = true;
+			score += target->points;
 			if (target->KB) {
 				target->knockbackCD = 0.2f;
 				glm::vec3 dif = target->getPosition() - player->getPosition();
@@ -816,7 +811,7 @@ void Game::update() {
 			state = State::Lose;
 		// player wins
 		if (Helper::inside(temp, level.exit))
-			state = State::Win;
+			win();
 		// item drops
 		for (auto& drop : drops)
 			if (!drop->collect && glm::length(temp - drop->getPosition()) < 0.5) {
@@ -837,8 +832,7 @@ void Game::update() {
 
 void Game::draw() {
 	// Set up scene
-	glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	fboD.clear({ 1.f, 0.f, 0.f, 1.f });
 	//glMatrixMode(GL_PROJECTION);
 	//glLoadIdentity();
 	//gluPerspective(glm::radians(60.0f), windowSize.x / windowSize.y, 0.001f, 10000.0f);
@@ -886,31 +880,19 @@ void Game::draw() {
 			}
 		}	break;
 	case State::Control:
-		screen.controls->draw(assets->shaders["Phong"], screen.camera, screen.light);
+		screen.controls->draw(assets->shaders["Unlit"], screen.camera);
 		break;
 	case State::Menu:
-		screen.menu->draw(assets->shaders["Phong"], screen.camera, screen.light);
+		screen.menu->draw(assets->shaders["Unlit"], screen.camera);
 		screen.play.obj->draw(assets->shaders["PhongNoTexture"], screen.camera, screen.light);
 		screen.quit.obj->draw(assets->shaders["PhongNoTexture"], screen.camera, screen.light);
 		screen.credit.obj->draw(assets->shaders["PhongNoTexture"], screen.camera, screen.light);
 		break;
 	case State::Win:
-		screen.win->draw(assets->shaders["Phong"], screen.camera, screen.light);
+		screen.win->draw(assets->shaders["Unlit"], screen.camera);
 		break;
 	case State::Lose:
-		screen.lose->draw(assets->shaders["Phong"], screen.camera, screen.light);
-		screen.menu->draw(program["Unlit"], screen.camera, {}, 0);
-		screen.play.obj->draw(program["PhongNoTexture"], screen.camera, { screen.light }, 0);
-		screen.quit.obj->draw(program["PhongNoTexture"], screen.camera, { screen.light }, 0);
-		break;
-	case State::Win:
-		screen.win->draw(program["Unlit"], screen.camera, {}, 0);
-		break;
-	case State::Lose:
-		screen.lose->draw(program["Unlit"], screen.camera, {}, 0);
-		break;
-	case State::Control:
-		screen.controls->draw(program["Unlit"], screen.camera, {}, 0);
+		screen.lose->draw(assets->shaders["Unlit"], screen.camera);
 		break;
 	default:
 		break;
@@ -1103,8 +1085,8 @@ void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 			case GLUT_DOWN:
 				break;
 			case GLUT_UP:
-				lightOn = !lightOn;
-				if (lightOn)
+				player->lightOn = !player->lightOn;
+				if (player->lightOn)
 					level.lights.push_back(level.flashLight);
 				else
 					level.lights.pop_back();
@@ -1230,7 +1212,7 @@ void Game::controllerInput(unsigned short index, Input::Button button) {
 				player->reload = true;
 				break;
 			case Input::Button::X:
-				lightOn = !lightOn;
+				player->lightOn = !player->lightOn;
 				break;
 			default:
 				break;
@@ -1356,16 +1338,23 @@ void Game::start() {
 	//soundList[5]->setPause(false);
 	//soundList[6]->setPause(false);
 	//soundList[7]->setPause(false);
-	
 	assets->sounds["soundtrack"]->stopSound();
 	assets->sounds["ambient"]->playSound(2)
 		->setVolume(0.05f);
 	assets->sounds["dialogue"]->playSound(2);
+	
 	state = State::Play;
+
 	loadEnemies();
 	loadDrops();
 	loadSigns();
 	//loadParts();
+}
+void Game::win() {
+	times.clear = times.current;
+	std::cout << "You cleared the level in " << times.clear << " miliseconds" << std::endl;
+
+	state = State::Win;
 }
 void Game::reset() {
 	//soundList[1]->stopSound();
@@ -1375,15 +1364,15 @@ void Game::reset() {
 	//soundList[7]->setPause(true);
 	//soundList[0]->playSound(2);
 	//soundList[0]->setVolume(0.1f);
-	
 	assets->sounds["ambient"]->stopSound();
 	assets->sounds["soundtrack"]->playSound(2)
 		->setVolume(0.05f);
+	
 	state = State::Menu;
+	
 	player->reset(level.start);
 	clearEnemies();
 	clearDrops();
 	clearItems();
 	clearParts();
-	lightOn = false;
 }

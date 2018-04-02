@@ -35,6 +35,11 @@ struct Material {
 	float specExponent;
 };
 
+uniform mat4 u_model;
+uniform mat4 u_view;
+uniform mat4 u_proj;
+uniform vec4 u_color;
+
 uniform int numLights;
 
 uniform Light lights[MAX_NUM_LIGHTS];

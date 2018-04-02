@@ -7,8 +7,7 @@
 
 #include <glm\gtc\type_ptr.hpp>
 
-ParticleEmitterSoA::ParticleEmitterSoA()
-{
+ParticleEmitterSoA::ParticleEmitterSoA() {
 	// Initialize memory pointers to null
 	particles.positions = nullptr;
 	particles.velocities = nullptr;
@@ -20,18 +19,15 @@ ParticleEmitterSoA::ParticleEmitterSoA()
 	playing = false;
 }
 
-ParticleEmitterSoA::~ParticleEmitterSoA()
-{
+ParticleEmitterSoA::~ParticleEmitterSoA() {
 	freeMemory();
 }
 
-void ParticleEmitterSoA::init(int numP)
-{
+void ParticleEmitterSoA::init(int numP) {
 	if (allocated)
 		freeMemory();
 
-	if (numP) // make sure new array size is not 0
-	{
+	if (numP) { // make sure new array size is not 0
 		particles.positions = new glm::vec3[numP];
 		particles.velocities = new glm::vec3[numP];
 		particles.accelerations = new glm::vec3[numP];
@@ -59,13 +55,10 @@ void ParticleEmitterSoA::init(int numP)
 	}
 }
 
-void ParticleEmitterSoA::update(float dTime)
-{
-	if (allocated /*&& playing*/)
-	{
+void ParticleEmitterSoA::update(float dTime) {
+	if (allocated /*&& playing*/) {
 		// loop through each particle
-		for (int i = 0; i < numParticles; i++)
-		{
+		for (int i = 0; i < numParticles; i++) 		{
 			// Get each property for the particle using pointer arithmetic
 			glm::vec3* pos = particles.positions + i;
 			glm::vec3* vel = particles.velocities + i;
@@ -75,12 +68,10 @@ void ParticleEmitterSoA::update(float dTime)
 			// other properties... 
 
 			// check if alive
-			if (*life <= 0)
-			{
+			if (*life <= 0) {
 				// if dead respawn
 				// could put additional logic here...
-				if (playing == true)
-				{
+				if (playing ) {
 					*pos = initPos;
 
 					(*vel).x = glm::mix(initForceMin.x, initForceMax.x, glm::linearRand(0.0f, 1.0f));
@@ -91,7 +82,6 @@ void ParticleEmitterSoA::update(float dTime)
 					*mass = glm::linearRand(0.5f, 1.0f);
 					*accel = *vel / *mass;
 				}
-				
 			}
 
 			float dt = dTime / dtFactor;
@@ -103,8 +93,7 @@ void ParticleEmitterSoA::update(float dTime)
 	}
 }
 
-void ParticleEmitterSoA::draw(Shader *shader, Camera *cam)
-{
+void ParticleEmitterSoA::draw(Shader *shader, Camera *cam) {
 	AttributeDescriptor* attrib = vbo.getAttributeDescriptor(VERTEX);
 
 	glBindVertexArray(vbo.getVAO());
@@ -115,18 +104,11 @@ void ParticleEmitterSoA::draw(Shader *shader, Camera *cam)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	shader->bind();
-	shader->sendUniformMat4("u_mvp", glm::value_ptr(transform), false);
-	shader->sendUniformMat4("u_mv", glm::value_ptr(cam->getView()), false);
-	shader->sendUniformMat4("u_proj", glm::value_ptr(cam->getProj()), false);
-	//color = glm::vec3(1, 0, 0);
-	shader->sendUniform("color", color);
-	shader->sendUniform("size", size);
-	//shader->sendUniformMat4["u_mvp"] = cam->viewProjMatrix;
-	//shader->sendUniformMat4["u_mv"] = cam->viewMatrix;
-	//shader->sendUniformMat4["u_proj"] = cam->projMatrix;
 	shader->sendUniform("u_model", transform);
 	shader->sendUniform("u_view", cam->getView());
 	shader->sendUniform("u_proj", cam->getProj());
+	shader->sendUniform("u_color", color);
+	shader->sendUniform("size", size);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -137,11 +119,9 @@ void ParticleEmitterSoA::draw(Shader *shader, Camera *cam)
 	glDepthMask(true);
 }
 
-void ParticleEmitterSoA::freeMemory()
-{
+void ParticleEmitterSoA::freeMemory() {
 	// Free up all arrays here
-	if (allocated)
-	{
+	if (allocated) {
 		delete[] particles.positions;
 		delete[] particles.velocities;
 		delete[] particles.remainingLives;

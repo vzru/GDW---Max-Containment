@@ -46,15 +46,12 @@ public:
 	Shader* sendUniform(const std::string &name, const glm::vec2 &vector);
 	Shader* sendUniform(const std::string &name, const glm::vec3 &vector);
 	Shader* sendUniform(const std::string &name, const glm::vec4 &vector);
-	Shader* sendUniformMat3(const std::string &name, float *matrix, bool transpose);
-	Shader* sendUniformMat4(const std::string &name, float *matrix, bool transpose);
-	void sendUniform(const std::string &name, const glm::mat2 &matrix, bool transpose = false);
-	void sendUniform(const std::string &name, const glm::mat3 &matrix, bool transpose = false);
-	void sendUniform(const std::string &name, const glm::mat4 &matrix, bool transpose = false);
+	Shader* sendUniform(const std::string &name, const glm::mat2 &matrix, bool transpose = false);
+	Shader* sendUniform(const std::string &name, const glm::mat3 &matrix, bool transpose = false);
+	Shader* sendUniform(const std::string &name, const glm::mat4 &matrix, bool transpose = false);
 	template<class T>
-	void sendUniform(const std::string &name, std::vector<T> vector);
+	Shader* sendUniform(const std::string &name, std::vector<T> vector);
 
-	bool isLoaded() const;
 	bool loaded = false;
 private:
 

@@ -147,151 +147,48 @@ Object* Object::draw(Shader *shader, Camera *camera, Light* light) {
 	// Start
 	shader->bind()
 	// Basic
-		->sendUniformMat4("uModel", glm::value_ptr(transform), false)
-		->sendUniformMat4("uView", glm::value_ptr(camera->getView()), false)
-		->sendUniformMat4("uProj", glm::value_ptr(camera->getProj()), false)
-		->sendUniform("objectColor", color)
+		->sendUniform("u_model", transform)
+		->sendUniform("u_view", camera->getView())
+		->sendUniform("u_proj", camera->getProj())
+		->sendUniform("u_color", color)
 		->sendUniform("animated", aMesh != nullptr)
 		->sendUniform("ammo", ammo)
-		->sendUniform("t", t)
-	// Material
-		->sendUniform("material.diffuse", 0)
-		->sendUniform("material.specular", 1)
-		->sendUniform("material.normal", 2)
-		->sendUniform("material.hue", mat->hue)
-		->sendUniform("material.specExponent", mat->specExponent)
-	// Light
-		->sendUniform("light.type", light->type)
-		->sendUniform("light.position", camera->getView() * light->position)
-		->sendUniform("light.direction", camera->getView() * light->direction)
-		->sendUniform("light.original", camera->getView() * light->original)
-		->sendUniform("light.ambient", light->ambient)
-		->sendUniform("light.diffuse", light->diffuse)
-		->sendUniform("light.specular", light->specular)
-		->sendUniform("light.specExponent", light->specExponent)
-		->sendUniform("light.spotExponent", light->spotExponent)
-		->sendUniform("light.cutoff", light->cutoff)
-		->sendUniform("light.outerCutoff", light->outerCutoff)
-		->sendUniform("light.partial", light->partial)
-		->sendUniform("light.attenuation", light->attenuation);
-
-	// Textures
-	glActiveTexture(GL_TEXTURE0);
-	mat->diffuse->bind();
-	glActiveTexture(GL_TEXTURE1);
-	mat->specular->bind();
-	glActiveTexture(GL_TEXTURE2);
-	mat->normal->bind();
-	// Mesh
-	if (aMesh) {
-		glBindVertexArray(aMesh->vao);
-		glDrawArrays(GL_TRIANGLES, 0, aMesh->getNumVertices());
-	}
-	else {
-		glBindVertexArray(mesh->vao);
-		glDrawArrays(GL_TRIANGLES, 0, mesh->getNumVertices());
-	}
-	glBindVertexArray(GL_NONE);
-	// Textures
-	mat->normal->unbind();
-	glActiveTexture(GL_TEXTURE1);
-	mat->specular->unbind();
-	glActiveTexture(GL_TEXTURE0);
-	mat->diffuse->unbind();
-	// End
-	shader->sendUniform("u_model", transform);
-	shader->sendUniform("u_view", camera->getView());
-	shader->sendUniform("u_proj", camera->getProj());
-	shader->sendUniform("u_color", color);
-	shader->sendUniform("animate", a);
+		->sendUniform("t", t);
 	// Material
 	mat->sendUniforms(shader, "material.");
-	// Lights
-	for (int i = 0; i < lights.size(); i++)
-		lights[i]->sendUniforms(shader, camera->getView(), "lights[" + std::to_string(i) + "].");
+	// Light
+	light->sendUniforms(shader, camera->getView(), "light.");
 
 	mat->bind();
-	mesh->draw();
+	if (aMesh != nullptr)
+		aMesh->draw();
+	else mesh->draw();
 	mat->unbind();
 	shader->unbind();
 	return this;
 }
 
 Object* Object::draw(Shader* shader, Camera* camera, std::vector<Light*> lights) {
-	// Start
 	shader->bind()
 	// Basic
-		->sendUniformMat4("uModel", glm::value_ptr(transform), false)
-		->sendUniformMat4("uView", glm::value_ptr(camera->getView()), false)
-		->sendUniformMat4("uProj", glm::value_ptr(camera->getProj()), false)
-		->sendUniform("objectColor", color)
+		->sendUniform("u_model", transform)
+		->sendUniform("u_view", camera->getView())
+		->sendUniform("u_proj", camera->getProj())
+		->sendUniform("u_color", color)
 		->sendUniform("animated", aMesh != nullptr)
 		->sendUniform("ammo", ammo)
 		->sendUniform("t", t)
-	// Material
-		->sendUniform("material.diffuse", 0)
-		->sendUniform("material.specular", 1)
-		->sendUniform("material.normal", 2)
-		->sendUniform("material.hue", mat->hue)
-		->sendUniform("material.specExponent", mat->specExponent)
 	// Lights
 		->sendUniform("numLights", lights.size());
-	for (int i = 0; i < lights.size(); i++) {
-		std::string prefix = "lights[" + std::to_string(i) + "].";
-
-		//shader->sendUniform("NUM_LIGHTS", lights.size());
-		shader->sendUniform(prefix + "type", lights[i]->type)
-			->sendUniform(prefix + "position", camera->getView() * lights[i]->position)
-			->sendUniform(prefix + "direction", camera->getView() * lights[i]->direction)
-			->sendUniform(prefix + "original", camera->getView() * lights[i]->original)
-			->sendUniform(prefix + "ambient", lights[i]->ambient)
-			->sendUniform(prefix + "diffuse", lights[i]->diffuse)
-			->sendUniform(prefix + "specular", lights[i]->specular)
-			->sendUniform(prefix + "specExponent", lights[i]->specExponent)
-			->sendUniform(prefix + "spotExponent", lights[i]->spotExponent)
-			->sendUniform(prefix + "cutoff", lights[i]->cutoff)
-			->sendUniform(prefix + "outerCutoff", lights[i]->outerCutoff)
-			->sendUniform(prefix + "partial", lights[i]->partial)
-			->sendUniform(prefix + "attenuation", lights[i]->attenuation);
-	}
-	// Textures
-	glActiveTexture(GL_TEXTURE0);
-	mat->diffuse->bind();
-	glActiveTexture(GL_TEXTURE1);
-	mat->specular->bind();
-	glActiveTexture(GL_TEXTURE2);
-	mat->normal->bind();
-	// Mesh
-	if (aMesh) {
-		glBindVertexArray(aMesh->vao);
-		glDrawArrays(GL_TRIANGLES, 0, aMesh->getNumVertices());
-	} else {
-		glBindVertexArray(mesh->vao);
-		glDrawArrays(GL_TRIANGLES, 0, mesh->getNumVertices());
-	}
-	glBindVertexArray(GL_NONE);
-	// Textures
-	mat->normal->unbind();
-	glActiveTexture(GL_TEXTURE1);
-	mat->specular->unbind();
-	glActiveTexture(GL_TEXTURE0);
-	mat->diffuse->unbind();
-	// End
-=======
-	shader->sendUniform("u_model", transform);
-	shader->sendUniform("u_view", camera->getView());
-	shader->sendUniform("u_proj", camera->getProj());
-	shader->sendUniform("u_color", color);
-	shader->sendUniform("animate", a);
-	shader->sendUniform("t", t);
-	// Material
-	mat->sendUniforms(shader, "material.");
-	// Lights
 	for (int i = 0; i < lights.size(); i++)
 		lights[i]->sendUniforms(shader, camera->getView(), "lights[" + std::to_string(i) + "].");
+	// Material
+	mat->sendUniforms(shader, "material.");
 
 	mat->bind();
-	mesh->draw();
+	if (aMesh != nullptr)
+		aMesh->draw();
+	else mesh->draw();
 	mat->unbind();
 	shader->unbind();
 	return this;

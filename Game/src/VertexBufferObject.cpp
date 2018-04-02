@@ -1,54 +1,41 @@
 #include "VertexBufferObject.h"
 #include <iostream>
 
-VertexBufferObject::VertexBufferObject()
-{
+VertexBufferObject::VertexBufferObject() {
 	vaoHandle = 0;
 	primitiveType = GL_TRIANGLES;
 }
 
-VertexBufferObject::~VertexBufferObject()
-{
+VertexBufferObject::~VertexBufferObject() {
 	destroy();
 }
 
-int VertexBufferObject::addAttributeArray(AttributeDescriptor attrib)
-{
+int VertexBufferObject::addAttributeArray(AttributeDescriptor attrib) {
 	attributeDescriptors.push_back(attrib);
 	return 1;
 }
 
-AttributeDescriptor* VertexBufferObject::getAttributeDescriptor(AttributeLocations loc)
-{
+AttributeDescriptor* VertexBufferObject::getAttributeDescriptor(AttributeLocations loc) {
 	for (int i = 0; i < attributeDescriptors.size(); i++)
-	{
 		if (attributeDescriptors[i].attributeLocation == loc)
 			return &attributeDescriptors[i];
-	}
 	return nullptr;
 }
 
-unsigned int VertexBufferObject::getVAO()
-{
+unsigned int VertexBufferObject::getVAO() {
 	return vaoHandle;
 }
 
-unsigned int VertexBufferObject::getVBO(AttributeLocations loc)
-{
+unsigned int VertexBufferObject::getVBO(AttributeLocations loc) {
 	for (int i = 0; i < attributeDescriptors.size(); i++)
-	{
 		if (attributeDescriptors[i].attributeLocation == loc)
 			return vboHandles[i];
-	}
 	return 0;
 }
 
-void VertexBufferObject::createVBO(GLenum vboUsage)
-{
+void VertexBufferObject::createVBO(GLenum vboUsage) {
 	if (vaoHandle)
-	{
 		destroy();
-	}
 
 	glGenVertexArrays(1, &vaoHandle);
 	glBindVertexArray(vaoHandle);
@@ -58,8 +45,7 @@ void VertexBufferObject::createVBO(GLenum vboUsage)
 
 	glGenBuffers(numBuffers, &vboHandles[0]);
 
-	for (unsigned int i = 0; i < numBuffers; i++)
-	{
+	for (unsigned int i = 0; i < numBuffers; i++) {
 		AttributeDescriptor* attrib = &attributeDescriptors[i];
 		
 		glEnableVertexAttribArray(attrib->attributeLocation);
@@ -87,10 +73,8 @@ void VertexBufferObject::draw() {
 	}
 }
 
-void VertexBufferObject::destroy()
-{
-	if (vaoHandle)
-	{
+void VertexBufferObject::destroy() {
+	if (vaoHandle) 	{
 		glDeleteVertexArrays(1, &vaoHandle);
 		glDeleteBuffers((GLsizei)vboHandles.size(), &vboHandles[0]);
 	}

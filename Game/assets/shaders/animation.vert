@@ -5,7 +5,7 @@ uniform mat4 u_view;
 uniform mat4 u_proj;
 uniform vec4 u_color;
 
-uniform int animate;
+uniform int animated;
 uniform float t;
 
 layout(location = 0) in vec3 in_vert;
@@ -28,7 +28,7 @@ void main() {
 	vec3 newNormal = in_normal;
 	vec2 newUV = in_uv;
 
-	if (animate) {
+	if (animated) {
 		newVert = mix(in_vert, in_vert2, t);
 		newNormal = mix(in_normal, in_normal2, t);
 		newUV = mix(in_uv, in_uv2, t);

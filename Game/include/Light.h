@@ -28,5 +28,5 @@ public:
 
 	glm::vec3 attenuation; // constant, linear, quadratic
 
-	void sendUniforms(Shader* shader, glm::mat4 view, std::string prefix);
+	void sendUniforms(Shader* shader, glm::mat4& view, std::string prefix);
 };

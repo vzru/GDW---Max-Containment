@@ -8,8 +8,7 @@
 // A VBO may have more attribute locations, but these ones never change
 // It's a good idea to use the same attribute location layouts for each shader,
 // Not required, but it makes VBO creation easier
-enum AttributeLocations
-{
+enum AttributeLocations {
 	VERTEX = 0,
 	TEX_COORD,
 	NORMAL,
@@ -20,8 +19,7 @@ enum AttributeLocations
 struct AttributeDescriptor
 {
 public:
-	AttributeDescriptor()
-	{
+	AttributeDescriptor() {
 		elementType = GL_FLOAT;
 		elementSize = 0;
 		numElements = 0;

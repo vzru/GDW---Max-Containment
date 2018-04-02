@@ -12,7 +12,7 @@ Enemy::~Enemy() {}
 void Enemy::update(float dt, Level* level) {
 	collide(dt, level, true);
 
-	position += velocity * (dt / movementSpeed);
+	position += velocity * (dt / moveSpeed);
 
 	// player is invincible
 	if (cooldown > 0.f)

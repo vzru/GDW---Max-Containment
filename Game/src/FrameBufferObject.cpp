@@ -9,8 +9,7 @@ FrameBufferObject::FrameBufferObject()
 
 }
 
-FrameBufferObject::~FrameBufferObject()
-{
+FrameBufferObject::~FrameBufferObject() {
 	destroy();
 }
 
@@ -19,8 +18,7 @@ FrameBufferObject::~FrameBufferObject()
 // Frame Buffers do not store any actual data but instead we attach textures to them.
 // We can write to the textures in a fragment shader.
 
-void FrameBufferObject::create(unsigned int fboWidth, unsigned int fboHeight, unsigned int numColourBuffers, bool useDepth)
-{
+void FrameBufferObject::create(unsigned int fboWidth, unsigned int fboHeight, unsigned int numColourBuffers, bool useDepth) {
 	width = fboWidth;
 	height = fboHeight;
 	numColorTex = numColourBuffers;
@@ -38,8 +36,7 @@ void FrameBufferObject::create(unsigned int fboWidth, unsigned int fboHeight, un
 	glGenTextures(numColorTex, colourTexHandles); // CHANGED
 
 	// We need to initialize all of the textures
-	for (int i = 0; i < numColorTex; i++)
-	{
+	for (int i = 0; i < numColorTex; i++) {
 		// Bind the texture
 		// binding tells OpenGL we want to do something with this texture
 		glBindTexture(GL_TEXTURE_2D, colourTexHandles[i]);
@@ -65,8 +62,7 @@ void FrameBufferObject::create(unsigned int fboWidth, unsigned int fboHeight, un
 	}
 
 	// An FBO can have a single depth map
-	if (useDepth)
-	{
+	if (useDepth) {
 		glGenTextures(1, &depthTexHandle);
 		glBindTexture(GL_TEXTURE_2D, depthTexHandle);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, 0);
@@ -92,14 +88,12 @@ void FrameBufferObject::create(unsigned int fboWidth, unsigned int fboHeight, un
 	glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE);
 }
 
-void FrameBufferObject::bindForDrawing()
-{
+void FrameBufferObject::bindForDrawing() {
 	glBindFramebuffer(GL_FRAMEBUFFER, handle);
 	glViewport(0, 0, width, height);
 }
 
-void FrameBufferObject::bindDepthTextureForSampling(GLenum textureUnit)
-{
+void FrameBufferObject::bindDepthTextureForSampling(GLenum textureUnit) {
 	if (depthTexHandle) {
 		glActiveTexture(textureUnit);
 		glBindTexture(GL_TEXTURE_2D, depthTexHandle);
@@ -108,14 +102,12 @@ void FrameBufferObject::bindDepthTextureForSampling(GLenum textureUnit)
 		std::cout << "FBO does not have a depth texture!" << std::endl;
 }
 
-void FrameBufferObject::unbind()
-{
+void FrameBufferObject::unbind() {
 	glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE);
 	glViewport(0, 0, width, height);
 }
 
-void FrameBufferObject::unbind(int backBufferWidth, int backBufferHeight)
-{
+void FrameBufferObject::unbind(int backBufferWidth, int backBufferHeight) {
 	glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE);
 	glViewport(0, 0, backBufferWidth, backBufferHeight);
 }
@@ -130,25 +122,21 @@ void FrameBufferObject::clear(glm::vec4 clearColour) {
 	//glMatrixMode(GL_MODELVIEW);
 }
 
-void FrameBufferObject::bindTextureForSampling(int textureAttachment, GLenum textureUnit)
-{
+void FrameBufferObject::bindTextureForSampling(int textureAttachment, GLenum textureUnit) {
 	glActiveTexture(textureUnit);
 	glBindTexture(GL_TEXTURE_2D, colourTexHandles[textureAttachment]);
 }
 
-void FrameBufferObject::unbindTexture(GLenum textureUnit)
-{
+void FrameBufferObject::unbindTexture(GLenum textureUnit) {
 	glActiveTexture(textureUnit);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 }
 
-void FrameBufferObject::destroy()
-{
+void FrameBufferObject::destroy() {
 	if (colourTexHandles[0])
 		glDeleteTextures(numColorTex, colourTexHandles);
 
-	if (depthTexHandle)
-	{
+	if (depthTexHandle) {
 		glDeleteTextures(1, &depthTexHandle);
 		depthTexHandle = 0;
 	}
