@@ -205,27 +205,27 @@ private:
 	struct Hud {
 		Object *display;
 		Object *healthBar;
-		struct Ammo {
-			Object *number;
-			std::vector<glm::vec3> positions = {
-				{ 3.4f, 7.f, 3.8f },
-				{ 3.65f, 7.f, 3.8f },
-				{ 3.5f, 7.f, 3.4f },
-				{ 3.75f, 7.f, 3.4f },
-				{ 4.f, 7.f, 3.4f }
-			};
-		} ammo;
 		struct Score {
 			Object *number;
-			std::vector<glm::vec3> positions = {
-				{ 5.0f, 7.f, -1.8f },
-				{ 5.18f, 7.f, -1.8f },
-				{ 5.36f, 7.f, -1.8f },
-				{ 5.54f, 7.f, -1.8f },
-				{ 5.72f, 7.f, -1.8f }
+			std::vector<glm::vec3> move = {
+				{ 5.13f, 7.f, -1.8f },
+				{ 5.31f, 7.f, -1.8f },
+				{ 5.49f, 7.f, -1.8f },
+				{ 5.67f, 7.f, -1.8f },
+				{ 5.85f, 7.f, -1.8f }
 			};
 			int score;
 		} score;
+		struct Ammo {
+			Object *number;
+			std::vector<std::pair<glm::vec3, glm::vec3>> move = {
+				{ { 3.55f, 7.f, 3.4f }, { 0.025f, 1.f, 0.06f } },
+				{ { 3.8f, 7.f, 3.4f }, { 0.025f, 1.f, 0.06f } },
+				{ { 3.4f, 7.f, 3.8f }, { 0.015f, 1.f, 0.04f } },
+				{ { 3.55f, 7.f, 3.8f }, { 0.015f, 1.f, 0.04f } },
+				{ { 3.7f, 7.f, 3.8f }, { 0.015f, 1.f, 0.04f } }
+			};
+		} ammo;
 		glm::vec3 angle = { 10.f, 0.f, 0.f };
 		Light *light;
 		Camera *camera;
