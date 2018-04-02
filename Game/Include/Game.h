@@ -42,13 +42,14 @@ namespace Input {
 		All = 0x3FFFFFF,
 	};
 }
-enum class State { Menu, Play, Pause, Win, Lose, Control };
+enum class State { Menu, Play, Play2, Pause, Win, Lose, Control, Credits };
 
 class Game {
 public:
 	// construct & destruct
 	Game(int& argc, char **argv);
 	void reloadEnemies();
+	void loadLevel2();
 	~Game();
 	void init(void(*_controllerInput)(unsigned short index, Input::Button button), void(*_controllerSpecial)(unsigned short index, Input::Triggers triggers, Input::Sticks sticks));
 
@@ -184,6 +185,75 @@ private:
 			}
 		};
 	} level;
+
+	struct LevelData2 {
+		Level* collision;
+		Object *map, *hitboxes;
+		Camera *camera;
+
+		// @@@@@ FOR SEAN @@@@@ Light positions, have to move them up from floor position
+		std::vector<glm::vec3> lightsPos =
+		{
+			// Examples for formatting
+			{ 4.25f, 10.0f, 29.5f },
+			{ 32.75f, 10.0f, 48.0f },
+			//{ 151.0f, 10.0f, 11.0f },
+			//{ 2.0f, 10.0f, 25.0f },
+			{ 79.5f, 10.0f, 68.0f }
+		};
+
+		std::vector<glm::vec4> exitPosR =
+		{
+			{ 36.5f, 1.0f, 60.5f,	0.f },	// Right
+			{ 122.2f, 1.0f, 31.7f,	0.f },	// Right
+			{ 55.4f, 1.0f, 13.f,		1.f },	// rotate to point south Right 
+			{ 130.7f, 1.0f, 12.2f,	1.f },	// rotate to point south Right
+			{ 84.1f, 1.0f, 41.f,		1.f }	// rotate to point south Right
+												//{45.f, 1.0f ,27.2f	, },	// Left
+												//{141.5f, 1.0f ,59.8f, },		// Left
+												//{95.7f, 1.0f ,47.4f	, },	// rotate to point north Left
+		};
+
+		std::vector<glm::vec4> exitPosL =
+		{
+			{ 45.f, 1.0f, 27.2f,	0.f },	// Left
+			{ 141.5f, 1.0f, 59.8f,	0.f },	// Left
+			{ 95.7f, 1.0f, 47.1f,	1.f }	// rotate to point north Left
+		};
+
+		std::vector<Light*> lightPointers;
+		//std::vector<Light*> lightNoFlash;
+		//std::vector<Light> lights;
+		Light *light, *light2, *light3;
+		glm::vec3 start = { 1.7f, 0.f, 2.1f };
+		glm::vec4 exit = { 42.17f, 45.19f, 14.85f, 17.65f };
+		glm::vec4 dial1 = { 7.1f, 7.8f, 5.6f, 6.7f };
+		glm::vec4 dial2 = { 7.8f, 11.f, 10.5f, 12.f };
+		//glm::vec4 dial2 = { 7.8f, 11.f, 19.f, 21.f };
+		glm::vec4 dial3 = { 27.f, 29.f, 60.f, 66.f };
+
+		//glm::vec4 exit = { 77.f, 81.f, 67.f, 70.f };
+
+		std::tuple<std::vector<glm::vec2>, std::vector<glm::vec2>, std::vector<glm::vec2>>
+			enemies = {
+			{
+				{ 10.77, 1.69 },	{ 15.17, 1.56 },	{ 28.93, 4.75 },	{ 37.31, 6.16 },
+				{ 49.96, 7.04 },	{ 61.96, 6.96 },	{ 59.51, 19.11 },	{ 58.76, 36.02 },
+				{ 50, 36.55 },		{ 43.79, 33 },		{ 40.14, 36.69 },	{ 31.97, 33.5 },
+				{ 23.3, 36.72 },	{ 18.03, 32.95 },	{ 9.15, 23.69 },	{ 5.46, 19 },
+				{ 7.73, 13.39 }
+			},
+			{
+				{ 43, 0.97 },		{ 56.36, 7.8 },		{ 64.74, 17.62 },	{ 46.87, 19.15 },
+				{ 12.79, 35.75 },	{ 31.80, 13.2 }
+			},
+			{
+				{ 36.65, 10.89 },	{ 56.1, 22.9 },		{ 50.34, 18.63 },	{ 54.53, 28.13 },
+				{ 67.78, 22.78 },	{ 3.31, 22.63 },	{ 8.34, 34 }
+			}
+			
+		};
+	} level2;
 	// characters
 	Player* player;
 	std::vector<Enemy*> enemies;
@@ -194,9 +264,11 @@ private:
 	std::vector<Object*> permItems;
 	bool lightOn = true;
 	void loadDrops();
+	void loadDrops2();
 	void loadSignR();
 	void loadSignL();
 	void loadEnemies(), clearEnemies();
+	void loadEnemies2();
 	void clearDrops();
 	void clearDial();
 	void clearItems();
@@ -220,7 +292,7 @@ private:
 	} hud;
 	// screens
 	struct Screen {
-		Object *menu, *pause, *win, *lose, *loading, *controls;
+		Object *menu, *pause, *win, *lose, *loading, *controls, *credit;
 		struct Button {
 			Object *obj;
 			glm::vec4 pos;
