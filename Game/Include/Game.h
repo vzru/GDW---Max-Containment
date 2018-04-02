@@ -75,7 +75,6 @@ public:
 	void controllerInput(unsigned short index, Input::Button button);
 	void controllerSpecial(unsigned short index, Input::Triggers triggers, Input::Sticks sticks);
 
-	void drawAmmo();
 	void reset();
 	void createDropItem(glm::vec3 pos, int type = 0);
 	void createCorpse(glm::vec3 pos);
@@ -93,6 +92,7 @@ private:
 	State state = State::Menu;
 	glm::vec2 windowSize;
 	int dialMode = 0;
+	int score = 0;
 	// input
 	struct InputData {
 		glm::vec2 mouse;
@@ -207,14 +207,26 @@ private:
 		Object *healthBar;
 		struct Ammo {
 			Object *number;
-			glm::vec3 positions[5] = {
-				{0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}
+			std::vector<glm::vec3> positions = {
+				{ 3.4f, 7.f, 3.8f },
+				{ 3.65f, 7.f, 3.8f },
+				{ 3.5f, 7.f, 3.4f },
+				{ 3.75f, 7.f, 3.4f },
+				{ 4.f, 7.f, 3.4f }
 			};
-			//Object *digit0, *digit1, *digit2, *digit3, *digit4, *digit5, *digit6, *digit7, *digit8, *digit9;
-			//glm::vec3 pos1, pos2, pos3, pos4, pos5;
 		} ammo;
+		struct Score {
+			Object *number;
+			std::vector<glm::vec3> positions = {
+				{ 5.0f, 7.f, -1.8f },
+				{ 5.18f, 7.f, -1.8f },
+				{ 5.36f, 7.f, -1.8f },
+				{ 5.54f, 7.f, -1.8f },
+				{ 5.72f, 7.f, -1.8f }
+			};
+			int score;
+		} score;
 		glm::vec3 angle = { 10.f, 0.f, 0.f };
-		glm::vec4 red = { 1.f, 0.f, 0.f, 1.f };
 		Light *light;
 		Camera *camera;
 	} hud;

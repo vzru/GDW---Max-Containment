@@ -577,7 +577,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	hud.display->loadMesh(assets->meshes["hud"]);
 	hud.healthBar->loadMesh(assets->meshes["hp bar"]);
 	hud.display->loadTexture(Type::Texture::DIFFUSE, assets->textures["hud"]);
-	hud.healthBar->color = hud.red;
+	hud.healthBar->color = glm::vec4(consts.color.red, 1.f);
 	hud.display->setRotation(hud.angle);
 	hud.healthBar->setRotation(hud.angle);
 	hud.display->setScale(glm::vec3(0.395f));
@@ -592,11 +592,18 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	hud.light->attenuation = { 1.f, 0.1f, 0.01f };
 	hud.ammo.number = new Object();
 	hud.ammo.number->loadMesh(assets->meshes["screen"]);
-	hud.ammo.number->setScale(glm::vec3(0.05f, 1.f, 0.1f));
+	hud.ammo.number->loadTexture(Type::Texture::DIFFUSE, assets->textures["numbers"]);
+	hud.ammo.number->setScale(glm::vec3(0.02f, 1.f, 0.05f));
 	hud.ammo.number->setRotation(hud.angle);
+	hud.score.number = new Object();
+	hud.score.number->loadMesh(assets->meshes["screen"]);
+	hud.score.number->loadTexture(Type::Texture::DIFFUSE, assets->textures["numbers"]);
+	hud.score.number->setScale(glm::vec3(0.03f, 1.f, 0.06f));
+	hud.score.number->setRotation(hud.angle);
 
 	// Initialize Enemies
 	std::get<0>(enemys) = new Enemy();			std::get<1>(enemys) = new Enemy();			std::get<2>(enemys) = new Enemy();
+	std::get<0>(enemys)->points = 100;			std::get<1>(enemys)->points = 200;			std::get<2>(enemys)->points = 450;
 	std::get<0>(enemys)->life = 15.f;			std::get<1>(enemys)->life = 25.f;			std::get<2>(enemys)->life = 10.f;
 	std::get<0>(enemys)->movementSpeed = 250.f;	std::get<1>(enemys)->movementSpeed = 300.f;	std::get<2>(enemys)->movementSpeed = 150.f;
 	std::get<0>(enemys)->damage = 2.f;			std::get<1>(enemys)->damage = 4.f;			std::get<2>(enemys)->damage = 5.f;
@@ -993,6 +1000,7 @@ void Game::update() {
 		//screen.pause->update(deltaTime);
 		hud.healthBar->update(deltaTime);
 		hud.ammo.number->update(deltaTime);
+		hud.score.number->update(deltaTime);
 		level.camera->update(player->getPosition());
 		// Point Light Position
 		level.lightPointers[0]->position = glm::vec4(player->getPosition() + glm::vec3(0.f, 2.f, 0.f), 1.f);
@@ -1120,6 +1128,7 @@ void Game::update() {
 					enemies[i]->update(deltaTime, level.collision);
 					// kill enemy
 					if (enemies[i]->life <= 0.f) {
+						score += enemies[i]->points;
 						createDropItem(enemies[i]->getPosition());
 						createCorpse(enemies[i]->getPosition());
 						enemies[i]->collect = true;
@@ -1212,6 +1221,23 @@ void Game::draw() {
 				}
 			}
 			level.map->draw(program["PhongSpot"], level.camera, level.lightPointers, 0);
+			glm::vec3 temp = player->getPosition();
+			int nums1[] = { score / 10000, score / 1000, score / 100, score / 10, score };
+			for (int i = 0; i < hud.score.positions.size(); i++) {
+				hud.score.number->ammo = nums1[i];
+				//std::cout << i << ": " << num[i] << std::endl;
+				hud.score.number->setPosition(temp + hud.score.positions[i]);
+				hud.score.number->update(deltaTime);
+				hud.score.number->draw(program["numbers"], level.camera, { hud.light }, 0);
+			}
+			int nums[] = { player->ammo / 10, player->ammo, player->ammoDepo / 100, player->ammoDepo / 10, player->ammoDepo };
+			for (int i = 0; i < hud.ammo.positions.size(); i++) {
+				hud.ammo.number->ammo = nums[i];
+				//std::cout << i << ": " << num[i] << std::endl;
+				hud.ammo.number->setPosition(temp + hud.ammo.positions[i]);
+				hud.ammo.number->update(deltaTime);
+				hud.ammo.number->draw(program["numbers"], level.camera, { hud.light }, 0);
+			}
 			for (int i = 0; i < dropItems.size(); i++)
 				if (!dropItems[i]->collect) {
 					dropItems[i]->draw(program["DropItems"], level.camera, level.lightPointers, 0);
@@ -1232,6 +1258,23 @@ void Game::draw() {
 					enemy->aDraw(program["NoFlashNoNorm"], level.camera, level.lightPointers, 1);
 				}
 			level.map->draw(program["NoFlash"], level.camera, level.lightPointers, 0);
+			glm::vec3 temp = player->getPosition();
+			int nums1[] = { score / 10000, score / 1000, score / 100, score / 10, score };
+			for (int i = 0; i < hud.score.positions.size(); i++) {
+				hud.score.number->ammo = nums1[i];
+				//std::cout << i << ": " << num[i] << std::endl;
+				hud.score.number->setPosition(temp + hud.score.positions[i]);
+				hud.score.number->update(deltaTime);
+				hud.score.number->draw(program["numbers"], level.camera, { hud.light }, 0);
+			}
+			int nums2[] = { player->ammo / 10, player->ammo, player->ammoDepo / 100, player->ammoDepo / 10, player->ammoDepo };
+			for (int i = 0; i < hud.ammo.positions.size(); i++) {
+				hud.ammo.number->ammo = nums2[i];
+				//std::cout << i << ": " << num[i] << std::endl;
+				hud.ammo.number->setPosition(temp + hud.ammo.positions[i]);
+				hud.ammo.number->update(deltaTime);
+				hud.ammo.number->draw(program["numbers"], level.camera, { hud.light }, 0);
+			}
 			for (int i = 0; i < dropItems.size(); i++)
 				if (!dropItems[i]->collect) {
 					dropItems[i]->draw(program["NoFlashNoNorm"], level.camera, level.lightPointers, 0);
@@ -1735,26 +1778,6 @@ void Game::createCorpse(glm::vec3 pos)
 	corpse->update(deltaTime);
 	permItems.push_back(new Object(*corpse));
 }
-//
-//void Game::drawAmmo() {
-//	if (hud.ammo.number) {
-//		hud.ammo.number->ammo = player->ammo / 10;
-//		hud.ammo.number->setPosition(hud.ammo.positions[0]);
-//		hud.ammo.number->draw(program["numbers"], level.camera, { hud.light });
-//		hud.ammo.number->ammo = player->ammo;
-//		hud.ammo.number->setPosition(hud.ammo.positions[1]);
-//		hud.ammo.number->draw(program["numbers"], level.camera, { hud.light });
-//		hud.ammo.number->ammo = player->ammoDepo / 100;
-//		hud.ammo.number->setPosition(hud.ammo.positions[2]);
-//		hud.ammo.number->draw(program["numbers"], level.camera, { hud.light });
-//		hud.ammo.number->ammo = player->ammoDepo / 10;
-//		hud.ammo.number->setPosition(hud.ammo.positions[3]);
-//		hud.ammo.number->draw(program["numbers"], level.camera, { hud.light });
-//		hud.ammo.number->ammo = player->ammoDepo;
-//		hud.ammo.number->setPosition(hud.ammo.positions[4]);
-//		hud.ammo.number->draw(program["numbers"], level.camera, { hud.light });
-//	}
-//}
 
 // Resets the level
 void Game::reset()
