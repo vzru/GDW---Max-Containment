@@ -8,7 +8,8 @@ Sound::Sound() {
 		sSys.initializeS();
 }
 
-Sound::Sound(char * f, bool l, int d) {
+Sound::Sound(char * f, bool l, int d)
+{
 	if (!sSys.init)
 		sSys.initializeS();
 	loadSound(f, l, d);
