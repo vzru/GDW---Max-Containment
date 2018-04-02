@@ -924,6 +924,9 @@ void Game::update() {
 		glm::vec3 temp = player->getPosition();
 		FMOD_VECTOR listener = { player->getPosition().x, player->getPosition().y, player->getPosition().z };
 		soundList[0]->changeListenerLoc(listener);
+		glm::vec3 pDir = glm::normalize(player->getVelocity());
+		float pAng = glm::acos(glm::dot(pDir, glm::vec3(0.f)));
+		std::cout << pAng << std::endl;
 		//std::cout << temp.x << '/' << temp.y << '/' << temp.z << std::endl;
 		//std::cout << rand() % 100 << std::endl
 		float partAngle = glm::radians(player->getRotation().y);
@@ -940,17 +943,17 @@ void Game::update() {
 		}
 		else
 		{
-			player->popCD -= deltaTime / 100.f;
+			player->popCD -= deltaTime / 10.f;
 		}
 
-		std::cout << player->popCD << std::endl;
+		//std::cout << player->popCD << std::endl;
 
-		if (temp.x > level.dial0.x && temp.x < level.dial0.y && temp.z > level.dial0.z && temp.z < level.dial0.w && dialMode == 0)
-		{
-			dialogue[0]->setPause(false);
-			dialMode = 1;
-		}
-		else if (temp.x > level.dial1.x && temp.x < level.dial1.y && temp.z > level.dial1.z && temp.z < level.dial1.w && dialMode == 1)
+		//if (temp.x > level.dial0.x && temp.x < level.dial0.y && temp.z > level.dial0.z && temp.z < level.dial0.w && dialMode == 0)
+		//{
+		//	dialogue[0]->setPause(false);
+		//	dialMode = 1;
+		//}
+		if (temp.x > level.dial1.x && temp.x < level.dial1.y && temp.z > level.dial1.z && temp.z < level.dial1.w && dialMode == 1)
 		{
 			dialogue[0]->stopSound();
 			dialogue[1]->setPause(false);
@@ -1171,7 +1174,7 @@ void Game::update() {
 					}
 					if (dropItems[i]->collect) {
 						soundList[4]->playSound(2);
-						soundList[4]->setVolume(0.5f);
+						soundList[4]->setVolume(0.2f);
 						player->popCD = 10.f;
 					}
 				}
@@ -1307,8 +1310,9 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 			soundList[0]->stopSound(0);
 			soundList[1]->playSound(2);
 			soundList[1]->setVolume(0.05f);
-			//dialogue[4]->playSound(2);
-			//soundList[4]->setVolume(0.5f);
+			dialogue[0]->playSound(2);
+			dialogue[0]->setVolume(0.5f);
+			dialMode = 1;
 			soundList[5]->setPause(false);
 			soundList[6]->setPause(false);
 			soundList[7]->setPause(false);
@@ -1625,7 +1629,9 @@ void Game::controllerInput(unsigned short index, Input::Button button) {
 				soundList[0]->stopSound();
 				soundList[1]->playSound(2);
 				soundList[1]->setVolume(0.05f);
-				//soundList[4]->playSound(2);
+				dialogue[0]->playSound(2);
+				dialogue[0]->setVolume(0.5f);
+				dialMode = 1;
 				soundList[5]->setPause(false);
 				soundList[6]->setPause(false);
 				soundList[7]->setPause(false);
