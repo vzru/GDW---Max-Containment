@@ -135,11 +135,11 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	//Initialize Assets
 	// level
 	//assets->loadMesh("level", "Laboratory Level Triangulated.obj");
-	assets->loadMesh("level", "new level.obj");
+	assets->loadMesh("level", "level 2.obj");
 
 	//assets->loadMesh("hitboxes", "Laboratory Level Hitboxes Triangulated.obj");
 	//assets->loadTexture("level color", "Lab_textures.png");
-	assets->loadTexture("level color", "new level texture.png");
+	assets->loadTexture("level color", "level 2 textures.png");
 
 	assets->loadTexture("level normal", "new level texture normals.png");
 	// screens
@@ -262,7 +262,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	level.hitboxes = new Object({ 0.f, -8.f, 0.f });
 	level.map->loadMesh(assets->meshes["level"]);
 	//level.collision->load("assets/meshes/Laboratory Level Hitboxes.obj");
-	level.collision->load("assets/meshes/new level hitboxes.obj");
+	level.collision->load("assets/meshes/level 2 hitboxes.obj");
 	level.hitboxes->loadMesh(assets->meshes["hitboxes"]);
 	level.map->loadTexture(Type::Texture::DIFFUSE, assets->textures["level color"]);
 	level.map->loadTexture(Type::Texture::NORMAL, assets->textures["level normal"]);
