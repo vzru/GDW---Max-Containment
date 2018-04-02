@@ -1622,6 +1622,7 @@ void Game::mousePassive(glm::vec2 mouse) {
 		case State::Play: {
 			glm::vec3 pPos = player->getPosition();
 			glm::vec2 diff = glm::vec2(pPos.x, pPos.z) + windowSize * 0.5f - mouse;
+			float slope = tan(glm::radians(hud.angle.x));
 			player->setRotation({ 0.f, glm::degrees(atan2(diff.y, -diff.x)), 0.f });
 			break;
 		} case State::Menu:
@@ -1630,8 +1631,7 @@ void Game::mousePassive(glm::vec2 mouse) {
 			else screen.play.obj->color.b = 1.f;
 			if (mouse.x > screen.quit.pos.x * windowSize.x && mouse.x < screen.quit.pos.y * windowSize.x && mouse.y > screen.quit.pos.z * windowSize.y && mouse.y < screen.quit.pos.w * windowSize.y)
 				screen.quit.obj->color.b = 0.f;
-			else
-				screen.quit.obj->color.b = 1.f;
+			else screen.quit.obj->color.b = 1.f;
 			break;
 		default:
 			break;
