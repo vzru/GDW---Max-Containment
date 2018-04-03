@@ -447,28 +447,28 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	screen.play.obj->setScale(glm::vec3(1.7f));
 	screen.play.obj->update(0.f);
 
-	screen.quit.obj = new Object({ 0.f, 0.2f, 1.75f });
+	screen.quit.obj = new Object({ 2.5f, 0.2f, 1.75f });
 	screen.quit.pos = { 0.36822917f, 0.64583333f, 0.72962963f, 0.99722223f };
-	screen.quit.scale = 1.5f;
+	screen.quit.scale = 1.f;
 	screen.quit.obj->color = glm::vec4(1.f);
 	screen.quit.obj->loadMesh(assets->meshes["quit"]);
-	screen.quit.obj->setScale(glm::vec3(1.5f));
+	screen.quit.obj->setScale(glm::vec3(1.f));
 	screen.quit.obj->update(0.f);
 
-	screen.credits.obj = new Object({ 0.f, 0.2f, 1.75f });
+	screen.credits.obj = new Object({ -1.75f, 0.2f, 1.7f });
 	screen.credits.pos = { 0.36822917f, 0.64583333f, 0.92962963f, 0.99722223f };
-	screen.credits.scale = 0.5f;
+	screen.credits.scale = 0.4f;
 	screen.credits.obj->color = glm::vec4(1.f);
 	screen.credits.obj->loadMesh(assets->meshes["credits"]);
-	screen.credits.obj->setScale(glm::vec3(1.f));
+	screen.credits.obj->setScale(glm::vec3(0.4f));
 	screen.credits.obj->update(0.f);
 
-	screen.resume.obj = new Object({ 0.f, 0.2f, 1.75f });
+	screen.resume.obj = new Object({ -1.75f, 0.2f, 1.67f });
 	screen.resume.pos = { 0.36822917f, 0.64583333f, 1.72962963f, 0.99722223f };
-	screen.resume.scale = 0.5f;
+	screen.resume.scale = 0.4f;
 	screen.resume.obj->color = glm::vec4(1.f);
 	screen.resume.obj->loadMesh(assets->meshes["resume"]);
-	screen.resume.obj->setScale(glm::vec3(1.f));
+	screen.resume.obj->setScale(glm::vec3(0.4f));
 	screen.resume.obj->update(0.f);
 
 
@@ -1070,7 +1070,7 @@ void Game::update() {
 		soundList[0]->changeListenerLoc(listener);
 		glm::vec3 pDir = glm::normalize(player->getVelocity());
 		float pAng = glm::acos(glm::dot(pDir, glm::vec3(0.f)));
-		std::cout << pAng << std::endl;
+		//std::cout << pAng << std::endl;
 		//std::cout << temp.x << '/' << temp.y << '/' << temp.z << std::endl;
 		//std::cout << rand() % 100 << std::endl
 		float partAngle = glm::radians(player->getRotation().y);
@@ -1365,7 +1365,7 @@ void Game::update() {
 		soundList[0]->changeListenerLoc(listener);
 		glm::vec3 pDir = glm::normalize(player->getVelocity());
 		float pAng = glm::acos(glm::dot(pDir, glm::vec3(0.f)));
-		std::cout << pAng << std::endl;
+		//std::cout << pAng << std::endl;
 		//std::cout << temp.x << '/' << temp.y << '/' << temp.z << std::endl;
 		//std::cout << rand() % 100 << std::endl
 		float partAngle = glm::radians(player->getRotation().y);
@@ -1432,6 +1432,7 @@ void Game::update() {
 		//screen.pause->update(deltaTime);
 		hud.healthBar->update(deltaTime);
 		hud.ammo.number->update(deltaTime);
+		hud.score.number->update(deltaTime);
 		level2.camera->update(player->getPosition());
 		// Point Light Position
 		level2.lightPointers[0]->position = glm::vec4(player->getPosition() + glm::vec3(0.f, 2.f, 0.f), 1.f);
@@ -1742,6 +1743,24 @@ void Game::draw() {
 				}
 			}
 			level2.map->draw(program["PhongSpot"], level2.camera, level2.lightPointers, 0);
+			glm::vec3 temp = player->getPosition();
+			int nums1[] = { score / 10000, score / 1000, score / 100, score / 10, score };
+			for (int i = 0; i < hud.score.move.size(); i++) {
+				hud.score.number->ammo = nums1[i];
+				//std::cout << i << ": " << num[i] << std::endl;
+				hud.score.number->setPosition(temp + hud.score.move[i]);
+				hud.score.number->update(deltaTime);
+				hud.score.number->draw(program["numbers"], level2.camera, { hud.light }, 0);
+			}
+			int nums2[] = { player->ammo / 10, player->ammo, player->ammoDepo / 100, player->ammoDepo / 10, player->ammoDepo };
+			for (int i = 0; i < hud.ammo.move.size(); i++) {
+				hud.ammo.number->ammo = nums2[i];
+				//std::cout << i << ": " << num[i] << std::endl;
+				hud.ammo.number->setPosition(temp + hud.ammo.move[i].first);
+				hud.ammo.number->setScale(hud.ammo.move[i].second);
+				hud.ammo.number->update(deltaTime);
+				hud.ammo.number->draw(program["numbers"], level2.camera, { hud.light }, 0);
+			}
 			for (int i = 0; i < dropItems.size(); i++)
 				if (!dropItems[i]->collect) {
 					dropItems[i]->draw(program["DropItems"], level2.camera, level2.lightPointers, 0);
@@ -1762,6 +1781,24 @@ void Game::draw() {
 					enemy->aDraw(program["NoFlashNoNorm"], level2.camera, level2.lightPointers, 1);
 				}
 			level2.map->draw(program["NoFlash"], level2.camera, level2.lightPointers, 0);
+			glm::vec3 temp = player->getPosition();
+			int nums1[] = { score / 10000, score / 1000, score / 100, score / 10, score };
+			for (int i = 0; i < hud.score.move.size(); i++) {
+				hud.score.number->ammo = nums1[i];
+				//std::cout << i << ": " << num[i] << std::endl;
+				hud.score.number->setPosition(temp + hud.score.move[i]);
+				hud.score.number->update(deltaTime);
+				hud.score.number->draw(program["numbers"], level2.camera, { hud.light }, 0);
+			}
+			int nums2[] = { player->ammo / 10, player->ammo, player->ammoDepo / 100, player->ammoDepo / 10, player->ammoDepo };
+			for (int i = 0; i < hud.ammo.move.size(); i++) {
+				hud.ammo.number->ammo = nums2[i];
+				//std::cout << i << ": " << num[i] << std::endl;
+				hud.ammo.number->setPosition(temp + hud.ammo.move[i].first);
+				hud.ammo.number->setScale(hud.ammo.move[i].second);
+				hud.ammo.number->update(deltaTime);
+				hud.ammo.number->draw(program["numbers"], level2.camera, { hud.light }, 0);
+			}
 			for (int i = 0; i < dropItems.size(); i++)
 				if (!dropItems[i]->collect) {
 					dropItems[i]->draw(program["NoFlashNoNorm"], level2.camera, level2.lightPointers, 0);
@@ -1817,7 +1854,7 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 			state = State::Pause;
 			break;
 		case State::Pause:
-			state = State::Play;
+			state = State::Play2;
 			break;
 		case State::Menu:
 			glutExit();
@@ -1975,7 +2012,7 @@ void Game::windowReshape(glm::vec2 size) {
 // mouse callback functions
 void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 	input.mouse = mouse;	input.button = button;	input.state = state;
-	//std::cout << mouse.x << ':' << mouse.y << std::endl;
+	std::cout << mouse.x << ':' << mouse.y << std::endl;
 	switch (this->state) {
 	case State::Play:
 		switch (button) {
@@ -2384,9 +2421,9 @@ void Game::loadLevel2()
 	clearPartEmitter();
 	clearDial();
 	initializeParticles();
-	soundList[5]->stopSound();
-	soundList[6]->stopSound();
-	soundList[7]->stopSound();
+	//soundList[5]->stopSound();
+	//soundList[6]->stopSound();
+	//soundList[7]->stopSound();
 	loadDrops2();
 	loadEnemies2();
 }
