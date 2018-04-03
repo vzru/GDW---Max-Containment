@@ -28,7 +28,7 @@ class ParticleEmitterSoA;
 namespace Input {
 	using Triggers = std::pair<float, float>;
 	using Sticks = std::pair<glm::vec2, glm::vec2>;
-	enum Button;
+	enum State;		enum Button;
 	class XBox;
 	enum Keys {
 		None = 0x0000000,
@@ -51,7 +51,7 @@ public:
 	void reloadEnemies();
 	void loadLevel2();
 	~Game();
-	void init(void(*_controllerInput)(unsigned short index, Input::Button button), void(*_controllerSpecial)(unsigned short index, Input::Triggers triggers, Input::Sticks sticks));
+	void init(void(*_controllerInput)(unsigned short index, Input::Button button, Input::State state), void(*_controllerSpecial)(unsigned short index, Input::Triggers triggers, Input::Sticks sticks));
 
 	void initializeParticles();
 
@@ -73,7 +73,7 @@ public:
 	void mouseMoved(glm::vec2 mouse);
 	void mousePassive(glm::vec2 mouse);
 	//controller
-	void controllerInput(unsigned short index, Input::Button button);
+	void controllerInput(unsigned short index, Input::Button button, Input::State state);
 	void controllerSpecial(unsigned short index, Input::Triggers triggers, Input::Sticks sticks);
 
 	void reset();
@@ -94,6 +94,7 @@ private:
 	glm::vec2 windowSize;
 	int dialMode = 0;
 	int score = 0;
+	bool lightOn = true;
 	// input
 	struct InputData {
 		glm::vec2 mouse;
@@ -262,7 +263,6 @@ private:
 	std::vector<Object*> dropItems;
 	Object *corpse, *exitR, *exitL;
 	std::vector<Object*> permItems;
-	bool lightOn = true;
 	void loadDrops();
 	void loadDrops2();
 	void loadSignR();

@@ -42,8 +42,8 @@ void TimerCallbackFunction(int value) {
 void SpecialInputCallbackFunction(int key, int x, int y) {
 	game->specialInput(key, { x, y });
 }
-void ControllerInputCallbackFunction(unsigned short index, Input::Button button) {
-	game->controllerInput(index, button);
+void ControllerInputCallbackFunction(unsigned short index, Input::Button button, Input::State state) {
+	game->controllerInput(index, button, state);
 }
 void ControllerSpecialCallbackFunction(unsigned short index, Input::Triggers triggers, Input::Sticks sticks) {
 	game->controllerSpecial(index, triggers, sticks);

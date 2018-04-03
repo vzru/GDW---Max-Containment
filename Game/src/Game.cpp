@@ -62,7 +62,7 @@ Game::Game(int& argc, char** argv)
 	srand(time(NULL));
 }
 
-void Game::init(void(*_controllerInput)(unsigned short index, Input::Button button), void(*_controllerSpecial)(unsigned short index, Input::Triggers triggers, Input::Sticks sticks)) {
+void Game::init(void(*_controllerInput)(unsigned short index, Input::Button button, Input::State state), void(*_controllerSpecial)(unsigned short index, Input::Triggers triggers, Input::Sticks sticks)) {
 	// Initialize game elements
 	timer = new Timer();
 	Assets *assets = Assets::getInstance();
@@ -2229,7 +2229,7 @@ void Game::mousePassive(glm::vec2 mouse) {
 		}
 }
 
-void Game::controllerInput(unsigned short index, Input::Button button, unsigned short state) {
+void Game::controllerInput(unsigned short index, Input::Button button, Input::State state) {
 	if (index == 0)
 		switch (this->state) {
 		case State::Play:
@@ -2237,7 +2237,7 @@ void Game::controllerInput(unsigned short index, Input::Button button, unsigned 
 				this->state = State::Pause;
 			if (button == Input::Button::RB)
 				player->reload = true;
-			if (button == Input::Button::X)
+			if (button == Input::Button::X && state == Input::State::Up)
 				lightOn = !lightOn;
 			break;
 		case State::Play2:
@@ -2245,20 +2245,18 @@ void Game::controllerInput(unsigned short index, Input::Button button, unsigned 
 				this->state = State::Pause;
 			if (button == Input::Button::RB)
 				player->reload = true;
-			if (button == Input::Button::X)
+			if (button == Input::Button::X && state == Input::State::Up)
 				lightOn = !lightOn;
 			break;
 		case State::Pause:
 			if (button == Input::Button::A)
 				this->state = State::Play;
-			if (button == Input::Button::B) {
+			if (button == Input::Button::B)
 				reset();
-			}
 			break;
 		case State::Lose: case State::Win:
-			if (button == Input::Button::B) {
+			if (button == Input::Button::B)
 				reset();
-			}
 			break;
 		case State::Menu:
 			if (button == Input::Button::A)
@@ -2267,8 +2265,7 @@ void Game::controllerInput(unsigned short index, Input::Button button, unsigned 
 				glutExit();
 			break;
 		case State::Control:
-			if (button == Input::Button::B)
-			{
+			if (button == Input::Button::B) {
 				soundList[0]->stopSound();
 				soundList[1]->playSound(2);
 				soundList[1]->setVolume(0.05f);
@@ -2298,11 +2295,13 @@ void Game::controllerSpecial(unsigned short index, Input::Triggers triggers, Inp
 			if (triggers.second > 0.5)
 			{
 				if (player->reloadCd <= 0.0f) {
-					player->firing = true;
-					soundList[3]->stopSound();
-					if (soundList[3]->chList.size() <= 0) {
-						soundList[2]->playSound(2);
-						soundList[2]->setVolume(0.05f);
+					if (!player->firing) {
+						player->firing = true;
+						soundList[3]->stopSound();
+						if (soundList[3]->chList.size() <= 0) {
+							soundList[2]->playSound(2);
+							soundList[2]->setVolume(0.05f);
+						}
 					}
 				}
 			}

@@ -28,7 +28,7 @@ namespace Input
 	bool XBox::update(unsigned short _numControllers) {
 		// download packets
 		unsigned int result;
-		for (unsigned int i = 0; i < min(min(_numControllers, 4), XUSER_MAX_COUNT); i++) {
+		for (unsigned int i = 0; i < min(min(_numControllers, MAX_NUM_CONTROLLERS), XUSER_MAX_COUNT); i++) {
 			// Set the state to zero
 			memset(&state, 0, sizeof(XINPUT_STATE));
 
@@ -41,8 +41,6 @@ namespace Input
 				// If the number of packets has changed, we know something has happened in the controller
 				// and we can get the state here. A simple speed optimization
 				if (state.dwPacketNumber != packetNumber[i]) {
-					// Reset everything to Zero
-					std::fill(std::begin(buttonStates[i]), std::end(buttonStates[i]), false);
 					packetNumber[i] = state.dwPacketNumber;
 
 #pragma region Update Sticks
@@ -73,14 +71,14 @@ namespace Input
 					// UPDATE ALL OF THE BUTTONS OF THE GAMEPAD
 					for (int j = 0; j < Button::Size; j++)
 						if (state.Gamepad.wButtons & button[j])
-							if (buttonStates[i][j])						buttonStates[i][j] = State::Hold;
-							else										buttonStates[i][j] = State::Down;
+							if (buttonStates[i][j] != State::Off)		buttonStates[i][j] = State::Down;
+							else										buttonStates[i][j] = State::Hold;
 						else if (buttonStates[i][j] == State::Hold)		buttonStates[i][j] = State::Up;
 						else if (buttonStates[i][j] == State::Up)		buttonStates[i][j] = State::Off;
 #pragma endregion
 				}
-				for (int b = 0; b < 14; b++)
-					if (buttonStates[i][b])
+				for (int b = 0; b < Button::Size; b++)
+					if (buttonStates[i][b] != State::Off)
 						(*callback)(i, (Input::Button)b, buttonStates[i][b]);
 				(*special)(i, triggers[i], sticks[i]);
 			} else connected[i] = false;

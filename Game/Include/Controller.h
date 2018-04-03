@@ -12,6 +12,7 @@
 namespace Input {
 	using Triggers = std::pair<float, float>;
 	using Sticks = std::pair<glm::vec2, glm::vec2>;
+#define MAX_NUM_CONTROLLERS 4
 	enum State {
 		Off, Down, Hold, Up
 	};
@@ -21,7 +22,7 @@ namespace Input {
 		LB,	RB,	A,	B,	X,	Y,
 		Size
 	};
-	int button[] = {
+	const int button[] = {
 		XINPUT_GAMEPAD_DPAD_UP, XINPUT_GAMEPAD_DPAD_DOWN, XINPUT_GAMEPAD_DPAD_LEFT, XINPUT_GAMEPAD_DPAD_RIGHT,
 		XINPUT_GAMEPAD_START, XINPUT_GAMEPAD_BACK, XINPUT_GAMEPAD_LEFT_THUMB, XINPUT_GAMEPAD_RIGHT_THUMB,
 		XINPUT_GAMEPAD_LEFT_SHOULDER, XINPUT_GAMEPAD_RIGHT_SHOULDER,
@@ -49,17 +50,17 @@ namespace Input {
 		bool setVibration(unsigned short index, Triggers _powers);
 		
 		// these are the callbacks
-		void(*callback)(unsigned short index, Input::Button button, unsigned short state);
+		void(*callback)(unsigned short index, Input::Button button, Input::State state);
 		void(*special)(unsigned short index, Input::Triggers _triggers, Input::Sticks _sticks);
 	private:
 
 		XINPUT_STATE state;
 
-		int packetNumber[4];
-		bool connected[4];
+		int packetNumber[MAX_NUM_CONTROLLERS];
+		bool connected[MAX_NUM_CONTROLLERS];
 
-		State buttonStates[4][14];
-		Triggers triggers[4];
-		Sticks sticks[4];
+		State buttonStates[MAX_NUM_CONTROLLERS][Button::Size];
+		Triggers triggers[MAX_NUM_CONTROLLERS];
+		Sticks sticks[MAX_NUM_CONTROLLERS];
 	};
 }
