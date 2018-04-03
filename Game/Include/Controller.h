@@ -12,11 +12,20 @@
 namespace Input {
 	using Triggers = std::pair<float, float>;
 	using Sticks = std::pair<glm::vec2, glm::vec2>;
+	enum State {
+		Off, Down, Hold, Up
+	};
 	enum Button	{
-		A = 0x0, B = 0x1, X = 0x2, Y = 0x3,
-		RB = 0x4, LB = 0x5, R3 = 0x6, L3 = 0x7,
-		Start = 0x8, Select = 0x9,
-		DPadLeft = 0xA, DPadRight = 0xB, DPadUp = 0xC, DPadDown = 0xD
+		DPadUp, DPadDown, DPadLeft, DPadRight,
+		Start,	Select,	L3,	R3,
+		LB,	RB,	A,	B,	X,	Y,
+		Size
+	};
+	int button[] = {
+		XINPUT_GAMEPAD_DPAD_UP, XINPUT_GAMEPAD_DPAD_DOWN, XINPUT_GAMEPAD_DPAD_LEFT, XINPUT_GAMEPAD_DPAD_RIGHT,
+		XINPUT_GAMEPAD_START, XINPUT_GAMEPAD_BACK, XINPUT_GAMEPAD_LEFT_THUMB, XINPUT_GAMEPAD_RIGHT_THUMB,
+		XINPUT_GAMEPAD_LEFT_SHOULDER, XINPUT_GAMEPAD_RIGHT_SHOULDER,
+		XINPUT_GAMEPAD_A, XINPUT_GAMEPAD_B, XINPUT_GAMEPAD_X, XINPUT_GAMEPAD_Y
 	};
 	
 	class XBox {
@@ -40,12 +49,8 @@ namespace Input {
 		bool setVibration(unsigned short index, Triggers _powers);
 		
 		// these are the callbacks
-		void setCallbacks(
-			void (*_callback)(unsigned short index, Input::Button button),
-			void (*_special)(unsigned short index, Input::Triggers triggers, Input::Sticks sticks)
-		);
-		void (*callback)(unsigned short index, Input::Button button);
-		void (*special)(unsigned short index, Input::Triggers _triggers, Input::Sticks _sticks);
+		void(*callback)(unsigned short index, Input::Button button, unsigned short state);
+		void(*special)(unsigned short index, Input::Triggers _triggers, Input::Sticks _sticks);
 	private:
 
 		XINPUT_STATE state;
@@ -53,7 +58,7 @@ namespace Input {
 		int packetNumber[4];
 		bool connected[4];
 
-		bool buttonStates[4][14];
+		State buttonStates[4][14];
 		Triggers triggers[4];
 		Sticks sticks[4];
 	};

@@ -2,7 +2,7 @@
 
 #include <Windows.h>
 
-#include "controller.h"
+#include "Controller.h"
 
 namespace Input
 {
@@ -53,7 +53,7 @@ namespace Input
 					if (glm::length(sticks[i].first) > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
 						sticks[i].first /= 32767.0f;
 					else sticks[i].first = { 0.0f, 0.0f };
-					
+
 					if (glm::length(sticks[i].second) > XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
 						sticks[i].second /= 32767.0f;
 					else sticks[i].second = { 0.0f, 0.0f };
@@ -71,39 +71,17 @@ namespace Input
 
 #pragma region Update Buttons
 					// UPDATE ALL OF THE BUTTONS OF THE GAMEPAD
-					if (state.Gamepad.wButtons & XINPUT_GAMEPAD_A)
-						buttonStates[i][Button::A] = true;
-					if (state.Gamepad.wButtons & XINPUT_GAMEPAD_B)
-						buttonStates[i][Button::B] = true;
-					if (state.Gamepad.wButtons & XINPUT_GAMEPAD_X)
-						buttonStates[i][Button::X] = true;
-					if (state.Gamepad.wButtons & XINPUT_GAMEPAD_Y)
-						buttonStates[i][Button::Y] = true;
-					if (state.Gamepad.wButtons & XINPUT_GAMEPAD_START)
-						buttonStates[i][Button::Start] = true;
-					if (state.Gamepad.wButtons &  XINPUT_GAMEPAD_BACK)
-						buttonStates[i][Button::Select] = true;
-					if (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER)
-						buttonStates[i][Button::LB] = true;
-					if (state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER)
-						buttonStates[i][Button::RB] = true;
-					if (state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB)
-						buttonStates[i][Button::L3] = true;
-					if (state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB)
-						buttonStates[i][Button::R3] = true;
-					if (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN)
-						buttonStates[i][Button::DPadDown] = true;
-					if (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP)
-						buttonStates[i][Button::DPadUp] = true;
-					if (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT)
-						buttonStates[i][Button::DPadRight] = true;
-					if (state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT)
-						buttonStates[i][Button::DPadLeft] = true;
+					for (int j = 0; j < Button::Size; j++)
+						if (state.Gamepad.wButtons & button[j])
+							if (buttonStates[i][j])						buttonStates[i][j] = State::Hold;
+							else										buttonStates[i][j] = State::Down;
+						else if (buttonStates[i][j] == State::Hold)		buttonStates[i][j] = State::Up;
+						else if (buttonStates[i][j] == State::Up)		buttonStates[i][j] = State::Off;
 #pragma endregion
 				}
 				for (int b = 0; b < 14; b++)
 					if (buttonStates[i][b])
-						(*callback)(i, (Input::Button)b);
+						(*callback)(i, (Input::Button)b, buttonStates[i][b]);
 				(*special)(i, triggers[i], sticks[i]);
 			} else connected[i] = false;
 		}
@@ -136,8 +114,5 @@ namespace Input
 		vibration.wRightMotorSpeed = _powers.second * 65535;
 		XInputSetState(_index, &vibration);
 		return true;
-	}
-	void XBox::setCallbacks(void(*_callback)(unsigned short index, Input::Button button), void(*_special)(unsigned short index, Input::Triggers triggers, Input::Sticks sticks)) {
-		callback = _callback; special = _special;
 	}
 }

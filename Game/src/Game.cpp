@@ -2011,6 +2011,7 @@ void Game::windowReshape(glm::vec2 size) {
 	windowSize = size;
 	glViewport(0, 0, windowSize.x, windowSize.y);
 	level.camera->reset(size);
+	level2.camera->reset(size);
 	screen.camera->reset(size);
 }
 
@@ -2168,20 +2169,29 @@ void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 
 void Game::mouseMoved(glm::vec2 mouse) {
 	input.mouse = mouse;
-	switch (state) {
-	case State::Play:
-		//if (mousePosition.length() > 0 && !(abs(change.x) >= 200.0f && abs(change.y) >= 200.0f))
-			//camera->processMotion(change, timer->getElapsedTimeMS());
-		break;
-	default:
-		break;
-	}
-	if (!input.xBox->getConnected(0) &&( state == State::Play || state == State::Play2)) {
-		glm::vec3 pPos = player->getPosition();
-		//std::cout << pos.x << ':' << pos.y << ';' << pPos.x << ':' << pPos.z << ';' << windowSize.x << ':' << windowSize.y << std::endl;
-		glm::vec2 diff = glm::vec2(pPos.x, pPos.z) + windowSize * 0.5f - mouse;
-		player->setRotation({ 0.f, glm::degrees(atan2(diff.y, -diff.x)), 0.f });
-	}
+	if (!input.xBox->getConnected(0))
+		switch (state) {
+		case State::Play: {
+			glm::vec3 camPos = level.camera->getPosition();
+			glm::vec3 pPos = player->getPosition();
+			float theta = atan2(camPos.z, camPos.y);
+			mouse.y /= cos(theta);
+			//std::cout << pos.x << ':' << pos.y << ';' << pPos.x << ':' << pPos.z << ';' << windowSize.x << ':' << windowSize.y << std::endl;
+			glm::vec2 offset = glm::vec2(pPos.x, pPos.z) + windowSize * 0.5f - mouse;
+			player->setRotation({ 0.f, glm::degrees(atan2(offset.y, -offset.x)), 0.f });
+			break;
+		} case State::Play2: {
+			glm::vec3 camPos = level2.camera->getPosition();
+			glm::vec3 pPos = player->getPosition();
+			float theta = atan2(camPos.z, camPos.y);
+			mouse.y /= cos(theta);
+			//std::cout << pos.x << ':' << pos.y << ';' << pPos.x << ':' << pPos.z << ';' << windowSize.x << ':' << windowSize.y << std::endl;
+			glm::vec2 offset = glm::vec2(pPos.x, pPos.z) + windowSize * 0.5f - mouse;
+			player->setRotation({ 0.f, glm::degrees(atan2(offset.y, -offset.x)), 0.f });
+			break;
+		} default:
+			break;
+		}
 }
 
 void Game::mousePassive(glm::vec2 mouse) {
@@ -2189,15 +2199,22 @@ void Game::mousePassive(glm::vec2 mouse) {
 	if (!input.xBox->getConnected(0))
 		switch (state) {
 		case State::Play: {
+			glm::vec3 camPos = level.camera->getPosition();
 			glm::vec3 pPos = player->getPosition();
-			glm::vec2 diff = glm::vec2(pPos.x, pPos.z) + windowSize * 0.5f - mouse;
-			float slope = tan(glm::radians(hud.angle.x));
-			player->setRotation({ 0.f, glm::degrees(atan2(diff.y, -diff.x)), 0.f });
+			float theta = atan2(camPos.z, camPos.y);
+			mouse.y /= cos(theta);
+			//std::cout << pos.x << ':' << pos.y << ';' << pPos.x << ':' << pPos.z << ';' << windowSize.x << ':' << windowSize.y << std::endl;
+			glm::vec2 offset = glm::vec2(pPos.x, pPos.z) + windowSize * 0.5f - mouse;
+			player->setRotation({ 0.f, glm::degrees(atan2(offset.y, -offset.x)), 0.f });
 			break;
 		} case State::Play2: {
+			glm::vec3 camPos = level2.camera->getPosition();
 			glm::vec3 pPos = player->getPosition();
-			glm::vec2 diff = glm::vec2(pPos.x, pPos.z) + windowSize * 0.5f - mouse;
-			player->setRotation({ 0.f, glm::degrees(atan2(diff.y, -diff.x)), 0.f });
+			float theta = atan2(camPos.z, camPos.y);
+			mouse.y /= cos(theta);
+			//std::cout << pos.x << ':' << pos.y << ';' << pPos.x << ':' << pPos.z << ';' << windowSize.x << ':' << windowSize.y << std::endl;
+			glm::vec2 offset = glm::vec2(pPos.x, pPos.z) + windowSize * 0.5f - mouse;
+			player->setRotation({ 0.f, glm::degrees(atan2(offset.y, -offset.x)), 0.f });
 			break;
 		} case State::Menu:
 			if (mouse.x > screen.play.pos.x * windowSize.x && mouse.x < screen.play.pos.y * windowSize.x && mouse.y > screen.play.pos.z * windowSize.y && mouse.y < screen.play.pos.w * windowSize.y)
@@ -2212,12 +2229,12 @@ void Game::mousePassive(glm::vec2 mouse) {
 		}
 }
 
-void Game::controllerInput(unsigned short index, Input::Button button) {
+void Game::controllerInput(unsigned short index, Input::Button button, unsigned short state) {
 	if (index == 0)
-		switch (state) {
+		switch (this->state) {
 		case State::Play:
 			if (button == Input::Button::Start)
-				state = State::Pause;
+				this->state = State::Pause;
 			if (button == Input::Button::RB)
 				player->reload = true;
 			if (button == Input::Button::X)
@@ -2225,7 +2242,7 @@ void Game::controllerInput(unsigned short index, Input::Button button) {
 			break;
 		case State::Play2:
 			if (button == Input::Button::Start)
-				state = State::Pause;
+				this->state = State::Pause;
 			if (button == Input::Button::RB)
 				player->reload = true;
 			if (button == Input::Button::X)
@@ -2233,7 +2250,7 @@ void Game::controllerInput(unsigned short index, Input::Button button) {
 			break;
 		case State::Pause:
 			if (button == Input::Button::A)
-				state = State::Play;
+				this->state = State::Play;
 			if (button == Input::Button::B) {
 				reset();
 			}
@@ -2245,7 +2262,7 @@ void Game::controllerInput(unsigned short index, Input::Button button) {
 			break;
 		case State::Menu:
 			if (button == Input::Button::A)
-				state = State::Control;
+				this->state = State::Control;
 			if (button == Input::Button::Start)
 				glutExit();
 			break;
@@ -2261,7 +2278,7 @@ void Game::controllerInput(unsigned short index, Input::Button button) {
 				soundList[5]->setPause(false);
 				soundList[6]->setPause(false);
 				soundList[7]->setPause(false);
-				state = State::Play;
+				this->state = State::Play;
 			}
 			break;
 		default:

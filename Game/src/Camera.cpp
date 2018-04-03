@@ -56,6 +56,10 @@ void Camera::move(glm::vec3 amount) {
 //	rightVector = glm::normalize(rightVector);
 //}
 
+glm::vec3 Camera::getPosition() {
+	return position;
+}
+
 void Camera::setPosition(glm::vec3 pos) {
 	position = pos;
 }
