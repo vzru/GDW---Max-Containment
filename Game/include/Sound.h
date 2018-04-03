@@ -27,6 +27,7 @@ public:
 	
 	// Channel Control
 	void stopSound();
+	void clearChannel();
 	void stopSound(int index);
 	void pauseSound(int index);
 	void setPause(bool p);

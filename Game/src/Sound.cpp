@@ -133,10 +133,19 @@ void Sound::setPause(int index, bool p)
 
 void Sound::stopSound()
 {
-	for (int i = 0; i < chList.size(); i++)
+	for (int i = chList.size(); i > 0; --i)
 	{
-		chList[i]->channel->stop();
+		chList[i - 1]->channel->stop();
 		chList.pop_back();
+	}
+}
+
+void Sound::clearChannel()
+{
+	for (int i = chList.size(); i > 0; --i)
+	{
+		chList[i - 1]->channel->stop();
+		delete chList[i - 1];
 	}
 }
 
