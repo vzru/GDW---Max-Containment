@@ -100,6 +100,7 @@ private:
 	int cheatCode = 0;
 	bool lightOn = false;
 	bool shotP = false;
+	bool stepT = false;
 	// input
 	struct InputData {
 		glm::vec2 mouse;
