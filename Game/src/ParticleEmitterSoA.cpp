@@ -92,6 +92,10 @@ void ParticleEmitterSoA::update(float dTime)
 					*mass = glm::linearRand(0.5f, 1.0f);
 					*accel = *vel / *mass;
 				}
+				else
+				{
+					*pos = glm::vec3(-100, -100, -100);
+				}
 				
 			}
 

@@ -196,22 +196,6 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	assets->loadTexture("enemy2 normal", "enemy2N.png");
 
 	// animation
-	//assets->loadMesh("dam0", "dam0.obj");
-	//assets->loadMesh("dam1", "dam1.obj");
-	//assets->loadMesh("dam2", "dam2.obj");
-	//assets->loadMesh("dam3", "dam3.obj");
-	//assets->loadMesh("dam4", "dam4.obj");
-	//assets->loadMesh("dam5", "dam5.obj");
-	//assets->loadMesh("dam6", "dam6.obj");
-	//assets->loadMesh("dam7", "dam7.obj");
-	//assets->loadMesh("dam8", "dam8.obj");
-
-	//assets->loadMesh("playerFrame0", "c_kframe_1.obj");
-	//assets->loadMesh("playerFrame1", "c_kframe_2.obj");
-	//assets->loadMesh("playerFrame2", "c_kframe_3.obj");
-	//assets->loadMesh("playerFrame3", "c_kframe_4.obj");
-	//assets->loadMesh("playerFrame4", "c_kframe_5.obj");
-
 	assets->loadAnimationMesh("playerFrame0", "player00.obj", "player01.obj");
 	assets->loadAnimationMesh("playerFrame1", "player01.obj", "player02.obj");
 	assets->loadAnimationMesh("playerFrame2", "player02.obj", "player03.obj");
@@ -389,27 +373,6 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	level2.light2->attenuation = { 0.5f, 0.1f, 0.01f };
 	level2.lightPointers.push_back(level2.light2);
 
-	//level.lights.reserve(level.lightPointers.size());// *sizeof(Light));
-	//
-	//for (int i = 0; i < level.lightPointers.size(); i++)
-	//{
-	//	level.lights[i] = *level.lightPointers[i];
-	//}
-
-	/*level.light3 = new Light();
-	level.light3->type = (unsigned int)Type::Light::SPOT;
-	level.light3->position = { 0.f, 0.0f, 0.f, 1.f };
-	level.light3->direction = { 0.f, 0.5f, 0.f, 0.f };
-	level.light3->original = level.light3->position;
-	level.light3->ambient = { 0.15f, 0.15f, 0.15f };
-	level.light3->diffuse = { 0.7f, 0.7f, 0.7f };
-	level.light3->specular = { 1.f, 1.f, 1.f };
-	level.light3->specExponent = 50.f;
-	level.light3->spotExponent = 1.f;
-	level.light3->cutoff = glm::radians(55.f);
-	level.light3->outerCutoff = glm::radians(1.f);
-	level.light3->partial = 0.3;
-	level.light3->attenuation = { 1.f, 0.5f, 0.1f };*/
 
 	// Initialize images
 	screen.menu = new Object();
@@ -450,7 +413,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	screen.play.obj->update(0.f);
 
 	screen.quit.obj = new Object({ 2.5f, 0.2f, 1.75f });
-	screen.quit.pos = { 0.36822917f, 0.64583333f, 0.72962963f, 0.99722223f };
+	screen.quit.pos = { 0.671875f, 0.8546875f, 0.72962963f, 0.9287f };
 	screen.quit.scale = 1.f;
 	screen.quit.obj->color = glm::vec4(1.f);
 	screen.quit.obj->loadMesh(assets->meshes["quit"]);
@@ -458,7 +421,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	screen.quit.obj->update(0.f);
 
 	screen.credits.obj = new Object({ -1.75f, 0.2f, 1.7f });
-	screen.credits.pos = { 0.36822917f, 0.64583333f, 0.92962963f, 0.99722223f };
+	screen.credits.pos = { 0.112f, 0.5015625f, 0.75833333f, 0.89352f };
 	screen.credits.scale = 0.4f;
 	screen.credits.obj->color = glm::vec4(1.f);
 	screen.credits.obj->loadMesh(assets->meshes["credits"]);
@@ -466,7 +429,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	screen.credits.obj->update(0.f);
 
 	screen.resume.obj = new Object({ -1.75f, 0.2f, 1.67f });
-	screen.resume.pos = { 0.36822917f, 0.64583333f, 1.72962963f, 0.99722223f };
+	screen.resume.pos = { 0.112f, 0.49427f, 0.7574f, 0.88426f };
 	screen.resume.scale = 0.4f;
 	screen.resume.obj->color = glm::vec4(1.f);
 	screen.resume.obj->loadMesh(assets->meshes["resume"]);
@@ -532,14 +495,6 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	}
 
 	// Initialize Sounds
-	//Sound* sound = new Sound("assets/sounds/game soundtrack.wav", true, 2);
-	//soundList.push_back(sound);
-	//sound = new Sound("assets/sounds/ambient machine noise.wav", true, 2);
-	//soundList.push_back(sound);
-	//sound = new Sound("assets/sounds/Gunshot_sound.wav", true, 3);
-	//soundList.push_back(sound);
-	//sound = new Sound("assets/sounds/Reload_sound.wav", false, 3);
-	//soundList.push_back(sound);
 
 	Sound* sound1 = new Sound("assets/sounds/ambient machine noise.wav", true, 2);
 	soundList.push_back(sound1);
@@ -550,16 +505,10 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	Sound* sound4 = new Sound("assets/sounds/pop.wav", false, 2);
 	soundList.push_back(sound4);
 	Sound* sound5 = new Sound("assets/sounds/Damaged.wav", true, 3);
-	//sound5->set3DDist(0.5f, 5.f);
-	//sound5->setMode(FMOD_3D_INVERSEROLLOFF);
 	soundList.push_back(sound5);
 	Sound* sound6 = new Sound("assets/sounds/Deformed.wav", true, 3);
-	//sound6->set3DDist(0.5f, 5.f);
-	//sound6->setMode(FMOD_3D_INVERSEROLLOFF);
 	soundList.push_back(sound6);
 	Sound* sound7 = new Sound("assets/sounds/Demented.wav", true, 3);
-	//sound7->set3DDist(0.5f, 5.f);
-	//sound7->setMode(FMOD_3D_INVERSEROLLOFF);
 	soundList.push_back(sound7);
 
 	Sound* dial0 = new Sound("assets/sounds/first.wav", false, 2);
@@ -583,7 +532,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	player->bullet->color = { 1.0f , 1.0f, 1.0f, 0.3f };
 	//player->life = 15.0f;
 	player->ammo = 30.0f;
-	player->ammoDepo = 90.f;
+	player->ammoDepo = 30.f;
 	player->reloadCd = 0.0f;
 
 	player->loadAnimationFrame(assets->aMeshes["playerFrame0"]);
@@ -676,7 +625,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 
 	// Initialize Enemies
 	std::get<0>(enemys) = new Enemy();			std::get<1>(enemys) = new Enemy();			std::get<2>(enemys) = new Enemy();
-	std::get<0>(enemys)->points = 100;			std::get<1>(enemys)->points = 200;			std::get<2>(enemys)->points = 450;
+	std::get<0>(enemys)->points = 100;			std::get<1>(enemys)->points = 300;			std::get<2>(enemys)->points = 500;
 	std::get<0>(enemys)->life = 15.f;			std::get<1>(enemys)->life = 25.f;			std::get<2>(enemys)->life = 10.f;
 	std::get<0>(enemys)->movementSpeed = 250.f;	std::get<1>(enemys)->movementSpeed = 300.f;	std::get<2>(enemys)->movementSpeed = 150.f;
 	std::get<0>(enemys)->damage = 2.f;			std::get<1>(enemys)->damage = 4.f;			std::get<2>(enemys)->damage = 5.f;
@@ -726,6 +675,8 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	std::get<2>(enemys)->loadAnimationFrame(assets->aMeshes["dem3"]);
 	std::get<2>(enemys)->loadAnimationFrame(assets->aMeshes["dem4"]);
 
+	dialogue[2]->setVolume(0.5f);
+
 	loadEnemies();
 
 	initializeParticles();
@@ -746,7 +697,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 void Game::initializeParticles()
 {
 	ParticleEmitterSoA *part = new ParticleEmitterSoA();
-	part->lifeR = glm::vec3(0.001f, 0.01f, 0.0f);
+	part->lifeR = glm::vec3(0.001f, 0.001f, 0.0f);
 	part->initForceMin = glm::vec3(-0.3f, -0.5f, -0.3f);
 	part->initForceMax = glm::vec3(0.3f, 0.0f, 0.3f);
 	part->size = 0.1f;
@@ -1045,8 +996,18 @@ void Game::update() {
 		if (player->reloadCd > 0.0f && !player->reloaded) {
 			soundList[2]->stopSound();
 			player->reloaded = true;
+			shotP = false;
 			soundList[3]->playSound(3);
 			soundList[3]->setVolume(0, 0.5f);
+		}
+
+		if (shotP)
+		{
+			partEList[0]->play();
+		}
+		else
+		{
+			partEList[0]->pause();
 		}
 
 		//soundList[1]->createChannel();
@@ -1072,7 +1033,7 @@ void Game::update() {
 		FMOD_VECTOR listener = { player->getPosition().x, player->getPosition().y, player->getPosition().z };
 		soundList[0]->changeListenerLoc(listener);
 		glm::vec3 pDir = glm::normalize(player->getVelocity());
-		float pAng = glm::acos(glm::dot(pDir, glm::vec3(0.f)));
+		float pAng = glm::acos(glm::dot(pDir, glm::vec3(1.f, 0.f, 0.f)));
 		//std::cout << pAng << std::endl;
 		//std::cout << temp.x << '/' << temp.y << '/' << temp.z << std::endl;
 		//std::cout << rand() % 100 << std::endl
@@ -1293,8 +1254,10 @@ void Game::update() {
 			player->newShot = false;
 		}
 		// player loses
-		if (player->life <= 0.f)
+		if (player->life <= 0.f) {
 			state = State::Lose;
+			reset();
+		}
 		// player wins
 		glm::vec3 pPos = player->getPosition();
 		if (pPos.x > level.exit.x && pPos.x < level.exit.y && pPos.z > level.exit.z && pPos.z < level.exit.w)
@@ -1341,8 +1304,18 @@ void Game::update() {
 		if (player->reloadCd > 0.0f && !player->reloaded) {
 			soundList[2]->stopSound();
 			player->reloaded = true;
+			shotP = false;
 			soundList[3]->playSound(3);
 			soundList[3]->setVolume(0, 0.5f);
+		}
+
+		if (shotP)
+		{
+			partEList[0]->play();
+		}
+		else
+		{
+			partEList[0]->pause();
 		}
 
 		//soundList[1]->createChannel();
@@ -1589,12 +1562,16 @@ void Game::update() {
 			player->newShot = false;
 		}
 		// player loses
-		if (player->life <= 0.f)
+		if (player->life <= 0.f) {
 			state = State::Lose;
+			reset();
+		}
 		// player wins
 		glm::vec3 pPos = player->getPosition();
-		if (pPos.x > level2.exit.x && pPos.x < level2.exit.y && pPos.z > level2.exit.z && pPos.z < level2.exit.w)
+		if (pPos.x > level2.exit.x && pPos.x < level2.exit.y && pPos.z > level2.exit.z && pPos.z < level2.exit.w) {
 			state = State::Win;
+			reset();
+		}
 		// item drops
 		for (int i = 0; i < dropItems.size(); i++)
 			if (!dropItems[i]->collect) {
@@ -1843,6 +1820,9 @@ void Game::draw() {
 	case State::Control:
 		screen.controls->draw(program["Phong"], screen.camera, { screen.light }, 0);
 		break;
+	case State::Credits:
+		screen.credit->draw(program["Phong"], screen.camera, { screen.light }, 0);
+		break;
 	default:
 		break;
 	}
@@ -1857,16 +1837,32 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 		switch (state) {
 		case State::Play:
 			state = State::Pause;
+			playMode = 0;
+			break;
+		case State::Play2:
+			state = State::Pause;
+			playMode = 1;
 			break;
 		case State::Pause:
-			state = State::Play2;
+			if (playMode == 1) {
+				state = State::Play2;
+			}
+			else {
+				state = State::Play;
+			}
+
 			break;
 		case State::Menu:
 			glutExit();
 			break;
-		case State::Lose: case State::Win:
-			reset();
-			//soundList[0]->playSound();
+		case State::Lose: 
+			state = State::Menu;
+			break;
+		case State::Win:
+			state = State::Credits;
+			break;
+		case State::Credits:
+			state = State::Menu;
 			break;
 		default:
 			break;
@@ -1890,10 +1886,24 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 			soundList[7]->setPause(false);
 			break;
 		case State::Pause:
-			state = State::Play;
+			if (cheatCode == 2) {
+				state = State::Play2;
+				loadLevel2();
+				cheatCode = 0;
+			}
+			else if (playMode == 1) {
+				state = State::Play2;
+			}
+			else {
+				state = State::Play;
+			}
 			break;
-		case State::Lose: case State::Win:
-			reset();
+		case State::Lose: 
+			state = State::Menu;
+			break;
+		case State::Win:
+			state = State::Credits;
+			break;
 			//soundList[0]->playSound();
 			break;
 		}
@@ -1904,6 +1914,7 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 	case 'Q': case 'q':
 		if (state == State::Pause) {
 			reset();
+			state = State::Menu;
 			//soundList[0]->playSound();
 		}
 		//enemies.push_back(new Enemy({ rand() % 21 - 10 + player->getPosition().x, 0, rand() % 21 - 10 + player->getPosition().z }));
@@ -1978,6 +1989,11 @@ void Game::keyboardUp(unsigned char key, glm::vec2 mouse) {
 	case '4':			input.keys &= ~Input::Keys::Num4; break;
 	case ' ':			input.keys &= ~Input::Keys::Space; break;
 	case 26:			input.keys &= ~Input::Keys::Esc; break;
+	case 'L': case 'l':	cheatCode = 1; break;
+	case 'B': case 'b':	
+		if(cheatCode == 1)
+			cheatCode = 2; 
+		break;
 
 	default: break;
 	}
@@ -2018,28 +2034,31 @@ void Game::windowReshape(glm::vec2 size) {
 // mouse callback functions
 void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 	input.mouse = mouse;	input.button = button;	input.state = state;
-	std::cout << mouse.x << ':' << mouse.y << std::endl;
+	//std::cout << mouse.x << ':' << mouse.y << std::endl;
 	switch (this->state) {
 	case State::Play:
 		switch (button) {
 		case GLUT_LEFT_BUTTON:
 			switch (state) {
 			case GLUT_DOWN:
-				if (player->reloadCd <= 0.0f) {
+				if (player->reloadCd <= 0.0f && (player->ammoDepo > 0.0f || player->ammo > 0.0f)) {
 					player->firing = true;
-					partEList[0]->play();
+					shotP = true;
+					//partEList[0]->play();
 					soundList[3]->stopSound();
-					soundList[2]->playSound(3);
-					soundList[2]->setVolume(0.05f);
+					//soundList[2]->playSound(3);
+					//soundList[2]->setVolume(0.05f);
 				}
 				else
 				{
-					partEList[0]->pause();
+					shotP = false;
+					//partEList[0]->pause();
 				}
 				break;
 			case GLUT_UP:
 				player->firing = false;
-				partEList[0]->pause();
+				shotP = false;
+				//partEList[0]->pause();
 				soundList[2]->stopSound();
 				break;
 			default:
@@ -2066,21 +2085,24 @@ void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 		case GLUT_LEFT_BUTTON:
 			switch (state) {
 			case GLUT_DOWN:
-				if (player->reloadCd <= 0.0f) {
+				if (player->reloadCd <= 0.0f && (player->ammoDepo > 0.0f || player->ammo > 0.0f)) {
 					player->firing = true;
-					partEList[0]->play();
+					shotP = true;
+					//partEList[0]->play();
 					soundList[3]->stopSound();
-					soundList[2]->playSound(3);
-					soundList[2]->setVolume(0.05f);
+					//soundList[2]->playSound(3);
+					//soundList[2]->setVolume(0.05f);
 				}
 				else
 				{
-					partEList[0]->pause();
+					shotP = false;
+					//partEList[0]->pause();
 				}
 				break;
 			case GLUT_UP:
 				player->firing = false;
-				partEList[0]->pause();
+				shotP = false;
+				//partEList[0]->pause();
 				soundList[2]->stopSound();
 				break;
 			default:
@@ -2109,6 +2131,8 @@ void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 			case GLUT_DOWN:
 				if (mouse.x > screen.play.pos.x * windowSize.x && mouse.x < screen.play.pos.y * windowSize.x && mouse.y > screen.play.pos.z * windowSize.y && mouse.y < screen.play.pos.w * windowSize.y)
 					this->state = State::Control;
+				if (mouse.x > screen.credits.pos.x * windowSize.x && mouse.x < screen.credits.pos.y * windowSize.x && mouse.y > screen.credits.pos.z * windowSize.y && mouse.y < screen.credits.pos.w * windowSize.y)
+					this->state = State::Credits;
 				//soundList[1]->playSound();
 				if (mouse.x > screen.quit.pos.x * windowSize.x && mouse.x < screen.quit.pos.y * windowSize.x && mouse.y > screen.quit.pos.z * windowSize.y && mouse.y < screen.quit.pos.w * windowSize.y)
 					glutExit();
@@ -2129,7 +2153,19 @@ void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 			switch (state) {
 			case GLUT_DOWN:
 				if (mouse.x > screen.resume.pos.x * windowSize.x && mouse.x < screen.resume.pos.y * windowSize.x && mouse.y > screen.resume.pos.z * windowSize.y && mouse.y < screen.resume.pos.w * windowSize.y)
-					this->state = State::Play;
+				{
+					if (cheatCode == 2) {
+						this->state = State::Play2;
+						loadLevel2();
+						cheatCode = 0;
+					}
+					else if (playMode == 1) {
+						this->state = State::Play2;
+					}
+					else {
+						this->state = State::Play;
+					}
+				}
 				//soundList[1]->playSound();
 				if (mouse.x > screen.quit.pos.x * windowSize.x && mouse.x < screen.quit.pos.y * windowSize.x && mouse.y > screen.quit.pos.z * windowSize.y && mouse.y < screen.quit.pos.w * windowSize.y)
 				{
@@ -2216,13 +2252,25 @@ void Game::mousePassive(glm::vec2 mouse) {
 			glm::vec2 offset = glm::vec2(pPos.x, pPos.z) + windowSize * 0.5f - mouse;
 			player->setRotation({ 0.f, glm::degrees(atan2(offset.y, -offset.x)), 0.f });
 			break;
-		} case State::Menu:
+		} case State::Menu: {
 			if (mouse.x > screen.play.pos.x * windowSize.x && mouse.x < screen.play.pos.y * windowSize.x && mouse.y > screen.play.pos.z * windowSize.y && mouse.y < screen.play.pos.w * windowSize.y)
-				screen.play.obj->color.b = 0.f;
-			else screen.play.obj->color.b = 1.f;
+				screen.play.obj->color = glm::vec4(1.0f, 0.f, 0.f, 1.0f);
+			else screen.play.obj->color = glm::vec4(1.0f, 1.f, 1.f, 1.0f);
 			if (mouse.x > screen.quit.pos.x * windowSize.x && mouse.x < screen.quit.pos.y * windowSize.x && mouse.y > screen.quit.pos.z * windowSize.y && mouse.y < screen.quit.pos.w * windowSize.y)
-				screen.quit.obj->color.b = 0.f;
-			else screen.quit.obj->color.b = 1.f;
+				screen.quit.obj->color = glm::vec4(1.0f, 0.f, 0.f, 1.0f);
+			else screen.quit.obj->color = glm::vec4(1.0f, 1.f, 1.f, 1.0f);
+			if (mouse.x > screen.credits.pos.x * windowSize.x && mouse.x < screen.credits.pos.y * windowSize.x && mouse.y > screen.credits.pos.z * windowSize.y && mouse.y < screen.credits.pos.w * windowSize.y)
+				screen.credits.obj->color = glm::vec4(1.0f, 0.f, 0.f, 1.0f);
+			else screen.credits.obj->color = glm::vec4(1.0f, 1.f, 1.f, 1.0f);
+			break;
+		}
+		case State::Pause:
+			if (mouse.x > screen.resume.pos.x * windowSize.x && mouse.x < screen.resume.pos.y * windowSize.x && mouse.y > screen.resume.pos.z * windowSize.y && mouse.y < screen.resume.pos.w * windowSize.y)
+				screen.resume.obj->color = glm::vec4(1.0f, 0.f, 0.f, 1.0f);
+			else screen.resume.obj->color = glm::vec4(1.0f, 1.f, 1.f, 1.0f);
+			if (mouse.x > screen.quit.pos.x * windowSize.x && mouse.x < screen.quit.pos.y * windowSize.x && mouse.y > screen.quit.pos.z * windowSize.y && mouse.y < screen.quit.pos.w * windowSize.y)
+				screen.quit.obj->color = glm::vec4(1.0f, 0.f, 0.f, 1.0f);
+			else screen.quit.obj->color = glm::vec4(1.0f, 1.f, 1.f, 1.0f);
 			break;
 		default:
 			break;
@@ -2251,12 +2299,18 @@ void Game::controllerInput(unsigned short index, Input::Button button, Input::St
 		case State::Pause:
 			if (button == Input::Button::A)
 				this->state = State::Play;
-			if (button == Input::Button::B)
+			if (button == Input::Button::B) {
 				reset();
+				this->state = State::Menu;
+			}
 			break;
-		case State::Lose: case State::Win:
+		case State::Lose: 
 			if (button == Input::Button::B)
-				reset();
+				this->state = State::Menu;
+			break;
+		case State::Win:
+			if (button == Input::Button::B)
+				this->state = State::Credits;
 			break;
 		case State::Menu:
 			if (button == Input::Button::A)
@@ -2294,14 +2348,14 @@ void Game::controllerSpecial(unsigned short index, Input::Triggers triggers, Inp
 				player->setRotation({ 0.0f, glm::degrees(atan2(sticks.second.y, sticks.second.x)), 0.0f });
 			if (triggers.second > 0.5)
 			{
-				if (player->reloadCd <= 0.0f) {
+				if (player->reloadCd <= 0.0f && (player->ammoDepo > 0.0f || player->ammo > 0.0f)) {
 					if (!player->firing) {
 						player->firing = true;
 						soundList[3]->stopSound();
-						if (soundList[3]->chList.size() <= 0) {
-							soundList[2]->playSound(2);
-							soundList[2]->setVolume(0.05f);
-						}
+						//if (soundList[3]->chList.size() <= 0) {
+						//	soundList[2]->playSound(2);
+						//	soundList[2]->setVolume(0.05f);
+						//}
 					}
 				}
 			}
@@ -2324,13 +2378,13 @@ void Game::controllerSpecial(unsigned short index, Input::Triggers triggers, Inp
 				player->setRotation({ 0.0f, glm::degrees(atan2(sticks.second.y, sticks.second.x)), 0.0f });
 			if (triggers.second > 0.5)
 			{
-				if (player->reloadCd <= 0.0f) {
+				if (player->reloadCd <= 0.0f && (player->ammoDepo > 0.0f || player->ammo > 0.0f) ) {
 					player->firing = true;
 					soundList[3]->stopSound();
-					if (soundList[3]->chList.size() <= 0) {
-						soundList[2]->playSound(2);
-						soundList[2]->setVolume(0.05f);
-					}
+					//if (soundList[3]->chList.size() <= 0) {
+					//	soundList[2]->playSound(2);
+					//	soundList[2]->setVolume(0.05f);
+					//}
 				}
 			}
 			else if (triggers.second < 0.5)
@@ -2425,19 +2479,19 @@ void Game::reset()
 	soundList[6]->setPause(true);
 	soundList[7]->setPause(true);
 	soundList[0]->playSound(2);
-	soundList[0]->setVolume(0.1f);
+	soundList[0]->setVolume(0.03f);
 	initializeParticles();
 	reloadEnemies();
 	loadDrops();
 	loadSignR();
 	loadSignL();
 	loadDialogue();
-	state = State::Menu;
+	//state = State::Menu;
 }
 
 void Game::loadLevel2()
 {
-	player->reset(level2.start);
+	player->level2(level2.start);
 	clearEnemies();
 	clearDrops();
 	clearItems();

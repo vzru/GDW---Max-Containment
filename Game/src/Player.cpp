@@ -80,7 +80,18 @@ void Player::reset(glm::vec3 pos) {
 	cooldown = 0.f;
 	life = 16.f;
 	ammo = 30.0f;
-	ammoDepo = 90.0f;
+	ammoDepo = 30.0f;
+	reloadCd = 0.0f;
+	nightCD = 0.0f;
+	firing = false;
+}
+
+void Player::level2(glm::vec3 pos) {
+	position = pos;
+	velocity = { 0.f, 0.f, 0.f };
+	acceleration = { 0.f, 0.f, 0.f };
+	cooldown = 0.f;
+	life = 20.f;
 	reloadCd = 0.0f;
 	nightCD = 0.0f;
 	firing = false;
@@ -122,18 +133,18 @@ void Player::reloading()
 	if ((ammo <= 0 && ammoDepo > 0.0f) || reload == true)
 	{
 		float diff = 30.f - ammo;
-		if (ammoDepo > 30.0f)
+		if (diff > ammoDepo)
+		{
+			ammo += ammoDepo;
+			ammoDepo -= ammoDepo;
+		}
+		else if (ammoDepo > 0.0f)
 		{
 			ammo += diff;
 			ammoDepo -= diff;
 		}
-		else if (ammoDepo > 0.0f)
-		{
-			ammo = ammoDepo;
-			ammoDepo = 0.0f;
-		}
-		reloadCd = 2.0f;
+		reloadCd = 1.7f;
 		reload = false;
-		std::cout << "Reload!" << std::endl;
+		//std::cout << "Reload!" << std::endl;
 	}
 }

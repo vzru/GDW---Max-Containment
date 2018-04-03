@@ -93,8 +93,11 @@ private:
 	State state = State::Menu;
 	glm::vec2 windowSize;
 	int dialMode = 0;
+	int playMode = 0;
 	int score = 0;
-	bool lightOn = true;
+	int cheatCode = 0;
+	bool lightOn = false;
+	bool shotP = false;
 	// input
 	struct InputData {
 		glm::vec2 mouse;
@@ -146,8 +149,8 @@ private:
 		glm::vec3 start = { 4.f, 0.f, 6.f };
 		glm::vec4 exit = { 77.f, 81.f, 67.f, 70.f };
 		glm::vec4 dial1 = { 7.1f, 7.8f, 5.6f, 6.7f };
-		glm::vec4 dial2 = { 7.8f, 11.f, 10.5f, 12.f };
-		//glm::vec4 dial2 = { 7.8f, 11.f, 19.f, 21.f };
+		//glm::vec4 dial2 = { 7.8f, 11.f, 10.5f, 12.f };
+		glm::vec4 dial2 = { 7.8f, 11.f, 33.f, 35.f };
 		glm::vec4 dial3 = { 27.f, 29.f, 60.f, 66.f };
 
 		//glm::vec4 exit = { 77.f, 81.f, 67.f, 70.f };
