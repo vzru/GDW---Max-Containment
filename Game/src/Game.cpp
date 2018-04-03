@@ -1036,6 +1036,7 @@ void Game::update() {
 		//soundList[0]->playSound();
 	}
 	else if (state == State::Play) {
+		currentTime += deltaTime;
 		//soundList[0]->stopSound();
 		//soundList[1]->playSound();
 
@@ -1330,6 +1331,7 @@ void Game::update() {
 			}
 	}
 	else if (state == State::Play2) {
+		currentTime += deltaTime;
 		//soundList[0]->stopSound();
 		//soundList[1]->playSound();
 		
@@ -2194,7 +2196,7 @@ void Game::mousePassive(glm::vec2 mouse) {
 			glm::vec2 diff = glm::vec2(pPos.x, pPos.z) + windowSize * 0.5f - mouse;
 			player->setRotation({ 0.f, glm::degrees(atan2(diff.y, -diff.x)), 0.f });
 			break;
-		}case State::Menu:
+		} case State::Menu:
 			if (mouse.x > screen.play.pos.x * windowSize.x && mouse.x < screen.play.pos.y * windowSize.x && mouse.y > screen.play.pos.z * windowSize.y && mouse.y < screen.play.pos.w * windowSize.y)
 				screen.play.obj->color.b = 0.f;
 			else screen.play.obj->color.b = 1.f;
@@ -2388,6 +2390,8 @@ void Game::createCorpse(glm::vec3 pos)
 // Resets the level
 void Game::reset()
 {
+	currentTime = 0.f;
+	score = 0;
 	player->reset(level.start);
 	dialMode = 0;
 	clearEnemies();

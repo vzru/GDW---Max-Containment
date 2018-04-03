@@ -89,7 +89,7 @@ private:
 
 	// helpers
 	Timer* timer = nullptr;
-	float deltaTime = 0.f;
+	float deltaTime = 0.f, currentTime = 0.f;
 	State state = State::Menu;
 	glm::vec2 windowSize;
 	int dialMode = 0;
