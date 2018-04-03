@@ -211,14 +211,7 @@ private:
 
 		std::vector<glm::vec4> exitPosR =
 		{
-			{ 36.5f, 1.0f, 60.5f,	0.f },	// Right
-			{ 122.2f, 1.0f, 31.7f,	0.f },	// Right
-			{ 55.4f, 1.0f, 13.f,		1.f },	// rotate to point south Right 
-			{ 130.7f, 1.0f, 12.2f,	1.f },	// rotate to point south Right
-			{ 84.1f, 1.0f, 41.f,		1.f }	// rotate to point south Right
-												//{45.f, 1.0f ,27.2f	, },	// Left
-												//{141.5f, 1.0f ,59.8f, },		// Left
-												//{95.7f, 1.0f ,47.4f	, },	// rotate to point north Left
+			{ 36.5f, 1.0f, 14.7f,	0.f },	// Right
 		};
 
 		std::vector<glm::vec4> exitPosL =
@@ -256,7 +249,7 @@ private:
 			},
 			{
 				{ 36.65, 10.89 },	{ 56.1, 22.9 },		{ 50.34, 18.63 },	{ 54.53, 28.13 },
-				{ 67.78, 22.78 },	{ 3.31, 22.63 },	{ 8.34, 34 }
+				{ 67.0, 22.78 },	{ 3.31, 22.63 },	{ 8.34, 34 }
 			}
 			
 		};

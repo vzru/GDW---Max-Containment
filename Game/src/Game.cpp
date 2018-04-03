@@ -383,14 +383,14 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	screen.win = new Object();
 	screen.controls = new Object();
 	screen.credit = new Object();
-	
+
 	screen.menu->loadMesh(assets->meshes["screen"]);
 	screen.pause->loadMesh(assets->meshes["screen"]);
 	screen.win->loadMesh(assets->meshes["screen"]);
 	screen.lose->loadMesh(assets->meshes["screen"]);
 	screen.controls->loadMesh(assets->meshes["screen"]);
 	screen.credit->loadMesh(assets->meshes["screen"]);
-	
+
 	screen.menu->loadTexture(Type::DIFFUSE, assets->textures["menu"]);
 	screen.pause->loadTexture(Type::DIFFUSE, assets->textures["pause"]);
 	screen.win->loadTexture(Type::DIFFUSE, assets->textures["win"]);
@@ -435,12 +435,12 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	screen.resume.obj->loadMesh(assets->meshes["resume"]);
 	screen.resume.obj->setScale(glm::vec3(0.4f));
 	screen.resume.obj->update(0.f);
-	
+
 	screen.score.number = new Object();
 	screen.score.number->loadMesh(assets->meshes["screen"]);
 	screen.score.number->loadTexture(Type::Texture::DIFFUSE, assets->textures["numbers"]);
 	screen.score.number->setScale(glm::vec3(0.1f, 1.f, 0.2f));
-	
+
 	// Initialize shaders
 	program["PhongSpot"] = new Shader();
 	if (!program["PhongSpot"]->load("assets/shaders/animation.vert", "assets/shaders/phongSpot.frag")) {
@@ -1089,7 +1089,7 @@ void Game::update() {
 
 		if (player->nightCD > 0.0f)
 		{
-			player->nightCD -= deltaTime/100.f;
+			player->nightCD -= deltaTime / 100.f;
 		}
 		if (player->popCD <= 0.0f)
 		{
@@ -1134,7 +1134,7 @@ void Game::update() {
 		{
 			soundList[3]->changeSoundLoc(0, tempS);
 		}
-		
+
 		//if(deltaTime >= 25.0f)
 		//std::cout << deltaTime << std::endl;
 
@@ -1263,7 +1263,7 @@ void Game::update() {
 					float distToEnemy = cos(bang - dang) * glm::length(diff);
 					//std::cout << glm::degrees(bang) << '/' << glm::degrees(dang) << '/' << dist << std::endl;
 					// seek towards player
-					if (((glm::length(diff) < 5.0f) || enemies[i]->triggered || glm::length(diff) < 15.0f && dist < 2.f && lightOn && distToEnemy > 0.0f) && glm::length(diff) > 1.0f && enemies[i]->knockbackCD <= 0 )
+					if (((glm::length(diff) < 5.0f) || enemies[i]->triggered || glm::length(diff) < 15.0f && dist < 2.f && lightOn && distToEnemy > 0.0f) && glm::length(diff) > 1.0f && enemies[i]->knockbackCD <= 0)
 					{
 						enemies[i]->setRotation({ 0.f, glm::degrees(atan2(-diff.z, diff.x)) - 90.f, 0.f });
 						enemies[i]->setVelocity(-glm::normalize(diff));
@@ -1290,7 +1290,7 @@ void Game::update() {
 		{
 			player->nightV = 0.0f;
 		}
-		
+
 
 		if (player->newShot == true)
 		{
@@ -1346,7 +1346,7 @@ void Game::update() {
 		//soundList[0]->stopSound();
 		//soundList[1]->playSound();
 		FMOD_VECTOR tempS = { player->getPosition().x, 0.0f, player->getPosition().z };
-		
+
 
 		if (player->reloadCd > 0.0f && !player->reloaded && player->ammoDepo > 0.0f) {
 			soundList[2]->stopSound();
@@ -1463,7 +1463,7 @@ void Game::update() {
 		{
 			soundList[3]->changeSoundLoc(0, tempS);
 		}
-		
+
 		//if(deltaTime >= 25.0f)
 		//std::cout << deltaTime << std::endl;
 
@@ -1636,7 +1636,7 @@ void Game::update() {
 		// player wins
 		glm::vec3 pPos = player->getPosition();
 		if (pPos.x > level2.exit.x && pPos.x < level2.exit.y && pPos.z > level2.exit.z && pPos.z < level2.exit.w) {
-			score += calculateScore(currentTime, 5 * 60 * 1000, 10000); // 5min
+			score += calculateScore(currentTime, 3 * 60 * 1000, 20000); // 3min
 			std::cout << currentTime << std::endl;
 			state = State::Win;
 			clear();
@@ -1930,7 +1930,7 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 		case State::Menu:
 			glutExit();
 			break;
-		case State::Lose: 
+		case State::Lose:
 			state = State::Menu;
 			break;
 		case State::Win:
@@ -1968,13 +1968,14 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 				state = State::Play2;
 				loadLevel2();
 				cheatCode = 0;
-			} else if (playMode == 1)
+			}
+			else if (playMode == 1)
 				state = State::Play2;
 			else state = State::Play;
 			screen.resume.obj->color = { 1.f, 1.f, 1.f, 1.0f };
 			screen.quit.obj->color = { 1.f, 1.f, 1.f, 1.0f };
 			break;
-		case State::Lose: 
+		case State::Lose:
 			state = State::Menu;
 			break;
 		case State::Win:
@@ -2066,9 +2067,9 @@ void Game::keyboardUp(unsigned char key, glm::vec2 mouse) {
 	case ' ':			input.keys &= ~Input::Keys::Space; break;
 	case 26:			input.keys &= ~Input::Keys::Esc; break;
 	case 'L': case 'l':	cheatCode = 1; break;
-	case 'B': case 'b':	
-		if(cheatCode == 1)
-			cheatCode = 2; 
+	case 'B': case 'b':
+		if (cheatCode == 1)
+			cheatCode = 2;
 		break;
 
 	default: break;
@@ -2362,8 +2363,8 @@ void Game::controllerInput(unsigned short index, Input::Button button, Input::St
 				this->state = State::Pause;
 			if (button == Input::Button::RB)
 				player->reload = true;
-			//if (button == Input::Button::X && state == Input::State::Up)
-			//	lightOn = !lightOn;
+			if (button == Input::Button::X && state == Input::State::Up)
+				lightOn = !lightOn;
 			break;
 		case State::Play2:
 			if (button == Input::Button::Start)
@@ -2381,7 +2382,7 @@ void Game::controllerInput(unsigned short index, Input::Button button, Input::St
 				this->state = State::Menu;
 			}
 			break;
-		case State::Lose: 
+		case State::Lose:
 			if (button == Input::Button::B)
 				this->state = State::Menu;
 			break;
@@ -2426,29 +2427,31 @@ void Game::controllerSpecial(unsigned short index, Input::Triggers triggers, Inp
 			if (triggers.second > 0.5)
 			{
 				if (player->reloadCd <= 0.0f && player->ammo > 0.0f) {
-					//if (!player->firing) {
-						player->firing = true;
+					if (!player->firing) {
 						soundList[3]->stopSound();
 						//if (soundList[3]->chList.size() <= 0) {
 						//	soundList[2]->playSound(2);
 						//	soundList[2]->setVolume(0.05f);
-						//}
-					//}
+					}
+					player->firing = true;
+					shotP = true;
+				//}
 				}
 			}
 			else if (triggers.second < 0.5)
 			{
 				player->firing = false;
+				shotP = false;
 				soundList[2]->stopSound();
 			}
-			if (triggers.first > 0.5)
-			{
-				lightOn = true;
-			}
-			else if (triggers.first < 0.5)
-			{
-				lightOn = false;
-			}
+			//if (triggers.first > 0.5)
+			//{
+			//	lightOn = true;
+			//}
+			//else if (triggers.first < 0.5)
+			//{
+			//	lightOn = false;
+			//}
 
 			//	lightOn = !lightOn;
 
@@ -2463,8 +2466,9 @@ void Game::controllerSpecial(unsigned short index, Input::Triggers triggers, Inp
 				player->setRotation({ 0.0f, glm::degrees(atan2(sticks.second.y, sticks.second.x)), 0.0f });
 			if (triggers.second > 0.5)
 			{
-				if (player->reloadCd <= 0.0f && player->ammo > 0.0f ) {
+				if (player->reloadCd <= 0.0f && player->ammo > 0.0f) {
 					player->firing = true;
+					shotP = true;
 					soundList[3]->stopSound();
 					//if (soundList[3]->chList.size() <= 0) {
 					//	soundList[2]->playSound(2);
@@ -2475,6 +2479,7 @@ void Game::controllerSpecial(unsigned short index, Input::Triggers triggers, Inp
 			else if (triggers.second < 0.5)
 			{
 				player->firing = false;
+				shotP = false;
 				soundList[2]->stopSound();
 			}
 			if (triggers.first > 0.5)
@@ -2594,6 +2599,13 @@ void Game::loadLevel2()
 	//soundList[7]->setPause(true);
 	loadDrops2();
 	loadEnemies2();
+	for (int i = 0; i < level.exitPosR.size(); i++)
+	{
+		exitR->setPosition(glm::vec3(level.exitPosR[i]));
+		exitR->setRotation(glm::vec3(0.0f, -90.f * level.exitPosR[i].w, 0.f));
+		exitR->update(deltaTime);
+		permItems.push_back(new Object(*exitR));
+	}
 }
 
 void Game::clear()
@@ -2624,5 +2636,10 @@ void Game::clear()
 }
 
 int calculateScore(float time, float goalTime, int perfectScore) {
-	return perfectScore - (time - goalTime) * 100;
+	if (time <= goalTime)
+	{
+		return perfectScore;
+	}
+
+	return glm::clamp(perfectScore * 0.75 - (time - goalTime) / 15.f, 0.0, (double)perfectScore);
 }
