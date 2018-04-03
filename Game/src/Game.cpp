@@ -1254,7 +1254,7 @@ void Game::update() {
 					// hurt player
 					if (enemies[i]->cooldown <= 0.f)
 						if (glm::length(diff) < 1.f) {
-							//player->life -= enemies[i]->damage;
+							player->life -= enemies[i]->damage;
 							enemies[i]->cooldown = enemies[i]->attackSpeed;
 						}
 					float bang = glm::radians(player->getRotation().y);
@@ -1583,7 +1583,7 @@ void Game::update() {
 					// hurt player
 					if (enemies[i]->cooldown <= 0.f)
 						if (glm::length(diff) < 1.f) {
-							//player->life -= enemies[i]->damage;
+							player->life -= enemies[i]->damage;
 							enemies[i]->cooldown = enemies[i]->attackSpeed;
 						}
 					float bang = glm::radians(player->getRotation().y);
