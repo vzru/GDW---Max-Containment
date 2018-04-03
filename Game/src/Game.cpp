@@ -144,6 +144,8 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	assets->loadTexture("level2 color", "level 2 textures.png");
 
 	assets->loadTexture("level normal", "new level texture normals.png");
+	assets->loadTexture("level2 normal", "level 2 normals.png");
+
 	// screens
 	assets->loadMesh("screen", "screen.obj");
 	assets->loadTexture("pause", "pause.png");
@@ -333,7 +335,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	level2.collision->load("assets/meshes/level 2 hitboxes.obj");
 	//level2.hitboxes->loadMesh(assets->meshes["hitboxes"]);
 	level2.map->loadTexture(Type::Texture::DIFFUSE, assets->textures["level2 color"]);
-	level2.map->loadTexture(Type::Texture::NORMAL, assets->textures["level normal"]);
+	level2.map->loadTexture(Type::Texture::NORMAL, assets->textures["level2 normal"]);
 	level2.hitboxes->update(deltaTime);
 	level2.camera = new Camera(windowSize);
 	level2.camera->setPosition({ 0.f, 12.5f, 2.5f });
@@ -1560,6 +1562,7 @@ void Game::update() {
 					enemies[i]->update(deltaTime, level2.collision);
 					// kill enemy
 					if (enemies[i]->life <= 0.f) {
+						score += enemies[i]->points;
 						createDropItem(enemies[i]->getPosition());
 						createCorpse(enemies[i]->getPosition());
 						enemies[i]->collect = true;
