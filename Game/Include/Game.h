@@ -48,8 +48,10 @@ class Game {
 public:
 	// construct & destruct
 	Game(int& argc, char **argv);
+	void reloadEnemies2();
 	void reloadEnemies();
 	void loadLevel2();
+	void clear();
 	~Game();
 	void init(void(*_controllerInput)(unsigned short index, Input::Button button, Input::State state), void(*_controllerSpecial)(unsigned short index, Input::Triggers triggers, Input::Sticks sticks));
 

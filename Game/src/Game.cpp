@@ -45,7 +45,7 @@ Game::Game(int& argc, char** argv)
 	glutCreateWindow("Max Containment");
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glutFullScreen();
+	//glutFullScreen();
 
 	glewExperimental = true;
 	if (glewInit() != GLEW_OK) {
@@ -850,6 +850,24 @@ void Game::loadEnemies2() {
 	soundList[7]->changeMinMaxDist(0.f, 11.0f);
 }
 
+void Game::reloadEnemies2() {
+	for (auto position : std::get<0>(level2.enemies)) {
+		std::get<0>(enemys)->setPosition({ position.x, 0.f, position.y });
+		FMOD_VECTOR temp = { position.x, 0.0f, position.y };
+		enemies.push_back(new Enemy(*std::get<0>(enemys)));
+	}
+	for (auto position : std::get<1>(level2.enemies)) {
+		std::get<1>(enemys)->setPosition({ position.x, 0.f, position.y });
+		FMOD_VECTOR temp = { position.x, 0.0f, position.y };
+		enemies.push_back(new Enemy(*std::get<1>(enemys)));
+	}
+	for (auto position : std::get<2>(level2.enemies)) {
+		std::get<2>(enemys)->setPosition({ position.x, 0.f, position.y });
+		FMOD_VECTOR temp = { position.x, 0.0f, position.y };
+		enemies.push_back(new Enemy(*std::get<2>(enemys)));
+	}
+}
+
 void Game::reloadEnemies() {
 	for (auto position : std::get<0>(level.enemies)) {
 		std::get<0>(enemys)->setPosition({ position.x, 0.f, position.y });
@@ -993,7 +1011,7 @@ void Game::update() {
 		//soundList[0]->stopSound();
 		//soundList[1]->playSound();
 
-		if (player->reloadCd > 0.0f && !player->reloaded) {
+		if (player->reloadCd > 0.0f && !player->reloaded && player->ammoDepo > 0.0f) {
 			soundList[2]->stopSound();
 			player->reloaded = true;
 			shotP = false;
@@ -1026,18 +1044,18 @@ void Game::update() {
 			player->acceleration.x = 0.f;
 		if (glm::length(player->acceleration) > 0.f)
 			player->acceleration = glm::normalize(player->acceleration);
-		if (input.keys & Input::Keys::KeyR)
+		if (input.keys & Input::Keys::KeyR && player->ammo < 30.0f)
 			player->reload = true;
 		player->update(deltaTime, level.collision);
 		glm::vec3 temp = player->getPosition();
 		FMOD_VECTOR listener = { player->getPosition().x, player->getPosition().y, player->getPosition().z };
 		soundList[0]->changeListenerLoc(listener);
 		glm::vec3 pDir = glm::normalize(player->getVelocity());
-		float pAng = glm::acos(glm::dot(pDir, glm::vec3(1.f, 0.f, 0.f)));
-		//std::cout << pAng << std::endl;
+		float pAng = glm::degrees(glm::acos(glm::dot(pDir, glm::vec3(0.f))));
+		float partAngle = glm::radians(player->getRotation().y);
+		std::cout << pAng << '/' << pAng - partAngle << std::endl;
 		//std::cout << temp.x << '/' << temp.y << '/' << temp.z << std::endl;
 		//std::cout << rand() % 100 << std::endl
-		float partAngle = glm::radians(player->getRotation().y);
 		//partEList[0]->direction = { cos(partAngle), 0, -sin(partAngle), 0.f };
 		partEList[0]->initPos = player->getPosition() + glm::vec3(cos(partAngle) * 0.7f, 1.0f, -sin(partAngle)* 0.7f);
 
@@ -1301,7 +1319,7 @@ void Game::update() {
 		//soundList[1]->playSound();
 		
 
-		if (player->reloadCd > 0.0f && !player->reloaded) {
+		if (player->reloadCd > 0.0f && !player->reloaded && player->ammoDepo > 0.0f) {
 			soundList[2]->stopSound();
 			player->reloaded = true;
 			shotP = false;
@@ -1334,18 +1352,18 @@ void Game::update() {
 			player->acceleration.x = 0.f;
 		if (glm::length(player->acceleration) > 0.f)
 			player->acceleration = glm::normalize(player->acceleration);
-		if (input.keys & Input::Keys::KeyR)
+		if (input.keys & Input::Keys::KeyR && player->ammo < 30.0f)
 			player->reload = true;
 		player->update(deltaTime, level2.collision);
 		glm::vec3 temp = player->getPosition();
 		FMOD_VECTOR listener = { player->getPosition().x, player->getPosition().y, player->getPosition().z };
 		soundList[0]->changeListenerLoc(listener);
 		glm::vec3 pDir = glm::normalize(player->getVelocity());
-		float pAng = glm::acos(glm::dot(pDir, glm::vec3(0.f)));
-		//std::cout << pAng << std::endl;
+		float pAng = glm::degrees(glm::acos(glm::dot(pDir, glm::vec3(0.f))));
+		float partAngle = glm::radians(player->getRotation().y);
+		std::cout << pAng << '/' << pAng - partAngle << std::endl;
 		//std::cout << temp.x << '/' << temp.y << '/' << temp.z << std::endl;
 		//std::cout << rand() % 100 << std::endl
-		float partAngle = glm::radians(player->getRotation().y);
 		//partEList[0]->direction = { cos(partAngle), 0, -sin(partAngle), 0.f };
 		partEList[0]->initPos = player->getPosition() + glm::vec3(cos(partAngle) * 0.7f, 1.0f, -sin(partAngle)* 0.7f);
 
@@ -1564,13 +1582,13 @@ void Game::update() {
 		// player loses
 		if (player->life <= 0.f) {
 			state = State::Lose;
-			reset();
+			clear();
 		}
 		// player wins
 		glm::vec3 pPos = player->getPosition();
 		if (pPos.x > level2.exit.x && pPos.x < level2.exit.y && pPos.z > level2.exit.z && pPos.z < level2.exit.w) {
 			state = State::Win;
-			reset();
+			clear();
 		}
 		// item drops
 		for (int i = 0; i < dropItems.size(); i++)
@@ -2046,8 +2064,8 @@ void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 					shotP = true;
 					//partEList[0]->play();
 					soundList[3]->stopSound();
-					//soundList[2]->playSound(3);
-					//soundList[2]->setVolume(0.05f);
+					soundList[2]->playSound(3);
+					soundList[2]->setVolume(0.05f);
 				}
 				else
 				{
@@ -2090,8 +2108,8 @@ void Game::mouseClicked(int button, int state, glm::vec2 mouse) {
 					shotP = true;
 					//partEList[0]->play();
 					soundList[3]->stopSound();
-					//soundList[2]->playSound(3);
-					//soundList[2]->setVolume(0.05f);
+					soundList[2]->playSound(3);
+					soundList[2]->setVolume(0.05f);
 				}
 				else
 				{
@@ -2498,9 +2516,37 @@ void Game::loadLevel2()
 	clearPartEmitter();
 	clearDial();
 	initializeParticles();
-	//soundList[5]->stopSound();
-	//soundList[6]->stopSound();
-	//soundList[7]->stopSound();
+	//soundList[5]->setPause(true);
+	//soundList[6]->setPause(true);
+	//soundList[7]->setPause(true);
 	loadDrops2();
 	loadEnemies2();
+}
+
+void Game::clear()
+{
+	currentTime = 0.f;
+	score = 0;
+	player->reset(level.start);
+	dialMode = 0;
+	clearEnemies();
+	clearDrops();
+	clearItems();
+	clearPartEmitter();
+	clearDial();
+	lightOn = false;
+	soundList[1]->stopSound();
+	//soundList[4]->stopSound();
+	soundList[5]->stopSound();
+	soundList[6]->stopSound();
+	soundList[7]->stopSound();
+	loadEnemies();
+	soundList[0]->playSound(2);
+	soundList[0]->setVolume(0.03f);
+	initializeParticles();
+	loadDrops();
+	loadSignR();
+	loadSignL();
+	loadDialogue();
+	//state = State::Menu;
 }
