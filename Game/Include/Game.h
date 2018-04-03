@@ -313,6 +313,17 @@ private:
 			glm::vec4 pos;
 			float scale;
 		} play, quit, resume, credits;
+		struct Score {
+			Object *number;
+			std::vector<glm::vec3> move = {
+				{ 1.6, 0.5, -1.8 },
+				{ 2.2, 0.5, -1.8 },
+				{ 2.8, 0.5, -1.8 },
+				{ 3.4, 0.5, -1.8 },
+				{ 4.0, 0.5, -1.8 }
+			};
+			int score;
+		} score;
 		Camera *camera;
 		Light *light;
 	} screen;

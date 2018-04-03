@@ -24,6 +24,8 @@
 #include "ParticleEmitterSoA.h"
 #include "FrameBufferObject.h"
 
+int calculateScore(float time, float goalTime, int perfectScore);
+
 Game::Game(int& argc, char** argv)
 	: windowSize(WINDOW_WIDTH, WINDOW_HEIGHT) {
 	// Memory Leak Detection
@@ -381,16 +383,14 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	screen.win = new Object();
 	screen.controls = new Object();
 	screen.credit = new Object();
-
-
+	
 	screen.menu->loadMesh(assets->meshes["screen"]);
 	screen.pause->loadMesh(assets->meshes["screen"]);
 	screen.win->loadMesh(assets->meshes["screen"]);
 	screen.lose->loadMesh(assets->meshes["screen"]);
 	screen.controls->loadMesh(assets->meshes["screen"]);
 	screen.credit->loadMesh(assets->meshes["screen"]);
-
-
+	
 	screen.menu->loadTexture(Type::DIFFUSE, assets->textures["menu"]);
 	screen.pause->loadTexture(Type::DIFFUSE, assets->textures["pause"]);
 	screen.win->loadTexture(Type::DIFFUSE, assets->textures["win"]);
@@ -435,8 +435,12 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	screen.resume.obj->loadMesh(assets->meshes["resume"]);
 	screen.resume.obj->setScale(glm::vec3(0.4f));
 	screen.resume.obj->update(0.f);
-
-
+	
+	screen.score.number = new Object();
+	screen.score.number->loadMesh(assets->meshes["screen"]);
+	screen.score.number->loadTexture(Type::Texture::DIFFUSE, assets->textures["numbers"]);
+	screen.score.number->setScale(glm::vec3(0.1f, 1.f, 0.2f));
+	
 	// Initialize shaders
 	program["PhongSpot"] = new Shader();
 	if (!program["PhongSpot"]->load("assets/shaders/animation.vert", "assets/shaders/phongSpot.frag")) {
@@ -616,7 +620,7 @@ void Game::init(void(*_controllerInput)(unsigned short index, Input::Button butt
 	hud.score.number = new Object();
 	hud.score.number->loadMesh(assets->meshes["screen"]);
 	hud.score.number->loadTexture(Type::Texture::DIFFUSE, assets->textures["numbers"]);
-	hud.score.number->setScale(glm::vec3(0.03f, 1.f, 0.06f));
+	hud.score.number->setScale({ 0.03f, 1.f, 0.06f });
 	hud.score.number->setRotation(hud.angle);
 	hud.ammo.number = new Object();
 	hud.ammo.number->loadMesh(assets->meshes["screen"]);
@@ -1471,15 +1475,15 @@ void Game::update() {
 				}
 				if (player->nightCD > 0.0f)
 				{
-					enemies[i]->color = glm::vec4(0.5f, 0.0f, 0.0f, 1.0f);
+					enemies[i]->color = { 0.5f, 0.f, 0.f, 1.0f };
 					for (int i = 0; i < dropItems.size(); i++)
-						dropItems[i]->color = glm::vec4(0.0f, 0.5f, 0.0f, 1.0f);
+						dropItems[i]->color = { 0.f, 0.5f, 0.f, 1.0f };
 				}
 				else
 				{
-					enemies[i]->color = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+					enemies[i]->color = { 0.f, 0.f, 0.f, 1.0f };
 					for (int i = 0; i < dropItems.size(); i++)
-						dropItems[i]->color = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+						dropItems[i]->color = { 0.f, 0.f, 0.f, 1.0f };
 				}
 
 				if (enemies[i]->range)
@@ -1569,6 +1573,7 @@ void Game::update() {
 		// player wins
 		glm::vec3 pPos = player->getPosition();
 		if (pPos.x > level2.exit.x && pPos.x < level2.exit.y && pPos.z > level2.exit.z && pPos.z < level2.exit.w) {
+			score += calculateScore(currentTime, 5 * 60 * 1000, 10000); // 5min
 			state = State::Win;
 			reset();
 		}
@@ -1811,10 +1816,18 @@ void Game::draw() {
 		screen.credits.obj->draw(program["PhongNoTexture"], screen.camera, { screen.light }, 0);
 
 		break;
-	case State::Win:
+	case State::Win: {
 		screen.win->draw(program["Phong"], screen.camera, { screen.light }, 0);
+		int nums1[] = { score / 10000, score / 1000, score / 100, score / 10, score };
+		for (int i = 0; i < screen.score.move.size(); i++) {
+			screen.score.number->ammo = nums1[i];
+			//std::cout << i << ": " << num[i] << std::endl;
+			screen.score.number->setPosition(screen.score.move[i]);
+			screen.score.number->update(deltaTime);
+			screen.score.number->draw(program["numbers"], screen.camera, { screen.light }, 0);
+		}
 		break;
-	case State::Lose:
+	} case State::Lose:
 		screen.lose->draw(program["Phong"], screen.camera, { screen.light }, 0);
 		break;
 	case State::Control:
@@ -1844,13 +1857,11 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 			playMode = 1;
 			break;
 		case State::Pause:
-			if (playMode == 1) {
+			if (playMode == 1)
 				state = State::Play2;
-			}
-			else {
-				state = State::Play;
-			}
-
+			else state = State::Play;
+			screen.resume.obj->color = { 1.f, 1.f, 1.f, 1.0f };
+			screen.quit.obj->color = { 1.f, 1.f, 1.f, 1.0f };
 			break;
 		case State::Menu:
 			glutExit();
@@ -1874,6 +1885,9 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 			state = State::Control;
 			break;
 		case State::Control:
+			screen.play.obj->color = { 1.f, 1.f, 1.f, 1.0f };
+			screen.quit.obj->color = { 1.f, 1.f, 1.f, 1.0f };
+			screen.credits.obj->color = { 1.f, 1.f, 1.f, 1.0f };
 			state = State::Play;
 			soundList[0]->stopSound(0);
 			soundList[1]->playSound(2);
@@ -1890,13 +1904,11 @@ void Game::keyboardDown(unsigned char key, glm::vec2 mouse) {
 				state = State::Play2;
 				loadLevel2();
 				cheatCode = 0;
-			}
-			else if (playMode == 1) {
+			} else if (playMode == 1)
 				state = State::Play2;
-			}
-			else {
-				state = State::Play;
-			}
+			else state = State::Play;
+			screen.resume.obj->color = { 1.f, 1.f, 1.f, 1.0f };
+			screen.quit.obj->color = { 1.f, 1.f, 1.f, 1.0f };
 			break;
 		case State::Lose: 
 			state = State::Menu;
@@ -2213,7 +2225,7 @@ void Game::mouseMoved(glm::vec2 mouse) {
 			float theta = atan2(camPos.z, camPos.y);
 			mouse.y /= cos(theta);
 			//std::cout << pos.x << ':' << pos.y << ';' << pPos.x << ':' << pPos.z << ';' << windowSize.x << ':' << windowSize.y << std::endl;
-			glm::vec2 offset = glm::vec2(pPos.x, pPos.z) + windowSize * 0.5f - mouse;
+			glm::vec2 offset = /*glm::vec2(pPos.x, pPos.z) +*/ windowSize * 0.5f - mouse;
 			player->setRotation({ 0.f, glm::degrees(atan2(offset.y, -offset.x)), 0.f });
 			break;
 		} case State::Play2: {
@@ -2222,7 +2234,7 @@ void Game::mouseMoved(glm::vec2 mouse) {
 			float theta = atan2(camPos.z, camPos.y);
 			mouse.y /= cos(theta);
 			//std::cout << pos.x << ':' << pos.y << ';' << pPos.x << ':' << pPos.z << ';' << windowSize.x << ':' << windowSize.y << std::endl;
-			glm::vec2 offset = glm::vec2(pPos.x, pPos.z) + windowSize * 0.5f - mouse;
+			glm::vec2 offset = /*glm::vec2(pPos.x, pPos.z) +*/ windowSize * 0.5f - mouse;
 			player->setRotation({ 0.f, glm::degrees(atan2(offset.y, -offset.x)), 0.f });
 			break;
 		} default:
@@ -2235,12 +2247,13 @@ void Game::mousePassive(glm::vec2 mouse) {
 	if (!input.xBox->getConnected(0))
 		switch (state) {
 		case State::Play: {
+			std::cout << mouse.x << ":" << mouse.y << std::endl;
 			glm::vec3 camPos = level.camera->getPosition();
 			glm::vec3 pPos = player->getPosition();
 			float theta = atan2(camPos.z, camPos.y);
 			mouse.y /= cos(theta);
 			//std::cout << pos.x << ':' << pos.y << ';' << pPos.x << ':' << pPos.z << ';' << windowSize.x << ':' << windowSize.y << std::endl;
-			glm::vec2 offset = glm::vec2(pPos.x, pPos.z) + windowSize * 0.5f - mouse;
+			glm::vec2 offset = /*glm::vec2(pPos.x, pPos.z) +*/ windowSize * 0.5f - mouse;
 			player->setRotation({ 0.f, glm::degrees(atan2(offset.y, -offset.x)), 0.f });
 			break;
 		} case State::Play2: {
@@ -2249,28 +2262,28 @@ void Game::mousePassive(glm::vec2 mouse) {
 			float theta = atan2(camPos.z, camPos.y);
 			mouse.y /= cos(theta);
 			//std::cout << pos.x << ':' << pos.y << ';' << pPos.x << ':' << pPos.z << ';' << windowSize.x << ':' << windowSize.y << std::endl;
-			glm::vec2 offset = glm::vec2(pPos.x, pPos.z) + windowSize * 0.5f - mouse;
+			glm::vec2 offset = /*glm::vec2(pPos.x, pPos.z) +*/ windowSize * 0.5f - mouse;
 			player->setRotation({ 0.f, glm::degrees(atan2(offset.y, -offset.x)), 0.f });
 			break;
 		} case State::Menu: {
 			if (mouse.x > screen.play.pos.x * windowSize.x && mouse.x < screen.play.pos.y * windowSize.x && mouse.y > screen.play.pos.z * windowSize.y && mouse.y < screen.play.pos.w * windowSize.y)
-				screen.play.obj->color = glm::vec4(1.0f, 0.f, 0.f, 1.0f);
-			else screen.play.obj->color = glm::vec4(1.0f, 1.f, 1.f, 1.0f);
+				screen.play.obj->color = { 1.f, 0.f, 0.f, 1.0f };
+			else screen.play.obj->color = { 1.f, 1.f, 1.f, 1.0f };
 			if (mouse.x > screen.quit.pos.x * windowSize.x && mouse.x < screen.quit.pos.y * windowSize.x && mouse.y > screen.quit.pos.z * windowSize.y && mouse.y < screen.quit.pos.w * windowSize.y)
-				screen.quit.obj->color = glm::vec4(1.0f, 0.f, 0.f, 1.0f);
-			else screen.quit.obj->color = glm::vec4(1.0f, 1.f, 1.f, 1.0f);
+				screen.quit.obj->color = { 1.f, 0.f, 0.f, 1.0f };
+			else screen.quit.obj->color = { 1.f, 1.f, 1.f, 1.0f };
 			if (mouse.x > screen.credits.pos.x * windowSize.x && mouse.x < screen.credits.pos.y * windowSize.x && mouse.y > screen.credits.pos.z * windowSize.y && mouse.y < screen.credits.pos.w * windowSize.y)
-				screen.credits.obj->color = glm::vec4(1.0f, 0.f, 0.f, 1.0f);
-			else screen.credits.obj->color = glm::vec4(1.0f, 1.f, 1.f, 1.0f);
+				screen.credits.obj->color = { 1.f, 0.f, 0.f, 1.0f };
+			else screen.credits.obj->color = { 1.f, 1.f, 1.f, 1.0f };
 			break;
 		}
 		case State::Pause:
 			if (mouse.x > screen.resume.pos.x * windowSize.x && mouse.x < screen.resume.pos.y * windowSize.x && mouse.y > screen.resume.pos.z * windowSize.y && mouse.y < screen.resume.pos.w * windowSize.y)
-				screen.resume.obj->color = glm::vec4(1.0f, 0.f, 0.f, 1.0f);
-			else screen.resume.obj->color = glm::vec4(1.0f, 1.f, 1.f, 1.0f);
+				screen.resume.obj->color = { 1.f, 0.f, 0.f, 1.0f };
+			else screen.resume.obj->color = { 1.f, 1.f, 1.f, 1.0f };
 			if (mouse.x > screen.quit.pos.x * windowSize.x && mouse.x < screen.quit.pos.y * windowSize.x && mouse.y > screen.quit.pos.z * windowSize.y && mouse.y < screen.quit.pos.w * windowSize.y)
-				screen.quit.obj->color = glm::vec4(1.0f, 0.f, 0.f, 1.0f);
-			else screen.quit.obj->color = glm::vec4(1.0f, 1.f, 1.f, 1.0f);
+				screen.quit.obj->color = { 1.f, 0.f, 0.f, 1.0f };
+			else screen.quit.obj->color = { 1.f, 1.f, 1.f, 1.0f };
 			break;
 		default:
 			break;
@@ -2503,4 +2516,8 @@ void Game::loadLevel2()
 	//soundList[7]->stopSound();
 	loadDrops2();
 	loadEnemies2();
+}
+
+int calculateScore(float time, float goalTime, int perfectScore) {
+	return perfectScore - (time - goalTime) * 1000;
 }
