@@ -202,11 +202,11 @@ private:
 		std::vector<glm::vec3> lightsPos =
 		{
 			// Examples for formatting
-			{ 4.25f, 10.0f, 29.5f },
-			{ 32.75f, 10.0f, 48.0f },
+			{ 42.17f, 10.0f, 14.85f},
+			{ 45.19f, 10.0f, 17.65f },
 			//{ 151.0f, 10.0f, 11.0f },
 			//{ 2.0f, 10.0f, 25.0f },
-			{ 79.5f, 10.0f, 68.0f }
+			{ 43.5f, 10.0f, 16.0f }
 		};
 
 		std::vector<glm::vec4> exitPosR =

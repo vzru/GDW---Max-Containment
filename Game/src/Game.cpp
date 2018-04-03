@@ -2425,7 +2425,7 @@ void Game::controllerSpecial(unsigned short index, Input::Triggers triggers, Inp
 				player->setRotation({ 0.0f, glm::degrees(atan2(sticks.second.y, sticks.second.x)), 0.0f });
 			if (triggers.second > 0.5)
 			{
-				if (player->reloadCd <= 0.0f && (player->ammoDepo > 0.0f || player->ammo > 0.0f)) {
+				if (player->reloadCd <= 0.0f && player->ammo > 0.0f) {
 					//if (!player->firing) {
 						player->firing = true;
 						soundList[3]->stopSound();
@@ -2463,7 +2463,7 @@ void Game::controllerSpecial(unsigned short index, Input::Triggers triggers, Inp
 				player->setRotation({ 0.0f, glm::degrees(atan2(sticks.second.y, sticks.second.x)), 0.0f });
 			if (triggers.second > 0.5)
 			{
-				if (player->reloadCd <= 0.0f && (player->ammoDepo > 0.0f || player->ammo > 0.0f) ) {
+				if (player->reloadCd <= 0.0f && player->ammo > 0.0f ) {
 					player->firing = true;
 					soundList[3]->stopSound();
 					//if (soundList[3]->chList.size() <= 0) {
@@ -2624,5 +2624,5 @@ void Game::clear()
 }
 
 int calculateScore(float time, float goalTime, int perfectScore) {
-	return perfectScore - (time - goalTime) * 1000;
+	return perfectScore - (time - goalTime) * 100;
 }
